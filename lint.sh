@@ -8,9 +8,9 @@ else
 fi
 
 echo
-echo "Linting backend/"
-if [ -d "backend" ]; then
-    (cd backend && npm run lint)
+echo "Linting auth-service/"
+if [ -d "auth" ]; then
+    (cd auth && npm run lint)
 else
-    echo "backend/ directory not found."
+    echo "auth/ directory not found."
 fi

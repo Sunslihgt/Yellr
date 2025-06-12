@@ -1,5 +1,5 @@
-# Frontend Dockerfile
-FROM node:20-alpine as build
+# Build
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
@@ -9,8 +9,13 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-FROM node:20-alpine as prod
+# Run
+FROM node:20-alpine AS prod
+
 WORKDIR /app
+
 COPY --from=build /app .
-EXPOSE 3000
+
+# EXPOSE 3000
+
 CMD ["npm", "start"]

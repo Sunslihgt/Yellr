@@ -1,7 +1,18 @@
-version: '3.8'
 services:
+  nginx:
+    image: nginx:latest
+    container_name: gateway
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-service
+      - frontend-service
+
   mongo:
     image: mongo:7
+    container_name: mongo
     restart: always
     ports:
       - "27017:27017"
@@ -11,27 +22,25 @@ services:
     volumes:
       - mongo-data:/data/db
 
-  backend:
-    build: ./backend
+  auth-service:
+    build: ./auth
+    container_name: auth-service
     restart: always
     ports:
       - "5000:5000"
     environment:
-      MONGO_URI: mongodb://root:example@mongo:27017/
+      MONGO_URI: mongodb://root:example@mongo:27017/ # Todo: use .env
     depends_on:
       - mongo
     volumes:
-      - ./backend:/app
+      - ./auth:/app
 
-  frontend:
+  frontend-service:
     build: ./frontend
+    container_name: frontend-service
     restart: always
     ports:
       - "3000:3000"
-    environment:
-      REACT_APP_API_URL: http://localhost:5000
-    depends_on:
-      - backend
     volumes:
       - ./frontend:/app
 
