@@ -11,14 +11,13 @@ The project uses the **MERN** stack (MongoDB, Express, React, Node) with Typescr
 
 ## ▶️ Running the Project
 
-To start the project using Docker Compose:
+To start the project using just run the bash file :
 
 ```sh
-docker-compose up --build
+./run-dev.sh
 ```
 
-This will start all necessary services. The optional flag `--build` will also build the project to be deployable.<br>
-_If you need to customize environment variables, edit the `.env` file before running._
+This will stop all currently running images, start all necessary services. HMR will be enabled to streamline the development process.<br>
 
 ## 🆗 Linting
 
