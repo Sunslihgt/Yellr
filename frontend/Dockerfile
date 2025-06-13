@@ -6,7 +6,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-COPY . .
+COPY src .
+COPY public .
+COPY tsconfig.json .
+
 RUN npm run build
 
 # Run

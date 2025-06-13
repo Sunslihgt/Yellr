@@ -16,7 +16,8 @@ RUN if [ "$NODE_ENV" = "production" ]; \
     else npm install; \
     fi
 
-COPY . .
+COPY src .
+COPY tsconfig.json .
 
 # Only build in production mode
 RUN if [ "$NODE_ENV" = "production" ]; \
