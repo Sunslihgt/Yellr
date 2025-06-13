@@ -26,7 +26,7 @@ services:
     build: 
       context: ./auth
       args:
-        NODE_ENV: development
+        NODE_ENV: ${NODE_ENV:-development}
     container_name: auth-service
     restart: always
     ports:
@@ -34,25 +34,14 @@ services:
     depends_on:
       - mongo
     volumes:
-      - ./auth:/app
+      - ./auth/src:/app/src
+      - ./auth/package.json:/app/package.json
+      - ./auth/package-lock.json:/app/package-lock.json
+      - ./auth/tsconfig.json:/app/tsconfig.json
       - /app/node_modules
       - /app/dist
     environment:
-      - NODE_ENV=development
-
-  auth-service-prod:
-    build: 
-      context: ./auth
-      args:
-        NODE_ENV: production
-    container_name: auth-service-prod
-    restart: always
-    ports:
-      - "5001:5000"
-    depends_on:
-      - mongo
-    environment:
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV:-development}
       - MONGO_URI=mongodb://root:example@mongo:27017/
 
   frontend-service:
