@@ -23,17 +23,37 @@ services:
       - mongo-data:/data/db
 
   auth-service:
-    build: ./auth
+    build: 
+      context: ./auth
+      args:
+        NODE_ENV: development
     container_name: auth-service
     restart: always
     ports:
       - "5000:5000"
-    environment:
-      MONGO_URI: mongodb://root:example@mongo:27017/ # Todo: use .env
     depends_on:
       - mongo
     volumes:
       - ./auth:/app
+      - /app/node_modules
+      - /app/dist
+    environment:
+      - NODE_ENV=development
+
+  auth-service-prod:
+    build: 
+      context: ./auth
+      args:
+        NODE_ENV: production
+    container_name: auth-service-prod
+    restart: always
+    ports:
+      - "5001:5000"
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://root:example@mongo:27017/
 
   frontend-service:
     build: ./frontend

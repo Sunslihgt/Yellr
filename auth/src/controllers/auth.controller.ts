@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
 import { sign, verify } from 'jsonwebtoken';
 import { compareSync, hashSync } from 'bcrypt';
+import dotenv from 'dotenv';
 import Auth from '../models/auth.model';
 // import User from '../models/user.model';
+
+dotenv.config({ path: './src/.env' });
 
 export interface AuthBody {
     email: string;
@@ -16,16 +19,19 @@ export const register = async (
     req: Request<{}, {}, AuthBody>,
     res: Response
 ) => {
-    if (!req.body || !req.body.email || !req.body.password) {
-        return res.status(400).json({ msg: 'Email and password are required.' });
-    }
-    const newUserAuth = new Auth(
-        req.body.email,
-        hashSync(req.body.password, 10)
-    );
-    User_DB.push(newUserAuth);
+    // if (!req.body || !req.body.email || !req.body.password) {
+    //     return res.status(400).json({ msg: 'Email and password are required.' });
+    // }
+    // const newUserAuth = new Auth(
+    //     req.body.email,
+    //     hashSync(req.body.password, 10)
+    // );
+    // User_DB.push(newUserAuth);
+    // return res.status(201).json({
+    //     msg: 'New User created !'
+    // });
     return res.status(201).json({
-        msg: 'New User created !'
+        msg: 'Register route is working'
     });
 };
 
@@ -41,7 +47,7 @@ export const login = async (
     );
 
 
-    if (authUser) {
+    if (authUser && process.env.ACCESS_JWT_KEY) {
         const accessToken = sign({
             email: authUser.email,
             exp: Math.floor(Date.now() / 1000) + 120
@@ -50,6 +56,8 @@ export const login = async (
         );
 
         return res.status(200).json({ message: `You are now connected, token: ${accessToken}` });
+    } else if (!process.env.ACCESS_JWT_KEY) {
+        return res.status(401).json({ message: "Invalid JWT key" });
     } else {
         return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -67,6 +75,10 @@ export const authenticate = async (
     }
 
     const token = tokenString.split('Bearer ')[1];
+
+    if (!process.env.ACCESS_JWT_KEY) {
+        return res.status(401).json({ message: "Invalid JWT key" });
+    }
 
     verify(
         token,
