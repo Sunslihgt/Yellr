@@ -16,3 +16,7 @@
 .DS_Store
 *.log
 *.pid
+
+# IDE
+.vscode
+.cursor
