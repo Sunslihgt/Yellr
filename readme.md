@@ -1,4 +1,4 @@
-# 🚨 YELLR  
+# 🚨 YELLR
 **_Where Everyone’s Loud_**  
 *...and nobody listens.*
 
@@ -6,22 +6,40 @@
 
 ## 👷‍♂️ Development
 
-Yellr is a _**Twitter/X clone**_ made by 3 students at CESI Graduate School of Engineering at Saint-Nazaire (_A3 INFO FISA 2024-2027_).<br>
-The project uses the **MERN** stack (MongoDB, Express, React, Node) with Typescript and Tailwind.
+Yellr is a _**Twitter/X clone**_ made by 3 students in a few weeks at CESI Graduate School of Engineering at Saint-Nazaire (_A3 INFO FISA 2024-2027_).<br>
+The project uses the **MERN** stack (MongoDB, Express, React, Node) with Typescript, Tailwind and Nginx. The backend is built from different micro-services.
 
 ## ▶️ Running the Project
 
-To start the project using just run the bash file :
+### Linux
+
+To start the project on Linux, just run the bash file :
 
 ```sh
 ./run-dev.sh
 ```
 
-This will stop all currently running images, start all necessary services. HMR will be enabled to streamline the development process.<br>
+This will stop all currently running images, start all necessary services. HMR will be enabled to streamline the development process.
+
+You can also run `./run-prod.sh` to build the project for deployment and prod tests.
+
+---
+
+### Windows
+
+To start the project on Windows, just run the PowerShell file :
+
+```sh
+./run-dev.ps1
+```
+
+This will stop all currently running images, start all necessary services. HMR will be enabled to streamline the development process.
+
+You can also run `./run-prod.ps1` to build the project for deployment and prod tests.
 
 ## 🆗 Linting
 
-To check code style and run linters, use the provided script:
+To check code style and run linters on Linux, use the provided script:
 
 ```sh
 ./lint.sh

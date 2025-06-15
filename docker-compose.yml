@@ -33,13 +33,12 @@ services:
       - "5000:5000"
     depends_on:
       - mongo
+    # Only for development
     volumes:
       - ./auth/src:/app/src
       - ./auth/package.json:/app/package.json
       - ./auth/package-lock.json:/app/package-lock.json
       - ./auth/tsconfig.json:/app/tsconfig.json
-      - /app/node_modules
-      - /app/dist
     environment:
       - NODE_ENV=${NODE_ENV:-development}
       - MONGO_URI=mongodb://root:example@mongo:27017/
@@ -51,7 +50,11 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./frontend:/app
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/package-lock.json:/app/package-lock.json
+      - ./frontend/tsconfig.json:/app/tsconfig.json
 
 volumes:
   mongo-data:

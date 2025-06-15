@@ -9,21 +9,17 @@ RUN echo "NODE_ENV: ${NODE_ENV}"
 WORKDIR /app
 
 COPY package*.json ./
+COPY tsconfig.json ./
 
-# Install dependencies based on environment
-RUN if [ "$NODE_ENV" = "production" ]; \
-    then npm install --production; \
-    else npm install; \
-    fi
+# Install dependencies
+RUN npm install --include=dev
 
-COPY . .
+COPY src ./src
 
 # Only build in production mode
 RUN if [ "$NODE_ENV" = "production" ]; \
     then npm run build; \
     fi
-
-EXPOSE 5000
 
 # Use different commands based on environment
 CMD if [ "$NODE_ENV" = "production" ]; \
