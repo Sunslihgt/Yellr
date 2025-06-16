@@ -32,9 +32,6 @@
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
         "@mui/material": "^6.4.12",
-        "@types/node": "^16.18.126",
-        "@types/react": "^19.1.6",
-        "@types/react-dom": "^19.1.6",
         "axios": "^1.9.0",
         "react": "^19.1.0",
         "react-dom": "^19.1.0",
@@ -42,8 +39,9 @@
         "zustand": "^5.0.5"
     },
     "devDependencies": {
+        "@types/node": "^16.18.126",
         "@types/react": "^19.1.6",
-        "@types/react-dom": "^19.1.5",
+        "@types/react-dom": "^19.1.6",
         "@typescript-eslint/eslint-plugin": "^5.62.0",
         "@typescript-eslint/parser": "^5.62.0",
         "eslint": "^8.57.1",

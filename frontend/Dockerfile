@@ -1,25 +1,29 @@
 # Frontend Dockerfile
-FROM node:20-alpine AS build
+FROM node:20-alpine
+
+# Add build argument with default value
+ARG NODE_ENV=development
+ENV NODE_ENV=${NODE_ENV}
+RUN echo "NODE_ENV: ${NODE_ENV}"
 
 WORKDIR /app
 
-# Dependencies
 COPY package*.json ./
-COPY src ./src
 COPY public ./public
 COPY tsconfig.json .
 
 # Install dependencies
 RUN npm install --include=dev
 
-# Build
-RUN npm run build
+COPY src ./src
 
-# Run
-FROM node:20-alpine AS prod
+# Only build in production mode
+RUN if [ "$NODE_ENV" = "production" ]; \
+    then npm run build; \
+    fi
 
-WORKDIR /app
-
-COPY --from=build /app .
-
-CMD ["npm", "start"]
+# Use different commands based on environment
+CMD if [ "$NODE_ENV" = "production" ]; \
+    then npm start; \
+    else npm run dev; \
+    fi

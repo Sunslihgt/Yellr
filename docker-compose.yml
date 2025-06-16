@@ -44,7 +44,10 @@ services:
       - MONGO_URI=mongodb://root:example@mongo:27017/
 
   frontend-service:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        NODE_ENV: ${NODE_ENV:-development}
     container_name: frontend-service
     restart: always
     ports:
@@ -55,6 +58,8 @@ services:
       - ./frontend/package.json:/app/package.json
       - ./frontend/package-lock.json:/app/package-lock.json
       - ./frontend/tsconfig.json:/app/tsconfig.json
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
 
 volumes:
   mongo-data:
