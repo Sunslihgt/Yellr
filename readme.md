@@ -13,15 +13,16 @@ The project uses the **MERN** stack (MongoDB, Express, React, Node) with Typescr
 
 ### Linux
 
-To start the project on Linux, just run the bash file :
+Use Make to run the project in development or production mode.
 
 ```sh
-./run-dev.sh
+make run-dev # Development
+make run-prod # Production
 ```
 
 This will stop all currently running images, start all necessary services. HMR will be enabled to streamline the development process.
 
-You can also run `./run-prod.sh` to build the project for deployment and prod tests.
+You can also run `make lint` to lint the project and its microservices.
 
 ---
 
