@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import './main.css';
 // import App from './App';
 
 const container = document.getElementById('root');
@@ -11,7 +12,7 @@ const root = createRoot(container)
 
 root.render(
     <React.StrictMode>
-        <h1>Hello world</h1>
+        <h1 className="text-3xl font-bold underline">Bonjour Tailwind !</h1>
         {/* <App /> */}
     </React.StrictMode>
 );
