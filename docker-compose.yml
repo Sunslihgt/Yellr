@@ -22,19 +22,6 @@ services:
     volumes:
       - mongo-data:/data/db
 
-  mysql:
-    image: mysql:8
-    container_name: mysql
-    restart: always
-    ports:
-      - "3306:3306"
-    environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-    volumes:
-      - mysql-data:/var/lib/mysql
-      - ./mysql/init_db.sql:/docker-entrypoint-initdb.d/init.sql
-
   auth-service:
     build: 
       context: ./auth
@@ -46,14 +33,12 @@ services:
       - "5000:5000"
     depends_on:
       - mongo
-      - mysql
     # Only for development
     volumes:
       - ./auth/src:/app/src
       - ./auth/package.json:/app/package.json
       - ./auth/package-lock.json:/app/package-lock.json
       - ./auth/tsconfig.json:/app/tsconfig.json
-      - ./auth/prisma:/app/prisma
     environment:
       - NODE_ENV=${NODE_ENV:-development}
       - MONGO_URI=mongodb://root:example@mongo:27017/
@@ -78,4 +63,3 @@ services:
 
 volumes:
   mongo-data:
-  mysql-data:
