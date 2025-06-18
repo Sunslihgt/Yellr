@@ -45,6 +45,27 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV:-development}
 
+  user-service:
+    build: 
+      context: ./user
+      args:
+        NODE_ENV: ${NODE_ENV:-development}
+    container_name: user-service
+    restart: always
+    ports:
+      - "5001:5001"
+    depends_on:
+      - mongo
+    # Only for development
+    volumes:
+      - ./user/src:/app/src
+      - ./user/package.json:/app/package.json
+      - ./user/package-lock.json:/app/package-lock.json
+      - ./user/tsconfig.json:/app/tsconfig.json
+      - ./user/.env:/app/.env
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+
   frontend-service:
     build:
       context: ./frontend

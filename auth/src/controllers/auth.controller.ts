@@ -8,13 +8,8 @@ dotenv.config({ path: './src/.env' });
 
 const JWT_LENGTH = 60 * 60 * 24; // 1 day in seconds
 
-export interface AuthBody {
-    email: string;
-    password: string;
-}
-
 export interface JwtAuthPayload {
-    email: string;
+    userId: string;
     exp: number;
 }
 
@@ -22,18 +17,19 @@ export const register = async (
     req: Request,
     res: Response
 ) => {
-    if (!req.body || !req.body.email || !req.body.password) {
-        return res.status(400).json({ msg: 'Email and password are required.' });
+    if (!req.body || !req.body.username || !req.body.email || !req.body.password) {
+        return res.status(400).json({ msg: 'Username, email and password are required.' });
     }
     try {
         // Check if user already exists
-        const existingUser = await UserModel.findOne({ email: req.body.email });
+        const existingUser = await UserModel.findOne({ username: req.body.username });
         if (existingUser) {
             return res.status(409).json({ msg: 'User already exists.' });
         }
         // Create new user
         const hashedPassword = hashSync(req.body.password, 10);
         const newUser = new UserModel({
+            username: req.body.username,
             email: req.body.email,
             passwordHash: hashedPassword,
         });
@@ -50,24 +46,24 @@ export const login = async (
     req: Request,
     res: Response
 ) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
     try {
         // Get user from database
-        const user = await UserModel.findOne({ email });
-        if (!user?.email || !user.passwordHash) {
+        const user = await UserModel.findOne({ username });
+        if (!user?.username || !user.passwordHash) {
             return res.status(401).json({ message: 'Invalid credentials : user not found' });
         }
         if (!compareSync(password, user.passwordHash)) {
             return res.status(401).json({ message: 'Invalid credentials : password does not match' });
         }
-        
+
         // JWT token generation
         const jwtKey = process.env.ACCESS_JWT_KEY;
         if (!jwtKey) {
             return res.status(401).json({ message: 'Application JWT key is not set' });
         }
         const payload: JwtAuthPayload = {
-            email: user.email,
+            userId: user._id.toString(),
             exp: Math.floor(Date.now() / 1000) + JWT_LENGTH
         };
         const accessToken = sign(
@@ -109,13 +105,13 @@ export const authenticate = async (
                 return res.status(403).json({ message: 'Token expired' });
             }
             try {
-                const user = await UserModel.findOne({ email: typedDecoded.email });
+                const user = await UserModel.findOne({ _id: typedDecoded.userId });
                 if (!user) {
                     return res.status(404).json({ message: 'User not found' });
                 }
                 return res.status(200).json({
                     message: 'Token is valid',
-                    email: typedDecoded.email,
+                    userId: typedDecoded.userId,
                     exp: typedDecoded.exp
                 });
             } catch (error) {
