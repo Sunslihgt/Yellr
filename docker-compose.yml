@@ -8,6 +8,7 @@ services:
       - "8080:8080"
     depends_on:
       - auth-service
+      - post-service
       - frontend-service
 
   mongo:
@@ -39,6 +40,27 @@ services:
       - ./auth/package.json:/app/package.json
       - ./auth/package-lock.json:/app/package-lock.json
       - ./auth/tsconfig.json:/app/tsconfig.json
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - MONGO_URI=mongodb://root:example@mongo:27017/
+
+  post-service:
+    build: 
+      context: ./post
+      args:
+        NODE_ENV: ${NODE_ENV:-development}
+    container_name: post-service
+    restart: always
+    ports:
+      - "5001:5001"
+    depends_on:
+      - mongo
+    # Only for development
+    volumes:
+      - ./post/src:/app/src
+      - ./post/package.json:/app/package.json
+      - ./post/package-lock.json:/app/package-lock.json
+      - ./post/tsconfig.json:/app/tsconfig.json
     environment:
       - NODE_ENV=${NODE_ENV:-development}
       - MONGO_URI=mongodb://root:example@mongo:27017/
