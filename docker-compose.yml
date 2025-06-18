@@ -19,6 +19,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
+      # MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      # MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - mongo-data:/data/db
 
@@ -39,9 +41,9 @@ services:
       - ./auth/package.json:/app/package.json
       - ./auth/package-lock.json:/app/package-lock.json
       - ./auth/tsconfig.json:/app/tsconfig.json
+      - ./auth/.env:/app/.env
     environment:
       - NODE_ENV=${NODE_ENV:-development}
-      - MONGO_URI=mongodb://root:example@mongo:27017/
 
   frontend-service:
     build:

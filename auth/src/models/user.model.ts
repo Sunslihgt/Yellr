@@ -1,14 +1,14 @@
-class User {
-    username: string;
-    bio: string;
+import mongoose from 'mongoose';
 
-    constructor(
-        username: string,
-        bio: string
-    ) {
-        this.username = username;
-        this.bio = bio;
-    }
-}
+const userSchema = new mongoose.Schema({
+    email: String,
+    username: String,
+    bio: String,
+    passwordHash: String,
+    createdAt: { type: Date, default: Date.now },
+    role: { type: String, enum: ['user', 'admin'], default: 'user' },
+});
 
-export default User;
+const UserModel = mongoose.model('User', userSchema);
+
+export default UserModel;
