@@ -6,7 +6,7 @@ const MessageCard = () => {
                 <div className="flex-shrink-0">
                     <img 
                         className="h-12 w-12 rounded-full" 
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqPDwMWlLtyFk9XGrH-KyIiBuqUEuL4EkwyA&s" 
                         alt="User avatar"
                     />
                 </div>
@@ -16,10 +16,10 @@ const MessageCard = () => {
                     {/* Header */}
                     <div className="flex items-center space-x-2 mb-1">
                         <span className="font-bold text-gray-900 dark:text-white hover:underline cursor-pointer">
-                            John Doe
+                            Fan de Tennis
                         </span>
                         <span className="text-gray-500 dark:text-gray-400">
-                            @johndoe
+                            @fan2tennis
                         </span>
                         <span className="text-gray-500 dark:text-gray-400">·</span>
                         <span className="text-gray-500 dark:text-gray-400 hover:underline cursor-pointer">
@@ -29,8 +29,7 @@ const MessageCard = () => {
                     
                     {/* Message content */}
                     <p className="text-gray-900 dark:text-white text-base leading-relaxed mb-3">
-                        Just finished building this amazing app! 🚀 The frontend is looking great with React and Tailwind CSS. 
-                        Can't wait to see what we can build next! #coding #react #tailwind
+                        J'aime très beaucoup le tennis.
                     </p>
                     
                     {/* Actions */}

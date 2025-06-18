@@ -13,13 +13,13 @@ function Navbar() {
         <div className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
             <button type="button" className="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
               <span className="sr-only">Open user menu</span>
-              <a href='/profile'><img className="w-8 h-8 rounded-full" src="https://media.licdn.com/dms/image/v2/D4E03AQHg3MdO2mcWwQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1713861621471?e=2147483647&v=beta&t=mAVe_RDs7TCUgCNeDQbsC4ZBfA-6RcreC-fV6AMbEY8" alt="user photo" /></a>
+              <a href='/profile'><img className="w-8 h-8 rounded-full" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqPDwMWlLtyFk9XGrH-KyIiBuqUEuL4EkwyA&s" alt="user photo" /></a>
             </button>
             <div className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600" id="user-dropdown">
-              <div className="px-4 py-3">
+              {/* <div className="px-4 py-3">
                 <span className="block text-sm text-gray-900 dark:text-white">Bonnie Green</span>
                 <span className="block text-sm  text-gray-500 truncate dark:text-gray-400">name@flowbite.com</span>
-              </div>
+              </div> */}
             </div>
             <button
               data-collapse-toggle="navbar-user"
