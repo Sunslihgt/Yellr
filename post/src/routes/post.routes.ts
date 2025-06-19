@@ -15,6 +15,4 @@ router.delete('/posts/:id', deletePost);
 
 router.post('/posts/:id/like', likePost);
 
-router.get('/posts/test', getPostsTest);
-
 export default router;

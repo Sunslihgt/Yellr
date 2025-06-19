@@ -33,7 +33,7 @@ app.get('/test', (req, res) => {
         port: PORT,
         endpoints: [
             'POST /api/posts - Créer un post',
-            'GET /api/posts/test - Voir les derniers posts'
+            'GET /api/posts - Voir les derniers posts'
         ]
     });
 });
