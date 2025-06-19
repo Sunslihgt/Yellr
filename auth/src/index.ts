@@ -3,7 +3,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import mongoose from 'mongoose';
-import UserModel from './models/user.model';
 
 dotenv.config({ path: './.env' });
 
@@ -17,7 +16,7 @@ const PORT = 5000;
 // Connect to MongoDB using Mongoose
 const connectDB = async () => {
     try {
-        const mongoUri = process.env.MONGO_URI!;
+        const mongoUri = process.env.MONGO_URI || '';
         if (!mongoUri) {
             throw new Error('MONGO_URI is not defined');
         }
