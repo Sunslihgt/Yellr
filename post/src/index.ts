@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const PORT = 5001;
+const PORT = 5002;
 
 const connectDB = async () => {
     try {
@@ -24,7 +24,7 @@ const connectDB = async () => {
     }
 };
 
-app.use('/api', postRoutes);
+app.use('/posts', postRoutes);
 
 app.get('/test', (req, res) => {
     res.json({ 

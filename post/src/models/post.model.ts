@@ -2,8 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IPost extends Document {
     content: string;
-    authorEmail: string;
-    authorUsername?: string;
+    authorId: string;
     tags: string[];
     likes: string[];
     createdAt: Date;
@@ -18,13 +17,10 @@ const PostSchema: Schema = new Schema({
         required: true,
         maxlength: 280
     },
-    authorEmail: {
-        type: String,
+    authorId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true
-    },
-    authorUsername: {
-        type: String,
-        default: ''
     },
     tags: [{
         type: String,
@@ -40,13 +36,23 @@ const PostSchema: Schema = new Schema({
     videoUrl: {
         type: String,
         default: null
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
     }
 }, {
     timestamps: true
 });
 
-PostSchema.index({ authorEmail: 1 });
+PostSchema.index({ authorId: 1 });
 PostSchema.index({ tags: 1 });
 PostSchema.index({ createdAt: -1 });
 
-export default mongoose.model<IPost>('Post', PostSchema); 
+const PostModel = mongoose.model<IPost>('Post', PostSchema);
+
+export default PostModel;

@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
-import Post, { IPost } from '../models/post.model';
+import PostModel from '../models/post.model';
+import { JwtUserRequest } from '../@types/jwtRequest';
+import { userIdExists } from '../utils/user.utils';
 
 export interface CreatePostBody {
     content: string;
-    authorEmail: string;
-    authorUsername?: string;
+    authorId?: string;
     tags?: string[];
     imageUrl?: string;
     videoUrl?: string;
@@ -17,39 +18,41 @@ export interface EditPostBody {
     videoUrl?: string;
 }
 
-export const createPost = async (req: Request, res: Response) => {
+const POST_MAX_LENGTH = 280;
+const DEFAULT_POST_LIMIT = 5; // Amount of posts to return by default
+const MAX_POST_LIMIT = 30; // Maximum amount of posts to return
+
+export const createPost = async (req: JwtUserRequest, res: Response) => {
     try {
-        const { content, authorEmail, authorUsername, tags, imageUrl, videoUrl }: CreatePostBody = req.body;
+        const { content, tags, imageUrl, videoUrl }: CreatePostBody = req.body;
+        const authorId = req.jwtUserId;
 
-        if (!content || !authorEmail) {
+        if (!content || !await userIdExists(authorId)) {
+            console.log(content, authorId, await userIdExists(authorId || ''));
+            return res.status(400).json({
+                error: 'Le contenu et l\'id de l\'auteur sont requis'
+            });
+        }
+        if (content.length > POST_MAX_LENGTH) {
             return res.status(400).json({ 
-                error: 'Le contenu et l\'email de l\'auteur sont requis' 
+                error: `Le contenu ne peut pas dépasser ${POST_MAX_LENGTH} caractères`
             });
         }
 
-        if (content.length > 280) {
-            return res.status(400).json({ 
-                error: 'Le contenu ne peut pas dépasser 280 caractères' 
-            });
-        }
-
-        const newPost = new Post({
+        const newPost = new PostModel({
             content,
-            authorEmail,
-            authorUsername: authorUsername || '',
+            authorId,
             tags: tags || [],
             likes: [],
             imageUrl: imageUrl || null,
             videoUrl: videoUrl || null
         });
-
         const savedPost = await newPost.save();
 
         return res.status(201).json({
             message: 'Post créé avec succès !',
             post: savedPost
         });
-
     } catch (error) {
         console.error('Erreur lors de la création du post:', error);
         return res.status(500).json({ 
@@ -58,7 +61,7 @@ export const createPost = async (req: Request, res: Response) => {
     }
 };
 
-export const editPost = async (req: Request, res: Response) => {
+export const editPost = async (req: JwtUserRequest, res: Response) => {
     try {
         const { id } = req.params;
         const { content, tags, imageUrl, videoUrl }: EditPostBody = req.body;
@@ -68,16 +71,14 @@ export const editPost = async (req: Request, res: Response) => {
                 error: 'ID du post requis' 
             });
         }
-
         if (!content && !tags && !imageUrl && !videoUrl) {
             return res.status(400).json({ 
                 error: 'Au moins un champ à modifier doit être fourni' 
             });
         }
-
-        if (content && content.length > 280) {
+        if (content && content.length > POST_MAX_LENGTH) {
             return res.status(400).json({ 
-                error: 'Le contenu ne peut pas dépasser 280 caractères' 
+                error: `Le contenu ne peut pas dépasser ${POST_MAX_LENGTH} caractères` 
             });
         }
 
@@ -87,7 +88,7 @@ export const editPost = async (req: Request, res: Response) => {
         if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
         if (videoUrl !== undefined) updateData.videoUrl = videoUrl;
 
-        const updatedPost = await Post.findByIdAndUpdate(
+        const updatedPost = await PostModel.findByIdAndUpdate(
             id,
             updateData,
             { new: true, runValidators: true }
@@ -103,7 +104,6 @@ export const editPost = async (req: Request, res: Response) => {
             message: 'Post modifié avec succès !',
             post: updatedPost
         });
-
     } catch (error) {
         console.error('Erreur lors de la modification du post:', error);
         return res.status(500).json({ 
@@ -112,7 +112,7 @@ export const editPost = async (req: Request, res: Response) => {
     }
 };
 
-export const deletePost = async (req: Request, res: Response) => {
+export const deletePost = async (req: JwtUserRequest, res: Response) => {
     try {
         const { id } = req.params;
 
@@ -122,8 +122,7 @@ export const deletePost = async (req: Request, res: Response) => {
             });
         }
 
-        const deletedPost = await Post.findByIdAndDelete(id);
-
+        const deletedPost = await PostModel.findByIdAndDelete(id);
         if (!deletedPost) {
             return res.status(404).json({ 
                 error: 'Post non trouvé' 
@@ -135,10 +134,9 @@ export const deletePost = async (req: Request, res: Response) => {
             deletedPost: {
                 id: deletedPost._id,
                 content: deletedPost.content,
-                authorEmail: deletedPost.authorEmail
+                authorId: deletedPost.authorId
             }
         });
-
     } catch (error) {
         console.error('Erreur lors de la suppression du post:', error);
         return res.status(500).json({ 
@@ -147,10 +145,10 @@ export const deletePost = async (req: Request, res: Response) => {
     }
 };
 
-export const likePost = async (req: Request, res: Response) => {
+export const likePost = async (req: JwtUserRequest, res: Response) => {
     try {
         const { id } = req.params;
-        const { userEmail } = req.body;
+        const { userId } = req.body;
 
         if (!id) {
             return res.status(400).json({ 
@@ -158,13 +156,13 @@ export const likePost = async (req: Request, res: Response) => {
             });
         }
 
-        if (!userEmail) {
+        if (!userId) {
             return res.status(400).json({ 
-                error: 'Email de l\'utilisateur requis' 
+                error: 'Id de l\'utilisateur requis' 
             });
         }
 
-        const post = await Post.findById(id);
+        const post = await PostModel.findById(id);
 
         if (!post) {
             return res.status(404).json({ 
@@ -172,22 +170,22 @@ export const likePost = async (req: Request, res: Response) => {
             });
         }
 
-        const hasLiked = post.likes.includes(userEmail);
+        const hasLiked = post.likes.includes(userId);
 
         let updatedPost;
         let action;
 
         if (hasLiked) {
-            updatedPost = await Post.findByIdAndUpdate(
+            updatedPost = await PostModel.findByIdAndUpdate(
                 id,
-                { $pull: { likes: userEmail } },
+                { $pull: { likes: userId } },
                 { new: true }
             );
             action = 'déliké';
         } else {
-            updatedPost = await Post.findByIdAndUpdate(
+            updatedPost = await PostModel.findByIdAndUpdate(
                 id,
-                { $addToSet: { likes: userEmail } },
+                { $addToSet: { likes: userId } },
                 { new: true }
             );
             action = 'liké';
@@ -210,20 +208,20 @@ export const likePost = async (req: Request, res: Response) => {
 
 export const getUserPosts = async (req: Request, res: Response) => {
     try {
-        const { email } = req.params;
+        const { id } = req.params;
 
-        if (!email) {
+        if (!id) {
             return res.status(400).json({ 
-                error: 'Email de l\'utilisateur requis' 
+                error: 'Id de l\'utilisateur requis' 
             });
         }
 
-        const userPosts = await Post.find({ authorEmail: email })
+        const userPosts = await PostModel.find({ authorId: id })
             .sort({ createdAt: -1 });
 
         return res.status(200).json({
             message: 'Posts de l\'utilisateur récupérés avec succès',
-            userEmail: email,
+            userId: id,
             count: userPosts.length,
             posts: userPosts
         });
@@ -236,18 +234,22 @@ export const getUserPosts = async (req: Request, res: Response) => {
     }
 };
 
-export const getPosts = async (req: Request, res: Response) => {
+export const getPosts = async (req: JwtUserRequest, res: Response) => {
     try {
-        const posts = await Post.find().sort({ createdAt: -1 }).limit(5);
+        const postsLimit = req.query.limit ? Math.min(parseInt(req.query.limit as string), MAX_POST_LIMIT) : DEFAULT_POST_LIMIT;
+        const postsOffset = req.query.offset ? parseInt(req.query.offset as string) : 0;
+        const posts = await PostModel.find().sort({ createdAt: -1 }).limit(postsLimit).skip(postsOffset);
         return res.status(200).json({
             message: 'Posts récupérés avec succès',
             count: posts.length,
-            posts
+            limit: postsLimit,
+            offset: postsOffset,
+            posts: posts
         });
     } catch (error) {
         console.error('Erreur lors de la récupération des posts:', error);
         return res.status(500).json({ 
-            error: 'Erreur interne du serveur' 
+            error: 'Erreur interne du serveur'
         });
     }
 }
