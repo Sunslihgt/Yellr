@@ -236,7 +236,7 @@ export const getUserPosts = async (req: Request, res: Response) => {
     }
 };
 
-export const getPostsTest = async (req: Request, res: Response) => {
+export const getPosts = async (req: Request, res: Response) => {
     try {
         const posts = await Post.find().sort({ createdAt: -1 }).limit(5);
         return res.status(200).json({
@@ -250,4 +250,4 @@ export const getPostsTest = async (req: Request, res: Response) => {
             error: 'Erreur interne du serveur' 
         });
     }
-}; 
+}
