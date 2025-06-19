@@ -1,0 +1,18 @@
+import { Router } from 'express';
+import { createPost, editPost, deletePost, likePost, getUserPosts, getPosts } from '../controllers/post.controller';
+
+const router = Router();
+
+router.post('/posts', createPost);
+
+router.get('/posts', getPosts);
+
+router.get('/posts/user/:email', getUserPosts);
+
+router.put('/posts/:id', editPost);
+
+router.delete('/posts/:id', deletePost);
+
+router.post('/posts/:id/like', likePost);
+
+export default router;
