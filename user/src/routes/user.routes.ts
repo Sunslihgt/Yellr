@@ -3,6 +3,7 @@ import { getUserById, updateUser, deleteUser, listUsers } from '../controllers/u
 
 const router = Router();
 
+// User routes
 router.get('/', listUsers);
 router.get('/:id', getUserById);
 router.put('/:id', updateUser);

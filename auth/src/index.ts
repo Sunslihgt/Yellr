@@ -21,20 +21,8 @@ const connectDB = async () => {
         if (!mongoUri) {
             throw new Error('MONGO_URI is not defined');
         }
-        console.log('MONGO_URI:', mongoUri);
         await mongoose.connect(mongoUri);
         console.log('MongoDB connected successfully');
-        // Show all documents in the database
-        const db = mongoose.connection.db;
-        if (db) {
-            const collections = await db.listCollections().toArray();
-            console.log('Collections:', collections);
-        } else {
-            console.log('No database connection');
-        }
-        // Show users in the database
-        const users = await UserModel.find();
-        console.log('Users:', users);
     } catch (error) {
         console.error('MongoDB connection error:', error);
         process.exit(1);

@@ -2,8 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import userRoutes from './routes/user.routes';
+import followRoutes from './routes/follow.routes';
 import mongoose from 'mongoose';
-import UserModel from './models/user.model';
 
 dotenv.config({ path: './.env' });
 
@@ -21,8 +21,8 @@ const connectDB = async () => {
         if (!mongoUri) {
             throw new Error('MONGO_URI is not defined');
         }
-        // console.log('MONGO_URI:', mongoUri);
         await mongoose.connect(mongoUri);
+        console.log('MongoDB connected successfully');
     } catch (error) {
         console.error('MongoDB connection error:', error);
         process.exit(1);
@@ -30,6 +30,7 @@ const connectDB = async () => {
 };
 
 app.use('/users', userRoutes);
+app.use('/follow', followRoutes);
 
 app.get('/test', (req, res) => {
     res.send('user-service: API is running');
