@@ -1,4 +1,4 @@
-# Backend auth-service Dockerfile
+# Backend user-service Dockerfile
 FROM node:20-alpine
 
 # Add build argument with default value

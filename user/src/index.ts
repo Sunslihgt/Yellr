@@ -1,7 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import authRoutes from './routes/auth.routes';
+import userRoutes from './routes/user.routes';
+import followRoutes from './routes/follow.routes';
 import mongoose from 'mongoose';
 
 dotenv.config({ path: './.env' });
@@ -11,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const PORT = 5000;
+const PORT = 5001;
 
 // Connect to MongoDB using Mongoose
 const connectDB = async () => {
@@ -28,17 +29,18 @@ const connectDB = async () => {
     }
 };
 
-app.use('/', authRoutes);
+app.use('/users', userRoutes);
+app.use('/follow', followRoutes);
 
 app.get('/test', (req, res) => {
-    res.send('auth-service: API is running');
+    res.send('user-service: API is running');
 });
 
 // Démarrage du serveur
 const startServer = async () => {
     await connectDB();
     app.listen(PORT, () => {
-        console.log(`Auth service running on port ${PORT}`);
+        console.log(`User service running on port ${PORT}`);
     });
 };
 
