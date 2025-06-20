@@ -31,12 +31,12 @@ export const createPost = async (req: JwtUserRequest, res: Response) => {
         if (!content || !await userIdExists(authorId)) {
             console.log(content, authorId, await userIdExists(authorId || ''));
             return res.status(400).json({
-                error: 'Le contenu et l\'id de l\'auteur sont requis'
+                error: 'Content and author id are required'
             });
         }
         if (content.length > POST_MAX_LENGTH) {
             return res.status(400).json({
-                error: `Le contenu ne peut pas dépasser ${POST_MAX_LENGTH} caractères`
+                error: `Content cannot exceed ${POST_MAX_LENGTH} characters`
             });
         }
 
@@ -51,13 +51,13 @@ export const createPost = async (req: JwtUserRequest, res: Response) => {
         const savedPost = await newPost.save();
 
         return res.status(201).json({
-            message: 'Post créé avec succès !',
+            message: 'Post created successfully!',
             post: savedPost
         });
     } catch (error) {
-        console.error('Erreur lors de la création du post:', error);
+        console.error('Error creating post:', error);
         return res.status(500).json({
-            error: 'Erreur interne du serveur'
+            error: 'Internal server error'
         });
     }
 };
@@ -69,17 +69,17 @@ export const editPost = async (req: JwtUserRequest, res: Response) => {
 
         if (!id || !await postIdExists(id)) {
             return res.status(400).json({
-                error: 'ID du post requis'
+                error: 'Post ID required'
             });
         }
         if (!content && !tags && !imageUrl && !videoUrl) {
             return res.status(400).json({
-                error: 'Au moins un champ à modifier doit être fourni'
+                error: 'At least one field to update must be provided'
             });
         }
         if (content && content.length > POST_MAX_LENGTH) {
-            return res.status(400).json({ 
-                error: `Le contenu ne peut pas dépasser ${POST_MAX_LENGTH} caractères`
+            return res.status(400).json({
+                error: `Content cannot exceed ${POST_MAX_LENGTH} characters`
             });
         }
 
@@ -96,19 +96,19 @@ export const editPost = async (req: JwtUserRequest, res: Response) => {
         );
 
         if (!updatedPost) {
-            return res.status(404).json({
-                error: 'Post non trouvé'
+            return res.status(404).json({ 
+                error: 'Post not found'
             });
         }
 
         return res.status(200).json({
-            message: 'Post modifié avec succès !',
+            message: 'Post updated successfully!',
             post: updatedPost
         });
     } catch (error) {
-        console.error('Erreur lors de la modification du post:', error);
+        console.error('Error updating post:', error);
         return res.status(500).json({
-            error: 'Erreur interne du serveur'
+            error: 'Internal server error'
         });
     }
 };
@@ -118,19 +118,19 @@ export const deletePost = async (req: JwtUserRequest, res: Response) => {
         const { id } = req.params;
         if (!id || !await postIdExists(id)) {
             return res.status(400).json({
-                error: 'ID du post requis'
+                error: 'Post ID required'
             });
         }
 
         const deletedPost = await PostModel.findByIdAndDelete(id);
         if (!deletedPost) {
             return res.status(404).json({
-                error: 'Post non trouvé'
+                error: 'Post not found'
             });
         }
 
         return res.status(200).json({
-            message: 'Post supprimé avec succès !',
+            message: 'Post deleted successfully!',
             deletedPost: {
                 id: deletedPost._id,
                 content: deletedPost.content,
@@ -138,9 +138,9 @@ export const deletePost = async (req: JwtUserRequest, res: Response) => {
             }
         });
     } catch (error) {
-        console.error('Erreur lors de la suppression du post:', error);
+        console.error('Error deleting post:', error);
         return res.status(500).json({
-            error: 'Erreur interne du serveur'
+            error: 'Internal server error'
         });
     }
 };
@@ -152,20 +152,20 @@ export const likePost = async (req: JwtUserRequest, res: Response) => {
 
         if (!id || !await postIdExists(id)) {
             return res.status(400).json({
-                error: 'ID du post requis'
+                error: 'Post ID required'
             });
         }
 
         if (!userId || !await userIdExists(userId)) {
             return res.status(400).json({
-                error: 'Id de l\'utilisateur requis'
+                error: 'User email required'
             });
         }
 
         const post = await PostModel.findById(id);
         if (!post) {
             return res.status(404).json({
-                error: 'Post non trouvé'
+                error: 'Post not found'
             });
         }
 
@@ -187,16 +187,16 @@ export const likePost = async (req: JwtUserRequest, res: Response) => {
         }
 
         return res.status(200).json({
-            message: `Post ${hasLiked ? 'déliké' : 'liké'} avec succès !`,
+            message: `Post ${hasLiked ? 'unliked' : 'liked'} avec succès !`,
             post: updatedPost,
             likesCount: updatedPost?.likes.length || 0,
             userHasLiked: !hasLiked
         });
 
     } catch (error) {
-        console.error('Erreur lors du like du post:', error);
+        console.error('Error liking post:', error);
         return res.status(500).json({
-            error: 'Erreur interne du serveur'
+            error: 'Internal server error'
         });
     }
 };
@@ -207,22 +207,22 @@ export const getUserPosts = async (req: Request, res: Response) => {
 
         if (!userId || !await userIdExists(userId)) {
             return res.status(400).json({
-                error: 'Id de l\'utilisateur requis'
+                error: 'User email required'
             });
         }
 
         const userPosts = await PostModel.find({ authorId: userId }).sort({ createdAt: -1 });
 
         return res.status(200).json({
-            message: 'Posts de l\'utilisateur récupérés avec succès',
+            message: 'User posts retrieved successfully',
             userId: userId,
             count: userPosts.length,
             posts: userPosts
         });
     } catch (error) {
-        console.error('Erreur lors de la récupération des posts utilisateur:', error);
+        console.error('Error retrieving user posts:', error);
         return res.status(500).json({
-            error: 'Erreur interne du serveur'
+            error: 'Internal server error'
         });
     }
 };
@@ -235,16 +235,16 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
         const posts = await PostModel.find().sort({ createdAt: -1 }).limit(postsLimit).skip(postsOffset);
 
         return res.status(200).json({
-            message: 'Posts récupérés avec succès',
+            message: 'Posts retrieved successfully',
             count: posts.length,
             limit: postsLimit,
             offset: postsOffset,
             posts: posts
         });
     } catch (error) {
-        console.error('Erreur lors de la récupération des posts:', error);
+        console.error('Error retrieving posts:', error);
         return res.status(500).json({
-            error: 'Erreur interne du serveur'
+            error: 'Internal server error'
         });
     }
 };
@@ -254,25 +254,25 @@ export const getPost = async (req: Request, res: Response) => {
         const { id } = req.params;
         if (!id || !await postIdExists(id)) {
             return res.status(400).json({
-                error: 'ID du post requis'
+                error: 'Post id required'
             });
         }
 
         const post = await PostModel.findById(id);
         if (!post) {
             return res.status(404).json({
-                error: 'Post non trouvé'
+                error: 'Post not found'
             });
         }
 
         return res.status(200).json({
-            message: 'Post récupéré avec succès',
+            message: 'Post retrieved successfully',
             post: post
         });
     } catch (error) {
-        console.error('Erreur lors de la récupération du post:', error);
+        console.error('Error retrieving post:', error);
         return res.status(500).json({
-            error: 'Erreur interne du serveur'
+            error: 'Internal server error'
         });
     }
 };

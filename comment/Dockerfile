@@ -1,4 +1,4 @@
-# Frontend Dockerfile
+# Backend auth-service Dockerfile
 FROM node:20-alpine
 
 # Add build argument with default value
@@ -9,10 +9,8 @@ RUN echo "NODE_ENV: ${NODE_ENV}"
 WORKDIR /app
 
 COPY package*.json ./
-COPY public ./public
-COPY tsconfig.json .
-COPY postcss.config.js .
-COPY tailwind.config.js .
+COPY tsconfig.json ./
+COPY .env ./
 
 # Install dependencies
 RUN npm install --include=dev

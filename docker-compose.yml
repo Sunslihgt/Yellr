@@ -10,6 +10,7 @@ services:
       - auth-service
       - user-service
       - post-service
+      - comment-service
       - frontend-service
 
   mongo:
@@ -87,6 +88,27 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV:-development}
 
+  comment-service:
+    build: 
+      context: ./comment
+      args:
+        NODE_ENV: ${NODE_ENV:-development}
+    container_name: comment-service
+    restart: always
+    ports:
+      - "5003:5003"
+    depends_on:
+      - mongo
+    # Only for development
+    volumes:
+      - ./comment/src:/app/src
+      - ./comment/package.json:/app/package.json
+      - ./comment/package-lock.json:/app/package-lock.json
+      - ./comment/tsconfig.json:/app/tsconfig.json
+      - ./comment/.env:/app/.env
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+
   frontend-service:
     build:
       context: ./frontend
@@ -104,6 +126,7 @@ services:
       - ./frontend/tsconfig.json:/app/tsconfig.json
     environment:
       - NODE_ENV=${NODE_ENV:-development}
+      - WATCHPACK_POLLING=true
 
 volumes:
   mongo-data:
