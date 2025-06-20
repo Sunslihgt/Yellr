@@ -9,6 +9,7 @@ services:
     depends_on:
       - auth-service
       - post-service
+      - comment-service
       - frontend-service
 
   mongo:
@@ -61,6 +62,27 @@ services:
       - ./post/package.json:/app/package.json
       - ./post/package-lock.json:/app/package-lock.json
       - ./post/tsconfig.json:/app/tsconfig.json
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - MONGO_URI=mongodb://root:example@mongo:27017/
+
+  comment-service:
+    build: 
+      context: ./comment
+      args:
+        NODE_ENV: ${NODE_ENV:-development}
+    container_name: comment-service
+    restart: always
+    ports:
+      - "5002:5002"
+    depends_on:
+      - mongo
+    # Only for development
+    volumes:
+      - ./comment/src:/app/src
+      - ./comment/package.json:/app/package.json
+      - ./comment/package-lock.json:/app/package-lock.json
+      - ./comment/tsconfig.json:/app/tsconfig.json
     environment:
       - NODE_ENV=${NODE_ENV:-development}
       - MONGO_URI=mongodb://root:example@mongo:27017/
