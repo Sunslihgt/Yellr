@@ -1,3 +1,5 @@
+import React from 'react';
+
 const MessageCard = () => {
     return (
         <article className="border-b border-gray-200 dark:border-gray-700 p-4 pr-20 pl-20 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors">
@@ -29,7 +31,7 @@ const MessageCard = () => {
                     
                     {/* Message content */}
                     <p className="text-gray-900 dark:text-white text-base leading-relaxed mb-3">
-                        J'aime très beaucoup le tennis.
+                        J&apos;aime très beaucoup le tennis.
                     </p>
                     
                     {/* Actions */}

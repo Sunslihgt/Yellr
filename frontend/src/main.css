@@ -12,3 +12,7 @@
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
+
+body.dark {
+    background-color: #1a202c;
+}
