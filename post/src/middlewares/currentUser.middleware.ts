@@ -37,5 +37,5 @@ export const currentUser = (requireAuth: boolean) => {
         }
 
         next();
-    }
+    };
 };

@@ -42,7 +42,7 @@ const startServer = async () => {
     await connectDB();
     app.listen(PORT, () => {
         console.log(`Post service running on port ${PORT}`);
-        console.log(`Endpoints disponibles :`);
+        console.log('Endpoints disponibles :');
         console.log(`- POST http://localhost:${PORT}/api/posts`);
         console.log(`- GET http://localhost:${PORT}/api/posts/test`);
     });
