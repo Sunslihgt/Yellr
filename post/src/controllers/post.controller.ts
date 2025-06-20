@@ -23,13 +23,13 @@ export const createPost = async (req: Request, res: Response) => {
 
         if (!content || !authorEmail) {
             return res.status(400).json({ 
-                error: 'Le contenu et l\'email de l\'auteur sont requis' 
+                error: 'Content and author email are required' 
             });
         }
 
         if (content.length > 280) {
             return res.status(400).json({ 
-                error: 'Le contenu ne peut pas dépasser 280 caractères' 
+                error: 'Content cannot exceed 280 characters' 
             });
         }
 
@@ -46,14 +46,14 @@ export const createPost = async (req: Request, res: Response) => {
         const savedPost = await newPost.save();
 
         return res.status(201).json({
-            message: 'Post créé avec succès !',
+            message: 'Post created successfully!',
             post: savedPost
         });
 
     } catch (error) {
-        console.error('Erreur lors de la création du post:', error);
+        console.error('Error creating post:', error);
         return res.status(500).json({ 
-            error: 'Erreur interne du serveur' 
+            error: 'Internal server error' 
         });
     }
 };
@@ -65,19 +65,19 @@ export const editPost = async (req: Request, res: Response) => {
 
         if (!id) {
             return res.status(400).json({ 
-                error: 'ID du post requis' 
+                error: 'Post ID required' 
             });
         }
 
         if (!content && !tags && !imageUrl && !videoUrl) {
             return res.status(400).json({ 
-                error: 'Au moins un champ à modifier doit être fourni' 
+                error: 'At least one field to update must be provided' 
             });
         }
 
         if (content && content.length > 280) {
             return res.status(400).json({ 
-                error: 'Le contenu ne peut pas dépasser 280 caractères' 
+                error: 'Content cannot exceed 280 characters' 
             });
         }
 
@@ -95,19 +95,19 @@ export const editPost = async (req: Request, res: Response) => {
 
         if (!updatedPost) {
             return res.status(404).json({ 
-                error: 'Post non trouvé' 
+                error: 'Post not found' 
             });
         }
 
         return res.status(200).json({
-            message: 'Post modifié avec succès !',
+            message: 'Post updated successfully!',
             post: updatedPost
         });
 
     } catch (error) {
-        console.error('Erreur lors de la modification du post:', error);
+        console.error('Error updating post:', error);
         return res.status(500).json({ 
-            error: 'Erreur interne du serveur' 
+            error: 'Internal server error' 
         });
     }
 };
@@ -118,7 +118,7 @@ export const deletePost = async (req: Request, res: Response) => {
 
         if (!id) {
             return res.status(400).json({ 
-                error: 'ID du post requis' 
+                error: 'Post ID required' 
             });
         }
 
@@ -126,12 +126,12 @@ export const deletePost = async (req: Request, res: Response) => {
 
         if (!deletedPost) {
             return res.status(404).json({ 
-                error: 'Post non trouvé' 
+                error: 'Post not found' 
             });
         }
 
         return res.status(200).json({
-            message: 'Post supprimé avec succès !',
+            message: 'Post deleted successfully!',
             deletedPost: {
                 id: deletedPost._id,
                 content: deletedPost.content,
@@ -140,9 +140,9 @@ export const deletePost = async (req: Request, res: Response) => {
         });
 
     } catch (error) {
-        console.error('Erreur lors de la suppression du post:', error);
+        console.error('Error deleting post:', error);
         return res.status(500).json({ 
-            error: 'Erreur interne du serveur' 
+            error: 'Internal server error' 
         });
     }
 };
@@ -154,13 +154,13 @@ export const likePost = async (req: Request, res: Response) => {
 
         if (!id) {
             return res.status(400).json({ 
-                error: 'ID du post requis' 
+                error: 'Post ID required' 
             });
         }
 
         if (!userEmail) {
             return res.status(400).json({ 
-                error: 'Email de l\'utilisateur requis' 
+                error: 'User email required' 
             });
         }
 
@@ -168,7 +168,7 @@ export const likePost = async (req: Request, res: Response) => {
 
         if (!post) {
             return res.status(404).json({ 
-                error: 'Post non trouvé' 
+                error: 'Post not found' 
             });
         }
 
@@ -183,27 +183,27 @@ export const likePost = async (req: Request, res: Response) => {
                 { $pull: { likes: userEmail } },
                 { new: true }
             );
-            action = 'déliké';
+            action = 'unliked';
         } else {
             updatedPost = await Post.findByIdAndUpdate(
                 id,
                 { $addToSet: { likes: userEmail } },
                 { new: true }
             );
-            action = 'liké';
+            action = 'liked';
         }
 
         return res.status(200).json({
-            message: `Post ${action} avec succès !`,
+            message: `Post ${action} successfully!`,
             post: updatedPost,
             likesCount: updatedPost?.likes.length || 0,
             userHasLiked: !hasLiked
         });
 
     } catch (error) {
-        console.error('Erreur lors du like du post:', error);
+        console.error('Error liking post:', error);
         return res.status(500).json({ 
-            error: 'Erreur interne du serveur' 
+            error: 'Internal server error' 
         });
     }
 };
@@ -214,7 +214,7 @@ export const getUserPosts = async (req: Request, res: Response) => {
 
         if (!email) {
             return res.status(400).json({ 
-                error: 'Email de l\'utilisateur requis' 
+                error: 'User email required' 
             });
         }
 
@@ -222,16 +222,16 @@ export const getUserPosts = async (req: Request, res: Response) => {
             .sort({ createdAt: -1 });
 
         return res.status(200).json({
-            message: 'Posts de l\'utilisateur récupérés avec succès',
+            message: 'User posts retrieved successfully',
             userEmail: email,
             count: userPosts.length,
             posts: userPosts
         });
 
     } catch (error) {
-        console.error('Erreur lors de la récupération des posts utilisateur:', error);
+        console.error('Error retrieving user posts:', error);
         return res.status(500).json({ 
-            error: 'Erreur interne du serveur' 
+            error: 'Internal server error' 
         });
     }
 };
@@ -240,14 +240,14 @@ export const getPosts = async (req: Request, res: Response) => {
     try {
         const posts = await Post.find().sort({ createdAt: -1 }).limit(5);
         return res.status(200).json({
-            message: 'Posts récupérés avec succès',
+            message: 'Posts retrieved successfully',
             count: posts.length,
             posts
         });
     } catch (error) {
-        console.error('Erreur lors de la récupération des posts:', error);
+        console.error('Error retrieving posts:', error);
         return res.status(500).json({ 
-            error: 'Erreur interne du serveur' 
+            error: 'Internal server error' 
         });
     }
 }
