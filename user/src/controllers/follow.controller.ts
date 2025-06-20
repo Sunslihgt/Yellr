@@ -2,18 +2,9 @@ import { Request, Response } from 'express';
 import { JwtUserRequest } from '../@types/jwtRequest';
 import dotenv from 'dotenv';
 import FollowModel from '../models/follow.model';
-import mongoose from 'mongoose';
-import UserModel from '../models/user.model';
+import { userIdExists } from '../utils/user.utils';
 
 dotenv.config({ path: './.env' });
-
-const userIdExists = async (userId: string) => {
-    if (userId && mongoose.Types.ObjectId.isValid(userId)) {
-        const userExists = await UserModel.exists({ _id: userId });
-        return userExists !== null;
-    }
-    return false;
-};
 
 export const getFollowers = async (req: Request, res: Response) => {
     try {

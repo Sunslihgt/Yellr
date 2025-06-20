@@ -8,6 +8,7 @@ services:
       - "8080:8080"
     depends_on:
       - auth-service
+      - user-service
       - post-service
       - comment-service
       - frontend-service
@@ -21,8 +22,6 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
-      # MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      # MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - mongo-data:/data/db
 
@@ -76,7 +75,7 @@ services:
     container_name: post-service
     restart: always
     ports:
-      - "5001:5001"
+      - "5002:5002"
     depends_on:
       - mongo
     # Only for development
@@ -85,9 +84,9 @@ services:
       - ./post/package.json:/app/package.json
       - ./post/package-lock.json:/app/package-lock.json
       - ./post/tsconfig.json:/app/tsconfig.json
+      - ./post/.env:/app/.env
     environment:
       - NODE_ENV=${NODE_ENV:-development}
-      - MONGO_URI=mongodb://root:example@mongo:27017/
 
   comment-service:
     build: 

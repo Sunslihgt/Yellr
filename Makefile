@@ -1,6 +1,6 @@
 .PHONY: lint lint-frontend lint-auth run-dev run-prod down
 
-lint: lint-frontend lint-auth lint-user
+lint: lint-frontend lint-auth lint-user lint-post
 
 lint-frontend:
 	@echo "Linting frontend/"
@@ -24,6 +24,14 @@ lint-user:
 		cd user && npm run lint; \
 	else \
 		echo "user/ directory not found."; \
+	fi
+
+lint-post:
+	@echo "Linting post-service/"
+	@if [ -d "post" ]; then \
+		cd post && npm run lint; \
+	else \
+		echo "post/ directory not found."; \
 	fi
 
 down:

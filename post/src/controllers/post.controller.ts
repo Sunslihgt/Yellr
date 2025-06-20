@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
-import Post, { IPost } from '../models/post.model';
+import PostModel from '../models/post.model';
+import { JwtUserRequest } from '../@types/jwtRequest';
+import { userIdExists } from '../utils/user.utils';
+import { postIdExists } from '../utils/post.utils';
 
 export interface CreatePostBody {
     content: string;
-    authorEmail: string;
-    authorUsername?: string;
+    authorId?: string;
     tags?: string[];
     imageUrl?: string;
     videoUrl?: string;
@@ -17,67 +19,67 @@ export interface EditPostBody {
     videoUrl?: string;
 }
 
-export const createPost = async (req: Request, res: Response) => {
+const POST_MAX_LENGTH = 280;
+const DEFAULT_POST_LIMIT = 5; // Amount of posts to return by default
+const MAX_POST_LIMIT = 30; // Maximum amount of posts to return
+
+export const createPost = async (req: JwtUserRequest, res: Response) => {
     try {
-        const { content, authorEmail, authorUsername, tags, imageUrl, videoUrl }: CreatePostBody = req.body;
+        const { content, tags, imageUrl, videoUrl }: CreatePostBody = req.body;
+        const authorId = req.jwtUserId;
 
-        if (!content || !authorEmail) {
-            return res.status(400).json({ 
-                error: 'Content and author email are required' 
+        if (!content || !await userIdExists(authorId)) {
+            console.log(content, authorId, await userIdExists(authorId || ''));
+            return res.status(400).json({
+                error: 'Content and author id are required'
+            });
+        }
+        if (content.length > POST_MAX_LENGTH) {
+            return res.status(400).json({
+                error: `Content cannot exceed ${POST_MAX_LENGTH} characters`
             });
         }
 
-        if (content.length > 280) {
-            return res.status(400).json({ 
-                error: 'Content cannot exceed 280 characters' 
-            });
-        }
-
-        const newPost = new Post({
+        const newPost = new PostModel({
             content,
-            authorEmail,
-            authorUsername: authorUsername || '',
+            authorId,
             tags: tags || [],
             likes: [],
             imageUrl: imageUrl || null,
             videoUrl: videoUrl || null
         });
-
         const savedPost = await newPost.save();
 
         return res.status(201).json({
             message: 'Post created successfully!',
             post: savedPost
         });
-
     } catch (error) {
         console.error('Error creating post:', error);
-        return res.status(500).json({ 
-            error: 'Internal server error' 
+        return res.status(500).json({
+            error: 'Internal server error'
         });
     }
 };
 
-export const editPost = async (req: Request, res: Response) => {
+export const editPost = async (req: JwtUserRequest, res: Response) => {
     try {
         const { id } = req.params;
         const { content, tags, imageUrl, videoUrl }: EditPostBody = req.body;
 
-        if (!id) {
-            return res.status(400).json({ 
-                error: 'Post ID required' 
+        if (!id || !await postIdExists(id)) {
+            return res.status(400).json({
+                error: 'Post ID required'
             });
         }
-
         if (!content && !tags && !imageUrl && !videoUrl) {
-            return res.status(400).json({ 
-                error: 'At least one field to update must be provided' 
+            return res.status(400).json({
+                error: 'At least one field to update must be provided'
             });
         }
-
-        if (content && content.length > 280) {
-            return res.status(400).json({ 
-                error: 'Content cannot exceed 280 characters' 
+        if (content && content.length > POST_MAX_LENGTH) {
+            return res.status(400).json({
+                error: `Content cannot exceed ${POST_MAX_LENGTH} characters`
             });
         }
 
@@ -87,7 +89,7 @@ export const editPost = async (req: Request, res: Response) => {
         if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
         if (videoUrl !== undefined) updateData.videoUrl = videoUrl;
 
-        const updatedPost = await Post.findByIdAndUpdate(
+        const updatedPost = await PostModel.findByIdAndUpdate(
             id,
             updateData,
             { new: true, runValidators: true }
@@ -95,7 +97,7 @@ export const editPost = async (req: Request, res: Response) => {
 
         if (!updatedPost) {
             return res.status(404).json({ 
-                error: 'Post not found' 
+                error: 'Post not found'
             });
         }
 
@@ -103,30 +105,27 @@ export const editPost = async (req: Request, res: Response) => {
             message: 'Post updated successfully!',
             post: updatedPost
         });
-
     } catch (error) {
         console.error('Error updating post:', error);
-        return res.status(500).json({ 
-            error: 'Internal server error' 
+        return res.status(500).json({
+            error: 'Internal server error'
         });
     }
 };
 
-export const deletePost = async (req: Request, res: Response) => {
+export const deletePost = async (req: JwtUserRequest, res: Response) => {
     try {
         const { id } = req.params;
-
-        if (!id) {
-            return res.status(400).json({ 
-                error: 'Post ID required' 
+        if (!id || !await postIdExists(id)) {
+            return res.status(400).json({
+                error: 'Post ID required'
             });
         }
 
-        const deletedPost = await Post.findByIdAndDelete(id);
-
+        const deletedPost = await PostModel.findByIdAndDelete(id);
         if (!deletedPost) {
-            return res.status(404).json({ 
-                error: 'Post not found' 
+            return res.status(404).json({
+                error: 'Post not found'
             });
         }
 
@@ -135,66 +134,60 @@ export const deletePost = async (req: Request, res: Response) => {
             deletedPost: {
                 id: deletedPost._id,
                 content: deletedPost.content,
-                authorEmail: deletedPost.authorEmail
+                authorId: deletedPost.authorId
             }
         });
-
     } catch (error) {
         console.error('Error deleting post:', error);
-        return res.status(500).json({ 
-            error: 'Internal server error' 
+        return res.status(500).json({
+            error: 'Internal server error'
         });
     }
 };
 
-export const likePost = async (req: Request, res: Response) => {
+export const likePost = async (req: JwtUserRequest, res: Response) => {
     try {
         const { id } = req.params;
-        const { userEmail } = req.body;
+        const userId = req.jwtUserId;
 
-        if (!id) {
-            return res.status(400).json({ 
-                error: 'Post ID required' 
+        if (!id || !await postIdExists(id)) {
+            return res.status(400).json({
+                error: 'Post ID required'
             });
         }
 
-        if (!userEmail) {
-            return res.status(400).json({ 
-                error: 'User email required' 
+        if (!userId || !await userIdExists(userId)) {
+            return res.status(400).json({
+                error: 'User email required'
             });
         }
 
-        const post = await Post.findById(id);
-
+        const post = await PostModel.findById(id);
         if (!post) {
-            return res.status(404).json({ 
-                error: 'Post not found' 
+            return res.status(404).json({
+                error: 'Post not found'
             });
         }
 
-        const hasLiked = post.likes.includes(userEmail);
+        const hasLiked = post.likes.includes(userId);
+        const updatedPost = hasLiked ? await PostModel.findByIdAndUpdate(
+            id,
+            { $pull: { likes: userId } },
+            { new: true }
+        ) : await PostModel.findByIdAndUpdate(
+            id,
+            { $addToSet: { likes: userId } },
+            { new: true }
+        );
 
-        let updatedPost;
-        let action;
-
-        if (hasLiked) {
-            updatedPost = await Post.findByIdAndUpdate(
-                id,
-                { $pull: { likes: userEmail } },
-                { new: true }
-            );
-            action = 'unliked';
-        } else {
-            updatedPost = await Post.findByIdAndUpdate(
-                id,
-                { $addToSet: { likes: userEmail } },
-                { new: true }
-            );
-            action = 'liked';
+        if (!updatedPost) {
+            return res.status(404).json({
+                error: 'Post not found'
+            });
         }
 
         return res.status(200).json({
-            message: `Post ${action} successfully!`,
+            message: `Post ${hasLiked ? 'unliked' : 'liked'} avec succès !`,
             post: updatedPost,
             likesCount: updatedPost?.likes.length || 0,
             userHasLiked: !hasLiked
@@ -202,52 +195,84 @@ export const likePost = async (req: Request, res: Response) => {
 
     } catch (error) {
         console.error('Error liking post:', error);
-        return res.status(500).json({ 
-            error: 'Internal server error' 
+        return res.status(500).json({
+            error: 'Internal server error'
         });
     }
 };
 
 export const getUserPosts = async (req: Request, res: Response) => {
     try {
-        const { email } = req.params;
+        const { id: userId } = req.params;
 
-        if (!email) {
-            return res.status(400).json({ 
-                error: 'User email required' 
+        if (!userId || !await userIdExists(userId)) {
+            return res.status(400).json({
+                error: 'User email required'
             });
         }
 
-        const userPosts = await Post.find({ authorEmail: email })
-            .sort({ createdAt: -1 });
+        const userPosts = await PostModel.find({ authorId: userId }).sort({ createdAt: -1 });
 
         return res.status(200).json({
             message: 'User posts retrieved successfully',
-            userEmail: email,
+            userId: userId,
             count: userPosts.length,
             posts: userPosts
         });
-
     } catch (error) {
         console.error('Error retrieving user posts:', error);
-        return res.status(500).json({ 
-            error: 'Internal server error' 
+        return res.status(500).json({
+            error: 'Internal server error'
         });
     }
 };
 
-export const getPosts = async (req: Request, res: Response) => {
+export const getPosts = async (req: JwtUserRequest, res: Response) => {
     try {
-        const posts = await Post.find().sort({ createdAt: -1 }).limit(5);
+        const postsLimit = req.query.limit ? Math.min(parseInt(req.query.limit as string), MAX_POST_LIMIT) : DEFAULT_POST_LIMIT;
+        const postsOffset = req.query.offset ? parseInt(req.query.offset as string) : 0;
+
+        const posts = await PostModel.find().sort({ createdAt: -1 }).limit(postsLimit).skip(postsOffset);
+
         return res.status(200).json({
             message: 'Posts retrieved successfully',
             count: posts.length,
-            posts
+            limit: postsLimit,
+            offset: postsOffset,
+            posts: posts
         });
     } catch (error) {
         console.error('Error retrieving posts:', error);
-        return res.status(500).json({ 
-            error: 'Internal server error' 
+        return res.status(500).json({
+            error: 'Internal server error'
         });
     }
-}
+};
+
+export const getPost = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        if (!id || !await postIdExists(id)) {
+            return res.status(400).json({
+                error: 'Post id required'
+            });
+        }
+
+        const post = await PostModel.findById(id);
+        if (!post) {
+            return res.status(404).json({
+                error: 'Post not found'
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Post retrieved successfully',
+            post: post
+        });
+    } catch (error) {
+        console.error('Error retrieving post:', error);
+        return res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
+};

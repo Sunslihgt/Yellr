@@ -17,7 +17,7 @@ const PORT = 5001;
 // Connect to MongoDB using Mongoose
 const connectDB = async () => {
     try {
-        const mongoUri = process.env.MONGO_URI || '';
+        const mongoUri = process.env.MONGO_URI || 'mongodb://root:example@mongo:27017/yellr?authSource=admin';
         if (!mongoUri) {
             throw new Error('MONGO_URI is not defined');
         }
