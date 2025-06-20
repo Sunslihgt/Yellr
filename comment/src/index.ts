@@ -4,14 +4,14 @@ import mongoose from 'mongoose';
 import commentRoutes from './routes/comment.routes';
 
 const app = express();
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 5003;
 
 app.use(cors());
 app.use(express.json());
 
 app.use('/api', commentRoutes);
 
-app.get('/comment/test', (req, res) => {
+app.get('/test', (req, res) => {
     res.json({ message: 'Comment Service is working!' });
 });
 

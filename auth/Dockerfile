@@ -10,6 +10,7 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY .env ./
 
 # Install dependencies
 RUN npm install --include=dev

@@ -1,15 +1,29 @@
-FROM node:18-alpine
+# Backend auth-service Dockerfile
+FROM node:20-alpine
 
-WORKDIR /usr/src/app
+# Add build argument with default value
+ARG NODE_ENV=development
+ENV NODE_ENV=${NODE_ENV}
+RUN echo "NODE_ENV: ${NODE_ENV}"
+
+WORKDIR /app
 
 COPY package*.json ./
+COPY tsconfig.json ./
+COPY .env ./
 
+# Install dependencies
 RUN npm install --include=dev
 
-COPY . .
+COPY src ./src
 
-RUN npm run build
+# Only build in production mode
+RUN if [ "$NODE_ENV" = "production" ]; \
+    then npm run build; \
+    fi
 
-EXPOSE 5002
-
-CMD ["npm", "start"] 
+# Use different commands based on environment
+CMD if [ "$NODE_ENV" = "production" ]; \
+    then npm start; \
+    else npm run dev; \
+    fi
