@@ -72,7 +72,8 @@ export const login = async (
         );
         return res.status(200).json({
             message: 'You are now connected',
-            token: accessToken
+            token: accessToken,
+            user: user
         });
     } catch (error) {
         return res.status(500).json({ message: 'Error during login', error });
