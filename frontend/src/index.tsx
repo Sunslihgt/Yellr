@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+// import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './main.css';
@@ -19,32 +19,33 @@ if (container === null) {
 
 const root = createRoot(container)
 
-function AppWithSkeleton() {
-    const [loading, setLoading] = useState(true);
+// function AppWithSkeleton() {
+//     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 1000);
-        return () => clearTimeout(timer);
-    }, []);
+//     useEffect(() => {
+//         const timer = setTimeout(() => setLoading(false), 1000);
+//         return () => clearTimeout(timer);
+//     }, []);
 
-    return (
-        <Error404 />
-    );
-}
+//     return (
+        
+//     );
+// }
 
 root.render(
-    <>
+    <div className="min-h-screen flex flex-col">
         <Navbar />
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<PostsWithSkeleton />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/notifications" element={<Notifications />} />
-                <Route path="/posts" element={<PostsWithSkeleton />} />
-                {/* Fallback route for any unmatched paths */}
-                <Route path="*" element={<AppWithSkeleton />} />
-            </Routes>
-        </BrowserRouter>
+        <main className="flex-1">
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<PostsWithSkeleton />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/notifications" element={<Notifications />} />
+                    <Route path="/posts" element={<PostsWithSkeleton />} />
+                    <Route path="*" element={<Error404 />} />
+                </Routes>
+            </BrowserRouter>
+        </main>
         <Footer />
-    </>
+    </div>
 );

@@ -16,3 +16,14 @@
 body.dark {
     background-color: #1a202c;
 }
+
+.rainbow-skeleton {
+        background: linear-gradient(270deg, #ff6ec4, #7873f5, #42e695, #ffe29f, #ff6ec4);
+        background-size: 400% 400%;
+        animation: rainbow-wave 2s ease-in-out infinite;
+      }
+      @keyframes rainbow-wave {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }

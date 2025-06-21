@@ -14,7 +14,7 @@ function PostsWithSkeleton() {
     }, []);
 
     return (
-        <div className='bg-gray-100 dark:bg-gray-800 min-h-screen flex flex-col'>
+        <div className='bg-gray-100 dark:bg-gray-800'>
             {/* <Navbar /> */}
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
                 <div className="lg:col-span-3">
