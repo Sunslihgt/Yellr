@@ -10,21 +10,17 @@ export const useApi = () => {
       ...options.headers,
     };
 
-    try {
-      const response = await fetch(url, {
-        ...options,
-        headers,
-      });
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
 
-      if (response.status === 401) {
-        // Token expired or invalid - could dispatch logout here
-        throw new Error('Unauthorized');
-      }
-
-      return response;
-    } catch (error) {
-      throw error;
+    if (response.status === 401) {
+      // Token expired or invalid - could dispatch logout here
+      throw new Error('Unauthorized');
     }
+
+    return response;
   };
 
   return { apiCall };

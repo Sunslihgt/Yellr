@@ -10,6 +10,14 @@ const userSchema = new mongoose.Schema({
     profilePictureUrl: { type: String },
 });
 
+userSchema.methods.toJSON = function () {
+    const user = this;
+    const userObject = user.toObject();
+    delete userObject.passwordHash;
+    return userObject;
+}
+
+
 const UserModel = mongoose.model('User', userSchema);
 
 export default UserModel;

@@ -6,6 +6,7 @@ import './main.css';
 
 import { store } from './store';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Logout from './pages/Logout';
 import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
@@ -22,13 +23,13 @@ if (container === null) {
     throw new Error('Something went wrong!');
 }
 
-const root = createRoot(container)
+const root = createRoot(container);
 
 function AppWithSkeleton() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 1000);
+        const timer = setTimeout(() => setLoading(false), 100);
         return () => clearTimeout(timer);
     }, []);
 
@@ -44,6 +45,7 @@ root.render(
                 <Navbar />
                 <Routes>
                     <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
                     <Route path="/logout" element={<Logout />} />
                     <Route path="/" element={<ProtectedRoute><PostsWithSkeleton /></ProtectedRoute>} />
                     <Route path="/user/:id" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
