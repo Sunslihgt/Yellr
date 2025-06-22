@@ -8,8 +8,21 @@ dotenv.config({ path: './.env' });
 
 const app = express();
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Skip JSON parsing for /authenticate route to be used for auth subrequests
+app.use((req, res, next) => {
+    if (req.path === '/authenticate') {
+        return next();
+    }
+    express.json()(req, res, next);
+});
+
+app.use((req, res, next) => {
+    if (req.path === '/authenticate') {
+        return next();
+    }
+    express.urlencoded({ extended: true })(req, res, next);
+});
 
 const PORT = 5000;
 

@@ -1,9 +1,10 @@
+import { useCallback } from 'react';
 import { useAppSelector } from '../store/hooks';
 
 export const useApi = () => {
   const { token } = useAppSelector((state) => state.auth);
 
-  const apiCall = async (url: string, options: RequestInit = {}) => {
+  const apiCall = useCallback(async (url: string, options: RequestInit = {}) => {
     const headers = {
       'Content-Type': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` }),
@@ -21,7 +22,7 @@ export const useApi = () => {
     }
 
     return response;
-  };
+  }, [token]);
 
   return { apiCall };
 };

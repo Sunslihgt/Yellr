@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AuthState, LoginCredentials, RegisterData, AuthResponse } from '../../@types/auth';
 import { User } from '../../@types/user';
+import { BASE_URL } from '../../constants/config';
 
 const initialState: AuthState = {
   token: localStorage.getItem('token'),
@@ -14,7 +15,7 @@ export const login = createAsyncThunk(
   'auth/login',
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:8080/api/auth/login', {
+      const response = await fetch(`${BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,7 +40,7 @@ export const register = createAsyncThunk(
   'auth/register',
   async (userData: RegisterData, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:8080/api/auth/register', {
+      const response = await fetch(`${BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

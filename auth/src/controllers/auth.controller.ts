@@ -135,7 +135,7 @@ export const authenticate = async (
                 return res.status(403).json({ message: 'Token expired' });
             }
             try {
-                const user = await UserModel.findOne({ _id: typedDecoded.userId });
+                const user = await UserModel.findById(typedDecoded.userId);
                 if (!user) {
                     return res.status(404).json({ message: 'User not found' });
                 }
