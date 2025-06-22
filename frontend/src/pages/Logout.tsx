@@ -15,7 +15,7 @@ const Logout: React.FC = () => {
 
     // Perform logout
     logout();
-    
+
     // Redirect to login page after logout
     navigate('/login');
   }, [logout, navigate, isAuthenticated]);
@@ -31,7 +31,7 @@ const Logout: React.FC = () => {
             Please wait while we sign you out.
           </p>
         </div>
-        
+
         <div className="flex justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
         </div>
@@ -40,4 +40,4 @@ const Logout: React.FC = () => {
   );
 };
 
-export default Logout; 
+export default Logout;

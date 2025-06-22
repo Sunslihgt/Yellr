@@ -24,4 +24,4 @@ export const useApi = () => {
   };
 
   return { apiCall };
-}; 
+};

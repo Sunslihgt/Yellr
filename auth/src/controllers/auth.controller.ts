@@ -44,8 +44,24 @@ export const register = async (
         });
         await newUser.save();
 
-        return res.status(201).json({
-            msg: 'New User created !'
+        // JWT token generation
+        const jwtKey = process.env.ACCESS_JWT_KEY;
+        if (!jwtKey) {
+            return res.status(401).json({ message: 'Application JWT key is not set' });
+        }
+        const payload: JwtAuthPayload = {
+            userId: newUser._id.toString(),
+            exp: Math.floor(Date.now() / 1000) + JWT_EXPIRATION
+        };
+        const accessToken = sign(
+            payload,
+            jwtKey
+        );
+
+        return res.status(200).json({
+            message: 'You are now registered',
+            token: accessToken,
+            user: newUser
         });
     } catch (error) {
         console.error(error);

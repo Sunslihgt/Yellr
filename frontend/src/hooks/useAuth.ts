@@ -15,11 +15,11 @@ export const useAuth = () => {
     isAuthenticated,
     isLoading,
     error,
-    
+
     // Actions
-    login: (credentials: LoginCredentials) => 
+    login: (credentials: LoginCredentials) =>
       dispatch(login(credentials)),
-    register: (userData: RegisterData) => 
+    register: (userData: RegisterData) =>
       dispatch(register(userData)),
     logout: () => dispatch(logout()),
     clearError: () => dispatch(clearError()),

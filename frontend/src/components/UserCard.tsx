@@ -4,9 +4,9 @@ function UserCard() {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-4">
       <div className="flex items-center space-x-3">
-        <img 
-          className="w-12 h-12 rounded-full" 
-          src="https://pbs.twimg.com/profile_images/1861527302418391040/Dh98PT3y_400x400.jpg" 
+        <img
+          className="w-12 h-12 rounded-full"
+          src="https://pbs.twimg.com/profile_images/1861527302418391040/Dh98PT3y_400x400.jpg"
           alt="Rafael Nadal profile picture"
         />
         <div className="flex-1 min-w-0">

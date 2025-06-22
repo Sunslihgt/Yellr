@@ -26,9 +26,9 @@ const Register: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    await register({ 
-      email, 
-      password, 
+    await register({
+      email,
+      password,
       username,
       profilePictureUrl: profilePictureUrl || undefined,
       bio: bio || undefined
@@ -46,7 +46,7 @@ const Register: React.FC = () => {
             Join Yellr and start sharing your thoughts
           </p>
         </div>
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleRegister}>
           <div className="space-y-4">
             {/* Username */}
@@ -66,7 +66,7 @@ const Register: React.FC = () => {
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>
-            
+
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -85,7 +85,7 @@ const Register: React.FC = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            
+
             {/* Password */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
@@ -181,4 +181,4 @@ const Register: React.FC = () => {
   );
 };
 
-export default Register; 
+export default Register;

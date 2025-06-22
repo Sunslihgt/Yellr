@@ -24,5 +24,7 @@ module.exports = {
     '@typescript-eslint/semi': ['warn', 'always'],
     '@typescript-eslint/quotes': ['warn', 'single'],
     'indent': ['warn', 4],
+    'no-empty': ['warn', { allowEmptyCatch: true }],
+    'no-trailing-spaces': ['warn'],
   },
 };

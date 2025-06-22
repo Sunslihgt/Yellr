@@ -37,7 +37,7 @@ const Login: React.FC = () => {
             Welcome back to Yellr
           </p>
         </div>
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div className="space-y-4">
             <div>
@@ -55,7 +55,7 @@ const Login: React.FC = () => {
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>
-            
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password

@@ -6,13 +6,13 @@ const MessageCard = () => {
             <div className="flex space-x-3">
                 {/* Avatar */}
                 <div className="flex-shrink-0">
-                    <img 
-                        className="h-12 w-12 rounded-full" 
-                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqPDwMWlLtyFk9XGrH-KyIiBuqUEuL4EkwyA&s" 
+                    <img
+                        className="h-12 w-12 rounded-full"
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqPDwMWlLtyFk9XGrH-KyIiBuqUEuL4EkwyA&s"
                         alt="User avatar"
                     />
                 </div>
-                
+
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                     {/* Header */}
@@ -28,12 +28,12 @@ const MessageCard = () => {
                             2h
                         </span>
                     </div>
-                    
+
                     {/* Message content */}
                     <p className="text-gray-900 dark:text-white text-base leading-relaxed mb-3">
                         J&apos;aime très beaucoup le tennis.
                     </p>
-                    
+
                     {/* Actions */}
                     <div className="flex items-center justify-between max-w-md">
                         {/* Reply */}
@@ -43,7 +43,7 @@ const MessageCard = () => {
                             </svg>
                             <span className="text-sm">12</span>
                         </button>
-                        
+
                         {/* Retweet */}
                         <button className="flex items-center space-x-2 text-gray-500 hover:text-green-500 transition-colors group">
                             <svg className="w-5 h-5 group-hover:bg-green-50 dark:group-hover:bg-green-900/20 rounded-full p-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,7 +51,7 @@ const MessageCard = () => {
                             </svg>
                             <span className="text-sm">5</span>
                         </button>
-                        
+
                         {/* Like */}
                         <button className="flex items-center space-x-2 text-gray-500 hover:text-red-500 transition-colors group">
                             <svg className="w-5 h-5 group-hover:bg-red-50 dark:group-hover:bg-red-900/20 rounded-full p-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,7 +59,7 @@ const MessageCard = () => {
                             </svg>
                             <span className="text-sm">24</span>
                         </button>
-                        
+
                         {/* Share */}
                         <button className="flex items-center space-x-2 text-gray-500 hover:text-blue-500 transition-colors group">
                             <svg className="w-5 h-5 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 rounded-full p-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

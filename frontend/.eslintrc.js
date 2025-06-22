@@ -33,5 +33,6 @@ module.exports = {
     '@typescript-eslint/quotes': ['warn', 'single'],
     'indent': ['warn', 2],
     'no-empty': ['warn', { allowEmptyCatch: true }],
+    'no-trailing-spaces': ['warn'],
   },
 };
