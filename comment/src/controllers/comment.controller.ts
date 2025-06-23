@@ -12,6 +12,10 @@ export interface ReplyToCommentBody {
     content: string;
 }
 
+export interface EditCommentBody {
+    content: string;
+}
+
 export const createCommentOnPost = async (req: JwtUserRequest, res: Response) => {
     try {
         const { postId } = req.params;
@@ -133,6 +137,82 @@ export const replyToComment = async (req: JwtUserRequest, res: Response) => {
 
     } catch (error) {
         console.error('Error creating reply:', error);
+        return res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
+};
+
+export const editComment = async (req: JwtUserRequest, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { content }: EditCommentBody = req.body;
+        const userId = req.jwtUserId;
+
+        console.log('DEBUG - Editing comment:', {
+            commentId: id,
+            content,
+            userId,
+            jwtUserId: req.jwtUserId
+        });
+
+        if (!id || !await commentIdExists(id)) {
+            return res.status(400).json({
+                error: 'Valid comment ID required'
+            });
+        }
+
+        if (!content) {
+            return res.status(400).json({
+                error: 'Content is required'
+            });
+        }
+
+        if (!userId || !await userIdExists(userId)) {
+            return res.status(400).json({
+                error: 'User not found'
+            });
+        }
+
+        if (content.length > 280) {
+            return res.status(400).json({
+                error: 'Comment cannot exceed 280 characters'
+            });
+        }
+
+        const comment = await Comment.findById(id);
+        if (!comment) {
+            return res.status(404).json({
+                error: 'Comment not found'
+            });
+        }
+
+        // Check if the user is the author of the comment
+        if (comment.authorId.toString() !== userId) {
+            return res.status(403).json({
+                error: 'You can only edit your own comments'
+            });
+        }
+
+        const updatedComment = await Comment.findByIdAndUpdate(
+            id,
+            { content },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedComment) {
+            return res.status(404).json({
+                error: 'Comment not found'
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Comment updated successfully!',
+            comment: updatedComment
+        });
+
+    } catch (error) {
+        console.error('Error editing comment:', error);
         return res.status(500).json({
             error: 'Internal server error'
         });
