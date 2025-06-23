@@ -9,54 +9,54 @@ import { useAppSelector } from '../store/hooks';
 import { PostWithAuthor, PostsResponse } from '../@types/post';
 import { BASE_URL } from '../constants/config';
 
+const POSTS_FETCH_LIMIT = 5;
+
 function PostsWithSkeleton() {
     const [loading, setLoading] = useState(true);
-    const [posts, setPosts] = useState<PostWithAuthor[]>([]);
+    const [posts, setPosts] = useState<(PostWithAuthor | null)[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [offset, setOffset] = useState(0);
+    const [totalCount, setTotalCount] = useState<number | null>(null);
     const { apiCall } = useApi();
     const { isAuthenticated } = useAppSelector((state) => state.auth);
 
-    useEffect(() => {
-        let isMounted = true;
-
-        const fetchPosts = async () => {
-            // Don't fetch posts if user is not authenticated
-            if (!isAuthenticated) {
-                setLoading(false);
-                return;
+    // Paginated fetchPosts function
+    const fetchPosts = async (fetchOffset = 0, append = false) => {
+        if (!isAuthenticated) {
+            setLoading(false);
+            return;
+        }
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await apiCall(`${BASE_URL}/api/posts?limit=${POSTS_FETCH_LIMIT}&offset=${fetchOffset}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch posts');
             }
-
-            try {
-                setLoading(true);
-                setError(null);
-
-                const response = await apiCall(`${BASE_URL}/api/posts`);
-
-                if (!isMounted) return;
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch posts');
-                }
-
-                const data: PostsResponse = await response.json();
+            const data: PostsResponse = await response.json();
+            setTotalCount(data.totalCount);
+            setOffset(fetchOffset + data.count);
+            if (append) {
+                setPosts((prev) => {
+                    let newPosts: (PostWithAuthor | null)[] = prev.concat(data.posts);
+                    newPosts = newPosts.filter((post) => post !== null);
+                    return newPosts;
+                });
+            } else {
                 setPosts(data.posts);
-            } catch (err) {
-                if (!isMounted) return;
-                console.error('Error fetching posts:', err);
-                setError(err instanceof Error ? err.message : 'Failed to fetch posts');
-            } finally {
-                if (isMounted) {
-                    setLoading(false);
-                }
             }
-        };
+        } catch (err) {
+            console.error('Error fetching posts:', err);
+            setError(err instanceof Error ? err.message : 'Failed to fetch posts');
+            setPosts((prevPosts) => prevPosts.filter((p) => p !== null));
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        fetchPosts();
-
-        return () => {
-            isMounted = false;
-        };
-    }, [apiCall, isAuthenticated]); // Add isAuthenticated to dependencies
+    useEffect(() => {
+        fetchPosts(0, false);
+    }, [apiCall, isAuthenticated]);
 
     // Show loading or error state if not authenticated
     if (!isAuthenticated) {
@@ -101,7 +101,7 @@ function PostsWithSkeleton() {
                             <h1 className="text-xl font-semibold text-gray-900 dark:text-white">What&apos;s new ?</h1>
                         </div>
                         <div className="overflow-y-auto h-[calc(100%-4rem)] scrollbar-hide p-4">
-                            {loading ? (
+                            {loading && posts.length === 0 ? (
                                 Array.from({ length: 2 }).map((_, i) => <SkeletonMessageCard key={i} />)
                             ) : error ? (
                                 <div className="text-center py-8">
@@ -119,9 +119,35 @@ function PostsWithSkeleton() {
                                 </div>
                             ) : (
                                 <>
-                                    {posts.map((post) => (
-                                        <MessageCard key={post._id} post={post} />
+                                    {posts.map((post, i) => (
+                                        post ? (
+                                            <MessageCard key={post._id} post={post} />
+                                        ) : (
+                                            <SkeletonMessageCard key={i} />
+                                        )
                                     ))}
+                                    {/* Load more button */}
+                                    {(!totalCount || posts.length < totalCount) ? (
+                                        <div className="flex justify-center">
+                                            <button
+                                                className="px-4 py-2 mt-4 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                                onClick={() => {
+                                                    // Show skeletons while loading
+                                                    setPosts(posts.concat(Array.from({ length: 2 }).map((_, i) => null)));
+                                                    setTimeout(() => {
+                                                        fetchPosts(offset, true);
+                                                    }, 1000);
+                                                }}
+                                                disabled={loading}
+                                            >
+                                                {loading ? 'Loading...' : 'Load more'}
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="flex justify-center">
+                                            <p className="text-gray-500 dark:text-gray-400">No more posts to load.</p>
+                                        </div>
+                                    )}
                                 </>
                             )}
                         </div>

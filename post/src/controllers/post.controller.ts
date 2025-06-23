@@ -266,9 +266,12 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
             };
         });
 
+        const totalCount = await PostModel.countDocuments();
+
         return res.status(200).json({
             message: 'Posts retrieved successfully',
             count: posts.length,
+            totalCount: totalCount,
             limit: postsLimit,
             offset: postsOffset,
             posts: postsWithAuthor
