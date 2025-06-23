@@ -232,14 +232,45 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
         const postsLimit = req.query.limit ? Math.min(parseInt(req.query.limit as string), MAX_POST_LIMIT) : DEFAULT_POST_LIMIT;
         const postsOffset = req.query.offset ? parseInt(req.query.offset as string) : 0;
 
-        const posts = await PostModel.find().sort({ createdAt: -1 }).limit(postsLimit).skip(postsOffset);
+        const posts = await PostModel.find()
+            .populate('authorId', 'username email bio profilePictureUrl')
+            .sort({ createdAt: -1 })
+            .limit(postsLimit)
+            .skip(postsOffset);
+
+        // Transform the data to match the expected frontend format
+        const postsWithAuthor = posts.map(post => {
+            const postObj = post.toObject();
+            const author = postObj.authorId as any; // Type assertion for populated field
+            
+            // Handle case where author might be null (user was deleted)
+            if (!author) {
+                return {
+                    ...postObj,
+                    author: {
+                        _id: postObj.authorId,
+                        username: 'Deleted User',
+                        email: 'deleted@example.com',
+                        bio: '',
+                        profilePictureUrl: null
+                    },
+                    authorId: postObj.authorId
+                };
+            }
+            
+            return {
+                ...postObj,
+                author: author,
+                authorId: author._id || author
+            };
+        });
 
         return res.status(200).json({
             message: 'Posts retrieved successfully',
             count: posts.length,
             limit: postsLimit,
             offset: postsOffset,
-            posts: posts
+            posts: postsWithAuthor
         });
     } catch (error) {
         console.error('Error retrieving posts:', error);
