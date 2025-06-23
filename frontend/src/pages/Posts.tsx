@@ -4,6 +4,7 @@ import MessageCard from '../components/MessageCard';
 import UserCard from '../components/UserCard';
 import SkeletonMessageCard from '../components/SkeletonMessageCard';
 import SkeletonUserCard from '../components/SkeletonUserCard';
+import PostSearchPane from '../components/PostSearchPane';
 import { useApi } from '../hooks/useApi';
 import { useAppSelector } from '../store/hooks';
 import { PostWithAuthor, PostsResponse } from '../@types/post';
@@ -17,6 +18,7 @@ function PostsWithSkeleton() {
     const [error, setError] = useState<string | null>(null);
     const [offset, setOffset] = useState(0);
     const [totalCount, setTotalCount] = useState<number | null>(null);
+    const [searchPaneFolded, setSearchPaneFolded] = useState(true);
     const { apiCall } = useApi();
     const { isAuthenticated } = useAppSelector((state) => state.auth);
 
@@ -100,7 +102,10 @@ function PostsWithSkeleton() {
                         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                             <h1 className="text-xl font-semibold text-gray-900 dark:text-white">What&apos;s new ?</h1>
                         </div>
-                        <div className="overflow-y-auto h-[calc(100%-4rem)] scrollbar-hide p-4">
+                        {/* Search Pane UI */}
+                        <PostSearchPane onFoldChange={setSearchPaneFolded} />
+                        {/* Posts */}
+                        <div className={`overflow-y-auto scrollbar-hide p-4 ${searchPaneFolded ? 'h-[calc(100%-64px-64px)]' : 'h-[calc(100%-64px-180px)]'}`}>
                             {loading && posts.length === 0 ? (
                                 Array.from({ length: 2 }).map((_, i) => <SkeletonMessageCard key={i} />)
                             ) : error ? (
