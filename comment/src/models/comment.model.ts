@@ -2,8 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IComment extends Document {
     content: string;
-    authorEmail: string;
-    authorUsername: string;
+    authorId: string;
     postId: mongoose.Types.ObjectId;
     parentCommentId?: mongoose.Types.ObjectId;
     likes: string[];
@@ -14,24 +13,18 @@ export interface IComment extends Document {
 const CommentSchema: Schema = new Schema({
     content: {
         type: String,
-        required: [true, 'Le contenu du commentaire est requis'],
-        maxlength: [280, 'Le commentaire ne peut pas dépasser 280 caractères'],
+        required: [true, 'Comment content is required'],
+        maxlength: [280, 'Comment cannot exceed 280 characters'],
         trim: true
     },
-    authorEmail: {
-        type: String,
-        required: [true, 'L\'email de l\'auteur est requis'],
-        trim: true,
-        lowercase: true
-    },
-    authorUsername: {
-        type: String,
-        required: [true, 'Le nom d\'utilisateur est requis'],
-        trim: true
+    authorId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: [true, 'Author ID is required']
     },
     postId: {
         type: mongoose.Schema.Types.ObjectId,
-        required: [true, 'L\'ID du post est requis'],
+        required: [true, 'Post ID is required'],
         ref: 'Post'
     },
     parentCommentId: {
@@ -40,9 +33,7 @@ const CommentSchema: Schema = new Schema({
         default: null
     },
     likes: [{
-        type: String,
-        trim: true,
-        lowercase: true
+        type: String
     }]
 }, {
     timestamps: true
@@ -50,6 +41,6 @@ const CommentSchema: Schema = new Schema({
 
 CommentSchema.index({ postId: 1, createdAt: -1 });
 CommentSchema.index({ parentCommentId: 1, createdAt: 1 });
-CommentSchema.index({ authorEmail: 1 });
+CommentSchema.index({ authorId: 1 });
 
 export default mongoose.model<IComment>('Comment', CommentSchema);

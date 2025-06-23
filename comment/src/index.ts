@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 5003;
 app.use(cors());
 app.use(express.json());
 
-app.use('/api', commentRoutes);
+app.use('/', commentRoutes);
 
 app.get('/test', (req, res) => {
     res.json({ message: 'Comment Service is working!' });
