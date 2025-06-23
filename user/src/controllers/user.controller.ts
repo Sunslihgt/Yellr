@@ -27,16 +27,16 @@ export const getUserById = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: Request, res: Response) => {
-    const { username, bio, password, role } = req.body;
+    const { username, bio, profilePictureUrl, password, role } = req.body;
     try {
-        const updateData: any = { username, bio, role };
+        const updateData: any = { username, bio, profilePictureUrl, role };
         if (password) {
             updateData.passwordHash = hashSync(password, 10);
         }
         // Remove undefined fields
         Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
         if(Object.keys(updateData).length === 0) {
-            return res.status(400).json({ message: 'No fields to update, please provide either username, bio, role or password' });
+            return res.status(400).json({ message: 'No fields to update, please provide either username, bio, profilePictureUrl, role or password' });
         }
         const updatedUser = await UserModel.findByIdAndUpdate(
             req.params.id,

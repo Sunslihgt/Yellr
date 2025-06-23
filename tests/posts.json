@@ -1,0 +1,90 @@
+[
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439021" },
+    "content": "Just finished building an amazing new feature! The feeling of creating something that people will actually use is incredible. #coding #development #excitement",
+    "authorId": { "$oid": "507f1f77bcf86cd799439011" },
+    "tags": ["coding", "development", "excitement"],
+    "likes": [{ "$oid": "507f1f77bcf86cd799439012" }, { "$oid": "507f1f77bcf86cd799439013" }],
+    "imageUrl": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=400&fit=crop",
+    "videoUrl": null,
+    "createdAt": "2024-03-15T08:30:00.000Z",
+    "updatedAt": "2024-03-15T08:30:00.000Z"
+  },
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439022" },
+    "content": "Working on some new digital art pieces today. The creative process is so therapeutic! What's everyone else working on? #art #creativity #digitalart",
+    "authorId": { "$oid": "507f1f77bcf86cd799439012" },
+    "tags": ["art", "creativity", "digitalart"],
+    "likes": [{ "$oid": "507f1f77bcf86cd799439011" }, { "$oid": "507f1f77bcf86cd799439014" }],
+    "imageUrl": "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600&h=400&fit=crop",
+    "videoUrl": null,
+    "createdAt": "2024-03-14T15:45:00.000Z",
+    "updatedAt": "2024-03-14T15:45:00.000Z"
+  },
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439023" },
+    "content": "Morning workout complete! Remember, consistency beats perfection every time. Start where you are, use what you have, do what you can. #fitness #motivation #health",
+    "authorId": { "$oid": "507f1f77bcf86cd799439013" },
+    "tags": ["fitness", "motivation", "health"],
+    "likes": [{ "$oid": "507f1f77bcf86cd799439011" }, { "$oid": "507f1f77bcf86cd799439012" }, { "$oid": "507f1f77bcf86cd799439014" }],
+    "imageUrl": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop",
+    "videoUrl": null,
+    "createdAt": "2024-03-15T06:00:00.000Z",
+    "updatedAt": "2024-03-15T06:00:00.000Z"
+  },
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439024" },
+    "content": "Exploring the beautiful streets of Paris today! The architecture here is absolutely breathtaking. Travel truly opens your mind to new perspectives. #travel #paris #architecture",
+    "authorId": { "$oid": "507f1f77bcf86cd799439014" },
+    "tags": ["travel", "paris", "architecture"],
+    "likes": [{ "$oid": "507f1f77bcf86cd799439011" }, { "$oid": "507f1f77bcf86cd799439012" }, { "$oid": "507f1f77bcf86cd799439013" }],
+    "imageUrl": "https://images.unsplash.com/photo-1502602898534-47d3c0c8705b?w=600&h=400&fit=crop",
+    "videoUrl": null,
+    "createdAt": "2024-03-13T12:20:00.000Z",
+    "updatedAt": "2024-03-13T12:20:00.000Z"
+  },
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439025" },
+    "content": "Just discovered this amazing new coffee shop downtown! The atmosphere is perfect for getting work done. Anyone else have favorite work spots? #coffee #productivity #workspace",
+    "authorId": { "$oid": "507f1f77bcf86cd799439011" },
+    "tags": ["coffee", "productivity", "workspace"],
+    "likes": [{ "$oid": "507f1f77bcf86cd799439012" }],
+    "imageUrl": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=400&fit=crop",
+    "videoUrl": null,
+    "createdAt": "2024-03-12T10:15:00.000Z",
+    "updatedAt": "2024-03-12T10:15:00.000Z"
+  },
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439026" },
+    "content": "Working on a new fitness program for beginners. It's amazing to see people transform their lives through health and wellness. #fitness #wellness #transformation",
+    "authorId": { "$oid": "507f1f77bcf86cd799439013" },
+    "tags": ["fitness", "wellness", "transformation"],
+    "likes": [{ "$oid": "507f1f77bcf86cd799439011" }, { "$oid": "507f1f77bcf86cd799439014" }],
+    "imageUrl": null,
+    "videoUrl": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+    "createdAt": "2024-03-11T18:30:00.000Z",
+    "updatedAt": "2024-03-11T18:30:00.000Z"
+  },
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439027" },
+    "content": "Sometimes the best art comes from unexpected inspiration. Today's piece was inspired by the sunset I saw yesterday. Nature is the ultimate artist! #inspiration #nature #art",
+    "authorId": { "$oid": "507f1f77bcf86cd799439012" },
+    "tags": ["inspiration", "nature", "art"],
+    "likes": [{ "$oid": "507f1f77bcf86cd799439011" }, { "$oid": "507f1f77bcf86cd799439013" }, { "$oid": "507f1f77bcf86cd799439014" }],
+    "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop",
+    "videoUrl": null,
+    "createdAt": "2024-03-10T20:45:00.000Z",
+    "updatedAt": "2024-03-10T20:45:00.000Z"
+  },
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439028" },
+    "content": "Platform update: We've just deployed some new features to improve your experience! Check out the new notification system and enhanced search functionality. #update #newfeatures",
+    "authorId": { "$oid": "507f1f77bcf86cd799439015" },
+    "tags": ["update", "newfeatures"],
+    "likes": [{ "$oid": "507f1f77bcf86cd799439011" }, { "$oid": "507f1f77bcf86cd799439012" }, { "$oid": "507f1f77bcf86cd799439013" }, { "$oid": "507f1f77bcf86cd799439014" }],
+    "imageUrl": null,
+    "videoUrl": null,
+    "createdAt": "2024-03-09T14:00:00.000Z",
+    "updatedAt": "2024-03-09T14:00:00.000Z"
+  }
+] 
