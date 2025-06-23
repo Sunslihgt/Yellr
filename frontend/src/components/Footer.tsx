@@ -6,7 +6,7 @@ function Footer() {
             <div className="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
                 <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
                     <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
-                        <img src="logos/LogoWithoutTagline.svg" alt="Yeller™" className="inline-block h-6 mr-1" />
+                        <img src="logos/PRIDELogoWithoutTagline.svg" alt="Yeller™" className="inline-block h-6 mr-1" />
                     </a>
                     All Rights Reserved.
                 </span>

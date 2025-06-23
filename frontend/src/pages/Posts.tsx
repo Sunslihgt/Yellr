@@ -29,15 +29,15 @@ function PostsWithSkeleton() {
             try {
                 setLoading(true);
                 setError(null);
-                
+
                 const response = await apiCall(`${BASE_URL}/api/posts`);
-                
+
                 if (!isMounted) return;
-                
+
                 if (!response.ok) {
                     throw new Error('Failed to fetch posts');
                 }
-                
+
                 const data: PostsResponse = await response.json();
                 setPosts(data.posts);
             } catch (err) {
@@ -94,7 +94,6 @@ function PostsWithSkeleton() {
 
     return (
         <div className='bg-gray-100 dark:bg-gray-800'>
-            {/* <Navbar /> */}
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
                 <div className="lg:col-span-3">
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden">
@@ -107,8 +106,8 @@ function PostsWithSkeleton() {
                             ) : error ? (
                                 <div className="text-center py-8">
                                     <p className="text-red-500 dark:text-red-400">{error}</p>
-                                    <button 
-                                        onClick={() => window.location.reload()} 
+                                    <button
+                                        onClick={() => window.location.reload()}
                                         className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                                     >
                                         Retry

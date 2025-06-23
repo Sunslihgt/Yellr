@@ -3,6 +3,7 @@ import PostModel from '../models/post.model';
 import { JwtUserRequest } from '../@types/jwtRequest';
 import { userIdExists } from '../utils/user.utils';
 import { postIdExists } from '../utils/post.utils';
+import { IPost } from '../models/post.model';
 
 export interface CreatePostBody {
     content: string;
@@ -83,7 +84,7 @@ export const editPost = async (req: JwtUserRequest, res: Response) => {
             });
         }
 
-        const updateData: any = {};
+        const updateData: Partial<IPost> = {};
         if (content) updateData.content = content;
         if (tags) updateData.tags = tags;
         if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
@@ -96,7 +97,7 @@ export const editPost = async (req: JwtUserRequest, res: Response) => {
         );
 
         if (!updatedPost) {
-            return res.status(404).json({ 
+            return res.status(404).json({
                 error: 'Post not found'
             });
         }
@@ -242,7 +243,7 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
         const postsWithAuthor = posts.map(post => {
             const postObj = post.toObject();
             const author = postObj.authorId as any; // Type assertion for populated field
-            
+
             // Handle case where author might be null (user was deleted)
             if (!author) {
                 return {
@@ -257,7 +258,7 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
                     authorId: postObj.authorId
                 };
             }
-            
+
             return {
                 ...postObj,
                 author: author,

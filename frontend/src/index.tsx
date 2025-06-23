@@ -14,8 +14,7 @@ import PostsWithSkeleton from './pages/Posts';
 import Error404 from './pages/Error404';
 import ProtectedRoute from './components/ProtectedRoute';
 
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import Layout from './Layout';
 // import App from './App';
 
 const container = document.getElementById('root');
@@ -42,20 +41,20 @@ root.render(
     <StrictMode>
         <Provider store={store}>
             <BrowserRouter>
-                <Navbar />
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/logout" element={<Logout />} />
-                    <Route path="/" element={<ProtectedRoute><PostsWithSkeleton /></ProtectedRoute>} />
-                    <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                    <Route path="/user/:id" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                    <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-                    <Route path="/posts" element={<ProtectedRoute><PostsWithSkeleton /></ProtectedRoute>} />
-                    {/* Fallback route for any unmatched paths */}
-                    <Route path="*" element={<AppWithSkeleton />} />
-                </Routes>
-                <Footer />
+                <Layout>
+                    <Routes>
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/logout" element={<Logout />} />
+                        <Route path="/" element={<ProtectedRoute><PostsWithSkeleton /></ProtectedRoute>} />
+                        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                        <Route path="/user/:id" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                        <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+                        <Route path="/posts" element={<ProtectedRoute><PostsWithSkeleton /></ProtectedRoute>} />
+                        {/* Fallback route for any unmatched paths */}
+                        <Route path="*" element={<AppWithSkeleton />} />
+                    </Routes>
+                </Layout>
             </BrowserRouter>
         </Provider>
     </StrictMode>

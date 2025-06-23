@@ -11,11 +11,10 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.methods.toJSON = function () {
-    const user = this;
-    const userObject = user.toObject();
+    const userObject = this.toObject();
     delete userObject.passwordHash;
     return userObject;
-}
+};
 
 const UserModel = mongoose.model('User', userSchema);
 
