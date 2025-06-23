@@ -1,5 +1,15 @@
 import mongoose from 'mongoose';
 
+export interface IUser extends Document {
+    email: string;
+    username: string;
+    bio: string;
+    profilePictureUrl: string;
+    passwordHash: string;
+    createdAt: Date;
+    role: string;
+}
+
 const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     username: { type: String, required: true, unique: true },
@@ -7,7 +17,7 @@ const userSchema = new mongoose.Schema({
     passwordHash: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
-    profilePictureUrl: { type: String },
+    profilePictureUrl: { type: String, default: null },
 });
 
 userSchema.methods.toJSON = function () {
@@ -16,6 +26,6 @@ userSchema.methods.toJSON = function () {
     return userObject;
 };
 
-const UserModel = mongoose.model('User', userSchema);
+const UserModel = mongoose.model<IUser>('User', userSchema);
 
 export default UserModel;
