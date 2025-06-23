@@ -7,7 +7,15 @@ const userSchema = new mongoose.Schema({
     passwordHash: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    profilePictureUrl: { type: String },
 });
+
+userSchema.methods.toJSON = function () {
+    const user = this;
+    const userObject = user.toObject();
+    delete userObject.passwordHash;
+    return userObject;
+}
 
 const UserModel = mongoose.model('User', userSchema);
 

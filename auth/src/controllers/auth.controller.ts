@@ -6,7 +6,7 @@ import UserModel from '../models/user.model';
 
 dotenv.config({ path: './src/.env' });
 
-const JWT_LENGTH = 60 * 60 * 24; // 1 day in seconds
+const JWT_EXPIRATION = 60 * 60 * 24; // 1 day in seconds
 
 export interface JwtAuthPayload {
     userId: string;
@@ -17,27 +17,54 @@ export const register = async (
     req: Request,
     res: Response
 ) => {
-    if (!req.body || !req.body.username || !req.body.email || !req.body.password) {
-        return res.status(400).json({ msg: 'Username, email and password are required.' });
-    }
     try {
-        // Check if user already exists
-        const existingUser = await UserModel.findOne({ username: req.body.username });
-        if (existingUser) {
-            return res.status(409).json({ msg: 'User already exists.' });
+        const { username, email, password, bio, profilePictureUrl } = req.body;
+        if (!req.body || !req.body.username || !req.body.email || !req.body.password) {
+            return res.status(400).json({ msg: 'Username, email and password are required.' });
         }
+
+        // Check if user already exists
+        const existingUsername = await UserModel.findOne({ username: username });
+        if (existingUsername) {
+            return res.status(409).json({ msg: 'Username already used.' });
+        }
+        const existingEmail = await UserModel.findOne({ email: email });
+        if (existingEmail) {
+            return res.status(409).json({ msg: 'Email already used.' });
+        }
+
         // Create new user
-        const hashedPassword = hashSync(req.body.password, 10);
+        const hashedPassword = hashSync(password, 10);
         const newUser = new UserModel({
-            username: req.body.username,
-            email: req.body.email,
+            username,
+            email,
             passwordHash: hashedPassword,
+            bio: bio || '',
+            profilePictureUrl: profilePictureUrl || ''
         });
         await newUser.save();
-        return res.status(201).json({
-            msg: 'New User created !'
+
+        // JWT token generation
+        const jwtKey = process.env.ACCESS_JWT_KEY;
+        if (!jwtKey) {
+            return res.status(401).json({ message: 'Application JWT key is not set' });
+        }
+        const payload: JwtAuthPayload = {
+            userId: newUser._id.toString(),
+            exp: Math.floor(Date.now() / 1000) + JWT_EXPIRATION
+        };
+        const accessToken = sign(
+            payload,
+            jwtKey
+        );
+
+        return res.status(200).json({
+            message: 'You are now registered',
+            token: accessToken,
+            user: newUser
         });
     } catch (error) {
+        console.error(error);
         return res.status(500).json({ msg: 'Error creating user', error });
     }
 };
@@ -64,17 +91,20 @@ export const login = async (
         }
         const payload: JwtAuthPayload = {
             userId: user._id.toString(),
-            exp: Math.floor(Date.now() / 1000) + JWT_LENGTH
+            exp: Math.floor(Date.now() / 1000) + JWT_EXPIRATION
         };
         const accessToken = sign(
             payload,
             jwtKey
         );
+
         return res.status(200).json({
             message: 'You are now connected',
-            token: accessToken
+            token: accessToken,
+            user: user
         });
     } catch (error) {
+        console.error(error);
         return res.status(500).json({ message: 'Error during login', error });
     }
 };
@@ -105,7 +135,7 @@ export const authenticate = async (
                 return res.status(403).json({ message: 'Token expired' });
             }
             try {
-                const user = await UserModel.findOne({ _id: typedDecoded.userId });
+                const user = await UserModel.findById(typedDecoded.userId);
                 if (!user) {
                     return res.status(404).json({ message: 'User not found' });
                 }
@@ -115,6 +145,7 @@ export const authenticate = async (
                     exp: typedDecoded.exp
                 });
             } catch (error) {
+                console.error(error);
                 return res.status(500).json({ message: 'Error during authentication', error });
             }
         }

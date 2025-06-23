@@ -1,4 +1,4 @@
-.PHONY: lint lint-frontend lint-auth run-dev run-prod down
+.PHONY: lint lint-frontend lint-auth run-dev run-prod down import-dummy-data
 
 lint: lint-frontend lint-auth lint-user lint-post
 
@@ -51,3 +51,22 @@ run-prod: down
 	@echo "Starting all containers in production mode"
 	@echo "==========================================="
 	@NODE_ENV=production docker-compose up --build
+
+clear-db:
+	@read -p "Are you sure you want to clear the database? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
+	@echo "==========================================="
+	@echo "Clearing MongoDB database"
+	@echo "==========================================="
+	@docker exec mongo mongosh --username root --password example admin --eval "db = db.getSiblingDB('yellr'); db.dropDatabase(); print('Dropped yellr database')" || echo "Warning: Could not clear existing data (MongoDB container might not be running)"
+
+import-dummy-data:
+	@make clear-db
+	@echo "==========================================="
+	@echo "Importing dummy data into MongoDB"
+	@echo "==========================================="
+	@echo "Importing users..."
+	@docker exec -i mongo mongoimport --username root --password example --authenticationDatabase admin --db yellr --collection users --jsonArray --parseGrace=autoCast --mode upsert < tests/users.json || echo "Error: Could not import users data"
+	@echo "Importing posts..."
+	@docker exec -i mongo mongoimport --username root --password example --authenticationDatabase admin --db yellr --collection posts --jsonArray --parseGrace=autoCast --mode upsert < tests/posts.json || echo "Error: Could not import posts data"
+	@echo "Dummy data import completed!"
+	@echo "Note: If you see errors above, make sure MongoDB container is running (try: make run-dev)"

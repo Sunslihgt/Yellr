@@ -24,6 +24,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
       - mongo-data:/data/db
+    command: --quiet
 
   auth-service:
     build: 
@@ -127,6 +128,9 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV:-development}
       - WATCHPACK_POLLING=true
+      - WDS_SOCKET_HOST=localhost
+      - WDS_SOCKET_PORT=0
+      - FAST_REFRESH=false
 
 volumes:
   mongo-data:
