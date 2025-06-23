@@ -13,18 +13,18 @@ export interface IComment extends Document {
 const CommentSchema: Schema = new Schema({
     content: {
         type: String,
-        required: [true, 'Le contenu du commentaire est requis'],
-        maxlength: [280, 'Le commentaire ne peut pas dépasser 280 caractères'],
+        required: [true, 'Comment content is required'],
+        maxlength: [280, 'Comment cannot exceed 280 characters'],
         trim: true
     },
     authorId: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: [true, 'L\'ID de l\'auteur est requis']
+        required: [true, 'Author ID is required']
     },
     postId: {
         type: mongoose.Schema.Types.ObjectId,
-        required: [true, 'L\'ID du post est requis'],
+        required: [true, 'Post ID is required'],
         ref: 'Post'
     },
     parentCommentId: {

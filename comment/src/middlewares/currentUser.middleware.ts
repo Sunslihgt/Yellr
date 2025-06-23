@@ -5,28 +5,28 @@ import { JwtUserRequest } from '../@types/jwtRequest';
 export const currentUserMiddleware = (req: JwtUserRequest, res: Response, next: NextFunction): void => {
     const token = req.headers.authorization?.split(' ')[1];
     
-    console.log('Token reçu:', token);
+    console.log('Token received:', token);
     
     if (!token) {
-        res.status(401).json({ error: 'Token manquant' });
+        res.status(401).json({ error: 'Token missing' });
         return;
     }
 
     try {
         const decoded = jwt.decode(token) as { userId?: string, exp?: number } | null;
-        console.log('Token décodé avec succès:', decoded);
+        console.log('Token decoded successfully:', decoded);
         
         if (decoded && decoded.userId) {
             req.jwtUserId = decoded.userId;
             next();
         } else {
-            res.status(401).json({ error: 'Token invalide - pas d\'userId trouvé' });
+            res.status(401).json({ error: 'Invalid token - no userId found' });
             return;
         }
     } catch (error) {
-        console.error('Erreur de décodage JWT:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
-        res.status(401).json({ error: 'Token invalide', details: errorMessage });
+        console.error('JWT decoding error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        res.status(401).json({ error: 'Invalid token', details: errorMessage });
         return;
     }
 }; 
