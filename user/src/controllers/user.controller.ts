@@ -34,9 +34,15 @@ export const updateUser = async (req: Request, res: Response) => {
         if (password) {
             updateData.passwordHash = hashSync(password, 10);
         }
-        // Remove undefined fields
-        Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
-        if(Object.keys(updateData).length === 0) {
+
+        // Remove undefined fields in a type-safe way
+        (Object.keys(updateData) as (keyof typeof updateData)[]).forEach(key => {
+            if (updateData[key] === undefined) {
+                delete updateData[key];
+            }
+        });
+
+        if (Object.keys(updateData).length === 0) {
             return res.status(400).json({
                 message: 'No fields to update, please provide either username, bio, profilePictureUrl, role or password'
             });

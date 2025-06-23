@@ -4,6 +4,7 @@ import { JwtUserRequest } from '../@types/jwtRequest';
 import { userIdExists } from '../utils/user.utils';
 import { postIdExists } from '../utils/post.utils';
 import { IPost } from '../models/post.model';
+import { IUser } from '../models/user.model';
 
 export interface CreatePostBody {
     content: string;
@@ -19,6 +20,14 @@ export interface EditPostBody {
     imageUrl?: string;
     videoUrl?: string;
 }
+
+const DELETED_USER = {
+    _id: '',
+    username: 'Deleted User',
+    email: 'deleted@example.com',
+    bio: '',
+    profilePictureUrl: null
+};
 
 const POST_MAX_LENGTH = 280;
 const DEFAULT_POST_LIMIT = 5; // Amount of posts to return by default
@@ -234,7 +243,7 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
         const postsOffset = req.query.offset ? parseInt(req.query.offset as string) : 0;
 
         const posts = await PostModel.find()
-            .populate('authorId', 'username email bio profilePictureUrl')
+            .populate('authorId')
             .sort({ createdAt: -1 })
             .limit(postsLimit)
             .skip(postsOffset);
@@ -242,19 +251,13 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
         // Transform the data to match the expected frontend format
         const postsWithAuthor = posts.map(post => {
             const postObj = post.toObject();
-            const author = postObj.authorId as any; // Type assertion for populated field
+            const author = postObj.authorId as unknown as IUser; // Type assertion for populated field
 
             // Handle case where author might be null (user was deleted)
             if (!author) {
                 return {
                     ...postObj,
-                    author: {
-                        _id: postObj.authorId,
-                        username: 'Deleted User',
-                        email: 'deleted@example.com',
-                        bio: '',
-                        profilePictureUrl: null
-                    },
+                    author: DELETED_USER,
                     authorId: postObj.authorId
                 };
             }
@@ -262,7 +265,7 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
             return {
                 ...postObj,
                 author: author,
-                authorId: author._id || author
+                authorId: (author as any)._id || author
             };
         });
 
