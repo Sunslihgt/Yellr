@@ -1,6 +1,6 @@
 .PHONY: lint lint-frontend lint-auth run-dev run-prod down import-dummy-data
 
-lint: lint-frontend lint-auth lint-user lint-post
+lint: lint-auth lint-user lint-post lint-comment lint-frontend
 
 lint-frontend:
 	@echo "Linting frontend/"
@@ -33,6 +33,22 @@ lint-post:
 	else \
 		echo "post/ directory not found."; \
 	fi
+
+lint-comment:
+	@echo "Linting comment-service/"
+	@if [ -d "comment" ]; then \
+		cd comment && npm run lint; \
+	else \
+		echo "comment/ directory not found."; \
+	fi
+
+lint-fix:
+	@echo "Fixing linting errors"
+	@cd auth && npm run lint:fix
+	@cd user && npm run lint:fix
+	@cd post && npm run lint:fix
+	@cd comment && npm run lint:fix
+	@cd frontend && npm run lint:fix
 
 down:
 	@echo "==========================================="
@@ -70,3 +86,13 @@ import-dummy-data:
 	@docker exec -i mongo mongoimport --username root --password example --authenticationDatabase admin --db yellr --collection posts --jsonArray --parseGrace=autoCast --mode upsert < tests/posts.json || echo "Error: Could not import posts data"
 	@echo "Dummy data import completed!"
 	@echo "Note: If you see errors above, make sure MongoDB container is running (try: make run-dev)"
+
+npm-install:
+	@echo "==========================================="
+	@echo "Installing npm packages"
+	@echo "==========================================="
+	@cd auth && npm install
+	@cd user && npm install
+	@cd post && npm install
+	@cd comment && npm install
+	@cd frontend && npm install

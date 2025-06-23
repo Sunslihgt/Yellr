@@ -8,15 +8,15 @@ interface ProtectedRouteProps {
 
 // Redirect to login if not authenticated, otherwise return the children
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+    const { isAuthenticated } = useAppSelector((state) => state.auth);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
 
-  return <>
-    {children}
-  </>;
+    return <>
+        {children}
+    </>;
 };
 
 export default ProtectedRoute;

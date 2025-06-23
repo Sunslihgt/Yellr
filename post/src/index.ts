@@ -27,7 +27,7 @@ const connectDB = async () => {
 app.use('/posts', postRoutes);
 
 app.get('/test', (req, res) => {
-    res.json({ 
+    res.json({
         message: 'post-service: API is running',
         service: 'POST',
         port: PORT,

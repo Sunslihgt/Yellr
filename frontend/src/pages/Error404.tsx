@@ -1,3 +1,5 @@
+import React from 'react';
+
 function Error() {
     return (
         <div className="flex-1 flex flex-col justify-center bg-gray-100 dark:bg-gray-800">

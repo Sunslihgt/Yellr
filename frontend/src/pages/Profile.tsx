@@ -1,3 +1,4 @@
+import React from 'react';
 import WorkInProgress from './WorkInProgress';
 
 function ProfileWithSkeleton() {

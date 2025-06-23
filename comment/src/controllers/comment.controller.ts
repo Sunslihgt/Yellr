@@ -19,14 +19,14 @@ export const createComment = async (req: Request, res: Response) => {
         const { content, authorEmail, authorUsername, postId }: CreateCommentBody = req.body;
 
         if (!content || !authorEmail || !authorUsername || !postId) {
-            return res.status(400).json({ 
-                error: 'All fields are required (content, authorEmail, authorUsername, postId)' 
+            return res.status(400).json({
+                error: 'All fields are required (content, authorEmail, authorUsername, postId)'
             });
         }
 
         if (content.length > 280) {
-            return res.status(400).json({ 
-                error: 'Comment cannot exceed 280 characters' 
+            return res.status(400).json({
+                error: 'Comment cannot exceed 280 characters'
             });
         }
 
@@ -48,8 +48,8 @@ export const createComment = async (req: Request, res: Response) => {
 
     } catch (error) {
         console.error('Error creating comment:', error);
-        return res.status(500).json({ 
-            error: 'Internal server error' 
+        return res.status(500).json({
+            error: 'Internal server error'
         });
     }
 };
@@ -60,27 +60,27 @@ export const replyToComment = async (req: Request, res: Response) => {
         const { content, authorEmail, authorUsername }: ReplyToCommentBody = req.body;
 
         if (!commentId) {
-            return res.status(400).json({ 
-                error: 'Comment ID required' 
+            return res.status(400).json({
+                error: 'Comment ID required'
             });
         }
 
         if (!content || !authorEmail || !authorUsername) {
-            return res.status(400).json({ 
-                error: 'All fields are required (content, authorEmail, authorUsername)' 
+            return res.status(400).json({
+                error: 'All fields are required (content, authorEmail, authorUsername)'
             });
         }
 
         if (content.length > 280) {
-            return res.status(400).json({ 
-                error: 'Reply cannot exceed 280 characters' 
+            return res.status(400).json({
+                error: 'Reply cannot exceed 280 characters'
             });
         }
 
         const parentComment = await Comment.findById(commentId);
         if (!parentComment) {
-            return res.status(404).json({ 
-                error: 'Comment not found' 
+            return res.status(404).json({
+                error: 'Comment not found'
             });
         }
 
@@ -102,8 +102,8 @@ export const replyToComment = async (req: Request, res: Response) => {
 
     } catch (error) {
         console.error('Error creating reply to comment:', error);
-        return res.status(500).json({ 
-            error: 'Internal server error' 
+        return res.status(500).json({
+            error: 'Internal server error'
         });
     }
 };
@@ -113,8 +113,8 @@ export const getPostComments = async (req: Request, res: Response) => {
         const { postId } = req.params;
 
         if (!postId) {
-            return res.status(400).json({ 
-                error: 'Post ID required' 
+            return res.status(400).json({
+                error: 'Post ID required'
             });
         }
 
@@ -132,8 +132,8 @@ export const getPostComments = async (req: Request, res: Response) => {
 
     } catch (error) {
         console.error('Error retrieving comments:', error);
-        return res.status(500).json({ 
-            error: 'Internal server error' 
+        return res.status(500).json({
+            error: 'Internal server error'
         });
     }
 };
@@ -152,7 +152,7 @@ const buildCommentsTree = (comments: any[]) => {
 
     comments.forEach(comment => {
         const commentObj = commentsMap.get(comment._id.toString());
-        
+
         if (comment.parentCommentId) {
             const parentComment = commentsMap.get(comment.parentCommentId.toString());
             if (parentComment) {
@@ -164,4 +164,4 @@ const buildCommentsTree = (comments: any[]) => {
     });
 
     return rootComments;
-}; 
+};

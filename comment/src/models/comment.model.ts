@@ -52,4 +52,4 @@ CommentSchema.index({ postId: 1, createdAt: -1 });
 CommentSchema.index({ parentCommentId: 1, createdAt: 1 });
 CommentSchema.index({ authorEmail: 1 });
 
-export default mongoose.model<IComment>('Comment', CommentSchema); 
+export default mongoose.model<IComment>('Comment', CommentSchema);

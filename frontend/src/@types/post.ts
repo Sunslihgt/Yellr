@@ -29,4 +29,4 @@ export interface PostsResponse {
   limit: number;
   offset: number;
   posts: PostWithAuthor[];
-} 
+}

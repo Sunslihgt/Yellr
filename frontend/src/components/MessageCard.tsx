@@ -14,7 +14,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post }) => {
         const date = new Date(dateString);
         const now = new Date();
         const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-        
+
         if (diffInSeconds < 60) return `${diffInSeconds}s`;
         if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
         if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;
@@ -27,11 +27,11 @@ const MessageCard: React.FC<MessageCardProps> = ({ post }) => {
 
     const handleShare = async () => {
         const shareUrl = `${BASE_URL}/posts/${post._id}`;
-        
+
         try {
             await navigator.clipboard.writeText(shareUrl);
             setShowCopiedMessage(true);
-            
+
             // Hide the message after 2 seconds
             setTimeout(() => {
                 setShowCopiedMessage(false);
@@ -45,7 +45,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post }) => {
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
-            
+
             setShowCopiedMessage(true);
             setTimeout(() => {
                 setShowCopiedMessage(false);
@@ -106,7 +106,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post }) => {
                         </button>
 
                         {/* Share */}
-                        <button 
+                        <button
                             onClick={handleShare}
                             className="flex items-center space-x-2 text-gray-500 hover:text-blue-500 transition-colors group relative"
                         >
