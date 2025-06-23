@@ -1,14 +1,14 @@
-import { useState } from "react";
-import ToggleButton from "./ToggleButton";
-import TagInput from "./TagInput";
-import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
+import React, { useState } from 'react';
+import ToggleButton from './ToggleButton';
+import TagInput from './TagInput';
+import { AiFillCaretDown, AiFillCaretUp } from 'react-icons/ai';
 
 interface PostSearchPaneProps {
     onFoldChange?: (folded: boolean) => void;
 }
 
 const PostSearchPane: React.FC<PostSearchPaneProps> = ({ onFoldChange }) => {
-    const [searchQuery, setSearchQuery] = useState("");
+    const [searchQuery, setSearchQuery] = useState('');
     const [authors, setAuthors] = useState<string[]>([]);
     const [tags, setTags] = useState<string[]>([]);
     const [subscribedOnly, setSubscribedOnly] = useState(false);
@@ -23,10 +23,10 @@ const PostSearchPane: React.FC<PostSearchPaneProps> = ({ onFoldChange }) => {
         if (e) {
             e.preventDefault();
         }
-        console.log("Search query:", searchQuery);
-        console.log("Author query:", authors);
-        console.log("Tags:", tags);
-        console.log("Subscribed only:", subscribedOnly);
+        console.log('Search query:', searchQuery);
+        console.log('Author query:', authors);
+        console.log('Tags:', tags);
+        console.log('Subscribed only:', subscribedOnly);
     };
 
     return (
@@ -37,7 +37,7 @@ const PostSearchPane: React.FC<PostSearchPaneProps> = ({ onFoldChange }) => {
                 <button
                     type="button"
                     className="text-gray-500 hover:text-blue-500 focus:outline-none"
-                    aria-label={folded ? "Expand search filters" : "Collapse search filters"}
+                    aria-label={folded ? 'Expand search filters' : 'Collapse search filters'}
                     onClick={e => { e.stopPropagation(); handleFoldChange(!folded); }}
                 >
                     {folded ? (

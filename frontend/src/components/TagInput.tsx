@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { AiFillCloseCircle } from "react-icons/ai";
+import React, { useState } from 'react';
+import { AiFillCloseCircle } from 'react-icons/ai';
 
 interface TagInputProps {
     tags: string[];
@@ -7,8 +7,8 @@ interface TagInputProps {
     placeholder?: string;
 }
 
-const TagInput: React.FC<TagInputProps> = ({ tags, setTags, placeholder = "Tags..." }) => {
-    const [tagInput, setTagInput] = useState("");
+const TagInput: React.FC<TagInputProps> = ({ tags, setTags, placeholder = 'Tags...' }) => {
+    const [tagInput, setTagInput] = useState('');
 
     const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if ((e.key === 'Enter' || e.key === ' ' || e.key === ',') && tagInput.trim()) {
@@ -17,7 +17,7 @@ const TagInput: React.FC<TagInputProps> = ({ tags, setTags, placeholder = "Tags.
             if (newTag && !tags.includes(newTag)) {
                 setTags([...tags, newTag]);
             }
-            setTagInput("");
+            setTagInput('');
         } else if (e.key === 'Backspace' && !tagInput && tags.length > 0) {
             // Remove last tag if input is empty and backspace is pressed
             setTags(tags.slice(0, -1));

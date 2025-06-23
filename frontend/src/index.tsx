@@ -15,7 +15,7 @@ import Error404 from './pages/Error404';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import Layout from './Layout';
-// import App from './App';
+import { initializeFavicon } from './utils/favicon';
 
 const container = document.getElementById('root');
 if (container === null) {
@@ -36,6 +36,9 @@ function AppWithSkeleton() {
         <Error404 />
     );
 }
+
+// Initialize favicon management
+initializeFavicon();
 
 root.render(
     <StrictMode>
