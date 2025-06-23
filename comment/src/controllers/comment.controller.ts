@@ -1,39 +1,57 @@
 import { Request, Response } from 'express';
 import Comment, { IComment } from '../models/comment.model';
+import { JwtUserRequest } from '../@types/jwtRequest';
+import { userIdExists } from '../utils/user.utils';
+import { commentIdExists } from '../utils/comment.utils';
 
 export interface CreateCommentBody {
     content: string;
-    authorEmail: string;
-    authorUsername: string;
-    postId: string;
 }
 
 export interface ReplyToCommentBody {
     content: string;
-    authorEmail: string;
-    authorUsername: string;
 }
 
-export const createComment = async (req: Request, res: Response) => {
+export const createCommentOnPost = async (req: JwtUserRequest, res: Response) => {
     try {
-        const { content, authorEmail, authorUsername, postId }: CreateCommentBody = req.body;
+        const { postId } = req.params;
+        const { content }: CreateCommentBody = req.body;
+        const authorId = req.jwtUserId;
 
-        if (!content || !authorEmail || !authorUsername || !postId) {
+        console.log('DEBUG - Création commentaire sur post:', {
+            postId,
+            content,
+            authorId,
+            jwtUserId: req.jwtUserId
+        });
+
+        if (!content || !postId || !authorId) {
             return res.status(400).json({
-                error: 'All fields are required (content, authorEmail, authorUsername, postId)'
+                error: 'Content, postId et authorId sont requis',
+                debug: {
+                    content: !!content,
+                    postId: !!postId,
+                    authorId: !!authorId,
+                    jwtUserId: req.jwtUserId
+                }
+            });
+        }
+
+        if (!await userIdExists(authorId)) {
+            return res.status(400).json({
+                error: 'Utilisateur non trouvé'
             });
         }
 
         if (content.length > 280) {
             return res.status(400).json({
-                error: 'Comment cannot exceed 280 characters'
+                error: 'Le commentaire ne peut pas dépasser 280 caractères'
             });
         }
 
         const newComment = new Comment({
             content,
-            authorEmail,
-            authorUsername,
+            authorId,
             postId,
             parentCommentId: null,
             likes: []
@@ -42,52 +60,65 @@ export const createComment = async (req: Request, res: Response) => {
         const savedComment = await newComment.save();
 
         return res.status(201).json({
-            message: 'Comment created successfully!',
+            message: 'Commentaire créé avec succès !',
             comment: savedComment
         });
 
     } catch (error) {
-        console.error('Error creating comment:', error);
+        console.error('Erreur lors de la création du commentaire:', error);
         return res.status(500).json({
-            error: 'Internal server error'
+            error: 'Erreur interne du serveur'
         });
     }
 };
 
-export const replyToComment = async (req: Request, res: Response) => {
+export const replyToComment = async (req: JwtUserRequest, res: Response) => {
     try {
         const { commentId } = req.params;
-        const { content, authorEmail, authorUsername }: ReplyToCommentBody = req.body;
+        const { content }: ReplyToCommentBody = req.body;
+        const authorId = req.jwtUserId;
 
-        if (!commentId) {
+        console.log('DEBUG - Réponse à commentaire:', {
+            commentId,
+            content,
+            authorId,
+            jwtUserId: req.jwtUserId
+        });
+
+        if (!commentId || !await commentIdExists(commentId)) {
             return res.status(400).json({
-                error: 'Comment ID required'
+                error: 'ID du commentaire requis et valide'
             });
         }
 
-        if (!content || !authorEmail || !authorUsername) {
+        if (!content || !authorId) {
             return res.status(400).json({
-                error: 'All fields are required (content, authorEmail, authorUsername)'
+                error: 'Content et authorId sont requis'
+            });
+        }
+
+        if (!await userIdExists(authorId)) {
+            return res.status(400).json({
+                error: 'Utilisateur non trouvé'
             });
         }
 
         if (content.length > 280) {
             return res.status(400).json({
-                error: 'Reply cannot exceed 280 characters'
+                error: 'La réponse ne peut pas dépasser 280 caractères'
             });
         }
 
         const parentComment = await Comment.findById(commentId);
         if (!parentComment) {
             return res.status(404).json({
-                error: 'Comment not found'
+                error: 'Commentaire parent non trouvé'
             });
         }
 
         const newReply = new Comment({
             content,
-            authorEmail,
-            authorUsername,
+            authorId,
             postId: parentComment.postId,
             parentCommentId: commentId,
             likes: []
@@ -96,14 +127,70 @@ export const replyToComment = async (req: Request, res: Response) => {
         const savedReply = await newReply.save();
 
         return res.status(201).json({
-            message: 'Reply to comment created successfully!',
+            message: 'Réponse au commentaire créée avec succès !',
             reply: savedReply
         });
 
     } catch (error) {
-        console.error('Error creating reply to comment:', error);
+        console.error('Erreur lors de la création de la réponse:', error);
         return res.status(500).json({
-            error: 'Internal server error'
+            error: 'Erreur interne du serveur'
+        });
+    }
+};
+
+export const likeComment = async (req: JwtUserRequest, res: Response) => {
+    try {
+        const { id } = req.params;
+        const userId = req.jwtUserId;
+
+        if (!id || !await commentIdExists(id)) {
+            return res.status(400).json({
+                error: 'ID du commentaire requis'
+            });
+        }
+
+        if (!userId || !await userIdExists(userId)) {
+            return res.status(400).json({
+                error: 'Utilisateur requis'
+            });
+        }
+
+        const comment = await Comment.findById(id);
+        if (!comment) {
+            return res.status(404).json({
+                error: 'Commentaire non trouvé'
+            });
+        }
+
+        const hasLiked = comment.likes.includes(userId);
+        const updatedComment = hasLiked ? await Comment.findByIdAndUpdate(
+            id,
+            { $pull: { likes: userId } },
+            { new: true }
+        ) : await Comment.findByIdAndUpdate(
+            id,
+            { $addToSet: { likes: userId } },
+            { new: true }
+        );
+
+        if (!updatedComment) {
+            return res.status(404).json({
+                error: 'Commentaire non trouvé'
+            });
+        }
+
+        return res.status(200).json({
+            message: `Commentaire ${hasLiked ? 'unliked' : 'liked'} avec succès !`,
+            comment: updatedComment,
+            likesCount: updatedComment?.likes.length || 0,
+            userHasLiked: !hasLiked
+        });
+
+    } catch (error) {
+        console.error('Erreur lors du like du commentaire:', error);
+        return res.status(500).json({
+            error: 'Erreur interne du serveur'
         });
     }
 };
@@ -114,26 +201,54 @@ export const getPostComments = async (req: Request, res: Response) => {
 
         if (!postId) {
             return res.status(400).json({
-                error: 'Post ID required'
+                error: 'ID du post requis'
             });
         }
 
         const comments = await Comment.find({ postId })
+            .populate('authorId', 'username email bio profilePictureUrl')
             .sort({ createdAt: 1 });
 
-        const commentsTree = buildCommentsTree(comments);
+        // Transform the data to match the expected format with author information
+        const commentsWithAuthor = comments.map(comment => {
+            const commentObj = comment.toObject();
+            const author = commentObj.authorId as any;
+
+            // Handle case where author might be null (user was deleted)
+            if (!author) {
+                return {
+                    ...commentObj,
+                    author: {
+                        _id: commentObj.authorId,
+                        username: 'Utilisateur supprimé',
+                        email: 'deleted@example.com',
+                        bio: '',
+                        profilePictureUrl: null
+                    },
+                    authorId: commentObj.authorId
+                };
+            }
+
+            return {
+                ...commentObj,
+                author: author,
+                authorId: author._id || author
+            };
+        });
+
+        const commentsTree = buildCommentsTree(commentsWithAuthor);
 
         return res.status(200).json({
-            message: 'Comments retrieved successfully',
+            message: 'Commentaires récupérés avec succès',
             postId: postId,
             count: comments.length,
             comments: commentsTree
         });
 
     } catch (error) {
-        console.error('Error retrieving comments:', error);
+        console.error('Erreur lors de la récupération des commentaires:', error);
         return res.status(500).json({
-            error: 'Internal server error'
+            error: 'Erreur interne du serveur'
         });
     }
 };
@@ -144,7 +259,7 @@ const buildCommentsTree = (comments: any[]) => {
 
     comments.forEach(comment => {
         const commentObj = {
-            ...comment.toObject(),
+            ...comment,
             replies: []
         };
         commentsMap.set(comment._id.toString(), commentObj);
