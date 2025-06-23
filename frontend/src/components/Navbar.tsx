@@ -9,7 +9,7 @@ function Navbar() {
     <nav className="sticky top-0 z-50 bg-white border-gray-200 dark:bg-gray-900">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-          <img className="h-8 " src="/logos/LogoWithoutTagline.svg" alt="Yellr Logo"/>
+          <img className="h-8 " src="/logos/PRIDELogoWithoutTagline.svg" alt="Yellr Logo"/>
         </a>
 
         <div className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">

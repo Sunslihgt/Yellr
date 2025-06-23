@@ -8,9 +8,7 @@ import Profile from './pages/Profile';
 import PostsWithSkeleton from './pages/Posts';
 import Error404 from './pages/Error404';
 
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-// import App from './App';
+import Layout from './layout';
 
 const container = document.getElementById('root');
 if (container === null) {
@@ -33,10 +31,8 @@ const root = createRoot(container)
 // }
 
 root.render(
-    <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-1">
-            <BrowserRouter>
+    <Layout >
+        <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<PostsWithSkeleton />} />
                     <Route path="/profile" element={<Profile />} />
@@ -45,7 +41,5 @@ root.render(
                     <Route path="*" element={<Error404 />} />
                 </Routes>
             </BrowserRouter>
-        </main>
-        <Footer />
-    </div>
+    </Layout>
 );

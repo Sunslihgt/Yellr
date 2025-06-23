@@ -15,7 +15,6 @@ function PostsWithSkeleton() {
 
     return (
         <div className='bg-gray-100 dark:bg-gray-800'>
-            {/* <Navbar /> */}
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
                 <div className="lg:col-span-3">
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden">
