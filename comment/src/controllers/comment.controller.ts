@@ -3,6 +3,7 @@ import Comment, { IComment } from '../models/comment.model';
 import { JwtUserRequest } from '../@types/jwtRequest';
 import { userIdExists } from '../utils/user.utils';
 import { commentIdExists } from '../utils/comment.utils';
+import { postIdExists } from '../utils/post.utils';
 
 export interface CreateCommentBody {
     content: string;
@@ -38,6 +39,12 @@ export const createCommentOnPost = async (req: JwtUserRequest, res: Response) =>
                     authorId: !!authorId,
                     jwtUserId: req.jwtUserId
                 }
+            });
+        }
+
+        if (!await postIdExists(postId)) {
+            return res.status(400).json({
+                error: 'Post not found'
             });
         }
 
@@ -120,6 +127,12 @@ export const replyToComment = async (req: JwtUserRequest, res: Response) => {
             });
         }
 
+        if (!await postIdExists(parentComment.postId.toString())) {
+            return res.status(400).json({
+                error: 'Associated post not found'
+            });
+        }
+
         const newReply = new Comment({
             content,
             authorId,
@@ -187,6 +200,12 @@ export const editComment = async (req: JwtUserRequest, res: Response) => {
             });
         }
 
+        if (!await postIdExists(comment.postId.toString())) {
+            return res.status(400).json({
+                error: 'Associated post not found'
+            });
+        }
+
         // Check if the user is the author of the comment
         if (comment.authorId.toString() !== userId) {
             return res.status(403).json({
@@ -226,7 +245,7 @@ export const likeComment = async (req: JwtUserRequest, res: Response) => {
 
         if (!id || !await commentIdExists(id)) {
             return res.status(400).json({
-                error: 'Comment ID required'
+                error: 'Valid comment ID required'
             });
         }
 
@@ -240,6 +259,12 @@ export const likeComment = async (req: JwtUserRequest, res: Response) => {
         if (!comment) {
             return res.status(404).json({
                 error: 'Comment not found'
+            });
+        }
+
+        if (!await postIdExists(comment.postId.toString())) {
+            return res.status(400).json({
+                error: 'Associated post not found'
             });
         }
 
@@ -282,6 +307,12 @@ export const getPostComments = async (req: Request, res: Response) => {
         if (!postId) {
             return res.status(400).json({
                 error: 'Post ID required'
+            });
+        }
+
+        if (!await postIdExists(postId)) {
+            return res.status(400).json({
+                error: 'Post not found'
             });
         }
 
