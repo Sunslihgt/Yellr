@@ -136,7 +136,12 @@ function PostsWithSkeleton() {
                                 <>
                                     {posts.map((post, i) => (
                                         post ? (
-                                            <MessageCard key={post._id} post={post} />
+                                            <MessageCard 
+                                                key={post._id} 
+                                                post={post} 
+                                                onPostUpdated={() => fetchPosts(0, false)}
+                                                onPostDeleted={() => fetchPosts(0, false)}
+                                            />
                                         ) : (
                                             <SkeletonMessageCard key={i} />
                                         )
