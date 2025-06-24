@@ -7,7 +7,10 @@ import postRoutes from './routes/post.routes';
 dotenv.config({ path: './.env' });
 
 const app = express();
+
+// Configuration CORS simplifiée
 app.use(cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -48,4 +51,4 @@ const startServer = async () => {
     });
 };
 
-startServer();
+startServer().catch(console.error);
