@@ -5,6 +5,7 @@ import UserCard from '../components/UserCard';
 import SkeletonMessageCard from '../components/SkeletonMessageCard';
 import SkeletonUserCard from '../components/SkeletonUserCard';
 import PostSearchPane from '../components/PostSearchPane';
+import PostHeader from '../components/PostHeader';
 import { useApi } from '../hooks/useApi';
 import { useAppSelector } from '../store/hooks';
 import { PostWithAuthor, PostsResponse } from '../@types/post';
@@ -31,13 +32,20 @@ function PostsWithSkeleton() {
         try {
             setLoading(true);
             setError(null);
+            console.log('Fetching posts with offset:', fetchOffset);
             const response = await apiCall(`${BASE_URL}/api/posts?limit=${POSTS_FETCH_LIMIT}&offset=${fetchOffset}`);
+            
             if (!response.ok) {
-                throw new Error('Failed to fetch posts');
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to fetch posts');
             }
+            
             const data: PostsResponse = await response.json();
+            console.log('Fetched posts:', data);
+            
             setTotalCount(data.totalCount);
             setOffset(fetchOffset + data.count);
+            
             if (append) {
                 setPosts((prev) => {
                     let newPosts: (PostWithAuthor | null)[] = prev.concat(data.posts);
@@ -102,10 +110,12 @@ function PostsWithSkeleton() {
                         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                             <h1 className="text-xl font-semibold text-gray-900 dark:text-white">What&apos;s new ?</h1>
                         </div>
+                        {/* Add PostHeader component */}
+                        <PostHeader onPostCreated={() => fetchPosts(0, false)} />
                         {/* Search Pane UI */}
                         <PostSearchPane onFoldChange={setSearchPaneFolded} />
                         {/* Posts */}
-                        <div className={`overflow-y-auto scrollbar-hide p-4 ${searchPaneFolded ? 'h-[calc(100%-64px-64px)]' : 'h-[calc(100%-64px-180px)]'}`}>
+                        <div className={`overflow-y-auto scrollbar-hide p-4 ${searchPaneFolded ? 'h-[calc(100%-64px-64px-116px)]' : 'h-[calc(100%-64px-180px-116px)]'}`}>
                             {loading && posts.length === 0 ? (
                                 Array.from({ length: 2 }).map((_, i) => <SkeletonMessageCard key={i} />)
                             ) : error ? (
