@@ -5,7 +5,7 @@ import UserCard from '../components/UserCard';
 import SkeletonMessageCard from '../components/SkeletonMessageCard';
 import SkeletonUserCard from '../components/SkeletonUserCard';
 import PostSearchPane, { SearchRequestBody } from '../components/PostSearchPane';
-import PostHeader from '../components/PostHeader';
+import CreatePost from '../components/CreatePost';
 import { useApi } from '../hooks/useApi';
 import { useAppSelector } from '../store/hooks';
 import { PostWithAuthor, PostsResponse } from '../@types/post';
@@ -129,7 +129,7 @@ function PostsWithSkeleton() {
                             <h1 className="text-xl font-semibold text-gray-900 dark:text-white">What&apos;s new ?</h1>
                         </div>
                         {/* Add PostHeader component */}
-                        <PostHeader onPostCreated={() => fetchPosts(0, false)} />
+                        <CreatePost onPostCreated={() => fetchPosts(0, false)} />
                         {/* Search Pane UI */}
                         <PostSearchPane onFoldChange={setSearchPaneFolded} onSearch={handleSearch} />
                         {/* Posts */}

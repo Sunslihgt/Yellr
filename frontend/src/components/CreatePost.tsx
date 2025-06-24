@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useApi } from '../hooks/useApi';
 import { BASE_URL } from '../constants/config';
 
-interface PostHeaderProps {
+interface CreatePostProps {
     onPostCreated?: () => void;
 }
 
-const PostHeader: React.FC<PostHeaderProps> = ({ onPostCreated }) => {
+const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -83,4 +83,4 @@ const PostHeader: React.FC<PostHeaderProps> = ({ onPostCreated }) => {
     );
 };
 
-export default PostHeader;
+export default CreatePost;
