@@ -170,7 +170,7 @@ const Register: React.FC = () => {
                                 type="password"
                                 autoComplete="new-password"
                                 required
-                                minLength={6}
+                                minLength={8}
                                 maxLength={128}
                                 className={`mt-1 appearance-none relative block w-full px-3 py-2 border ${
                                     passwordError ? 'border-red-300' : 'border-gray-300'
@@ -182,9 +182,6 @@ const Register: React.FC = () => {
                             {passwordError && (
                                 <p className="mt-1 text-xs text-red-600">{passwordError}</p>
                             )}
-                            <p className="mt-1 text-xs text-gray-500">
-                                Password must be at least 6 characters long
-                            </p>
                         </div>
 
                         {/* Profile Picture URL */}
