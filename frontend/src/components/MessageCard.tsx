@@ -140,7 +140,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
     const isAuthor = user?._id === post.author._id;
 
     return (
-        <article className="border-b border-gray-200 dark:border-gray-700 p-4 pr-20 pl-20 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors relative">
+        <article className="border-b border-gray-200 dark:border-gray-700 py-2 lg:py-4 px-2 sm:px-2 md:px-8 lg:px-20 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors relative">
             {isAuthor && (
                 <div className="absolute top-4 right-4">
                     <button

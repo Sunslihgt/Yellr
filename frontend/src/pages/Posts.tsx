@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
 import MessageCard from '../components/MessageCard';
-import UserCard from '../components/UserCard';
 import SkeletonMessageCard from '../components/SkeletonMessageCard';
-import SkeletonUserCard from '../components/SkeletonUserCard';
 import PostSearchPane, { SearchRequestBody } from '../components/PostSearchPane';
 import CreatePost from '../components/CreatePost';
+import FollowedUsersSection from '../components/FollowedUsersSection';
 import { useApi } from '../hooks/useApi';
 import { useAppSelector } from '../store/hooks';
 import { PostWithAuthor, PostsResponse } from '../@types/post';
 import { BASE_URL } from '../constants/config';
-import { User } from '../@types/user';
 
 const POSTS_FETCH_LIMIT = 5;
 const POSTS_FETCH_DELAY = 150;
@@ -28,7 +26,6 @@ function PostsWithSkeleton() {
         tags: [],
         subscribedOnly: false,
     });
-    const [followedUsers, setFollowedUsers] = useState<User[]>([]);
     const { apiCall } = useApi();
     const { isAuthenticated } = useAppSelector((state) => state.auth);
 
@@ -87,25 +84,6 @@ function PostsWithSkeleton() {
         setOffset(0);
     };
 
-    const fetchFollowedUsers = async () => {
-        const response = await apiCall(`${BASE_URL}/api/follow/following`, {
-            method: 'GET',
-        });
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Error fetching followed users:', errorData);
-            return;
-        }
-        const data: User[] = (await response.json()) || [];
-        setFollowedUsers(data);
-    };
-
-    useEffect(() => {
-        if (isAuthenticated) {
-            fetchFollowedUsers();
-        }
-    }, [isAuthenticated]);
-
     // Show loading or error state if not authenticated
     if (!isAuthenticated) {
         return (
@@ -123,18 +101,7 @@ function PostsWithSkeleton() {
                             </div>
                         </div>
                     </div>
-                    <div className="lg:col-span-1">
-                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden">
-                            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Followed</h1>
-                            </div>
-                            <div className="overflow-y-auto h-[calc(100%-4rem)] p-4 scrollbar-hide">
-                                <div className="text-center py-8">
-                                    <p className="text-gray-500 dark:text-gray-400">Please log in to view followed users.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <FollowedUsersSection />
                 </div>
             </div>
         );
@@ -212,23 +179,8 @@ function PostsWithSkeleton() {
                         </div>
                     </div>
                 </div>
-                <div className="lg:col-span-1">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden">
-                        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Followed</h1>
-                        </div>
-                        <div className="overflow-y-auto h-[calc(100%-4rem)] p-4 scrollbar-hide">
-                            {loading ? (
-                                Array.from({ length: 3 }).map((_, i) => <SkeletonUserCard key={i} />)
-                            ) : (
-                                <>
-                                    {followedUsers.map((user, i) => (
-                                        <UserCard key={i} user={user} />
-                                    ))}
-                                </>
-                            )}
-                        </div>
-                    </div>
+                <div className="hidden lg:block lg:col-span-1">
+                    <FollowedUsersSection />
                 </div>
             </div>
         </div>
