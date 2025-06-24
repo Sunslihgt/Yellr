@@ -4,6 +4,7 @@ import { JwtUserRequest } from '../@types/jwtRequest';
 import { userIdExists } from '../utils/user.utils';
 import { commentIdExists } from '../utils/comment.utils';
 import { postIdExists } from '../utils/post.utils';
+import { sanitizeContent } from '../utils/validation.utils';
 
 export interface CreateCommentBody {
     content: string;
@@ -42,6 +43,15 @@ export const createCommentOnPost = async (req: JwtUserRequest, res: Response) =>
             });
         }
 
+        // Sanitize content to prevent XSS
+        const sanitizedContent = sanitizeContent(content);
+        
+        if (!sanitizedContent) {
+            return res.status(400).json({
+                error: 'Content cannot be empty after sanitization'
+            });
+        }
+
         if (!await postIdExists(postId)) {
             return res.status(400).json({
                 error: 'Post not found'
@@ -54,14 +64,14 @@ export const createCommentOnPost = async (req: JwtUserRequest, res: Response) =>
             });
         }
 
-        if (content.length > 280) {
+        if (sanitizedContent.length > 280) {
             return res.status(400).json({
                 error: 'Comment cannot exceed 280 characters'
             });
         }
 
         const newComment = new Comment({
-            content,
+            content: sanitizedContent,
             authorId,
             postId,
             parentCommentId: null,
@@ -108,13 +118,22 @@ export const replyToComment = async (req: JwtUserRequest, res: Response) => {
             });
         }
 
+        // Sanitize content to prevent XSS
+        const sanitizedContent = sanitizeContent(content);
+        
+        if (!sanitizedContent) {
+            return res.status(400).json({
+                error: 'Content cannot be empty after sanitization'
+            });
+        }
+
         if (!await userIdExists(authorId)) {
             return res.status(400).json({
                 error: 'User not found'
             });
         }
 
-        if (content.length > 280) {
+        if (sanitizedContent.length > 280) {
             return res.status(400).json({
                 error: 'Reply cannot exceed 280 characters'
             });
@@ -134,7 +153,7 @@ export const replyToComment = async (req: JwtUserRequest, res: Response) => {
         }
 
         const newReply = new Comment({
-            content,
+            content: sanitizedContent,
             authorId,
             postId: parentComment.postId,
             parentCommentId: commentId,
@@ -181,13 +200,22 @@ export const editComment = async (req: JwtUserRequest, res: Response) => {
             });
         }
 
+        // Sanitize content to prevent XSS
+        const sanitizedContent = sanitizeContent(content);
+        
+        if (!sanitizedContent) {
+            return res.status(400).json({
+                error: 'Content cannot be empty after sanitization'
+            });
+        }
+
         if (!userId || !await userIdExists(userId)) {
             return res.status(400).json({
                 error: 'User not found'
             });
         }
 
-        if (content.length > 280) {
+        if (sanitizedContent.length > 280) {
             return res.status(400).json({
                 error: 'Comment cannot exceed 280 characters'
             });
@@ -215,7 +243,7 @@ export const editComment = async (req: JwtUserRequest, res: Response) => {
 
         const updatedComment = await Comment.findByIdAndUpdate(
             id,
-            { content },
+            { content: sanitizedContent },
             { new: true, runValidators: true }
         );
 

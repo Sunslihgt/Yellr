@@ -3,6 +3,7 @@ import { sign, verify } from 'jsonwebtoken';
 import { compareSync, hashSync } from 'bcrypt';
 import dotenv from 'dotenv';
 import UserModel from '../models/user.model';
+import { isValidUsername, isValidEmail, isValidPassword } from '../utils/validation.utils';
 
 dotenv.config({ path: './src/.env' });
 
@@ -19,16 +20,34 @@ export const register = async (
 ) => {
     try {
         const { username, email, password, bio, profilePictureUrl } = req.body;
-        if (!req.body || !req.body.username || !req.body.email || !req.body.password) {
+        
+        if (!username || !email || !password) {
             return res.status(400).json({ msg: 'Username, email and password are required.' });
         }
 
+        const usernameValidation = isValidUsername(username);
+        if (!usernameValidation.isValid) {
+            return res.status(400).json({ msg: usernameValidation.error });
+        }
+
+        const emailValidation = isValidEmail(email);
+        if (!emailValidation.isValid) {
+            return res.status(400).json({ msg: emailValidation.error });
+        }
+
+        const passwordValidation = isValidPassword(password);
+        if (!passwordValidation.isValid) {
+            return res.status(400).json({ msg: passwordValidation.error });
+        }
+
+        const trimmedUsername = username.trim();
+
         // Check if user already exists
-        const existingUsername = await UserModel.findOne({ username: username });
+        const existingUsername = await UserModel.findOne({ username: trimmedUsername });
         if (existingUsername) {
             return res.status(409).json({ msg: 'Username already used.' });
         }
-        const existingEmail = await UserModel.findOne({ email: email });
+        const existingEmail = await UserModel.findOne({ email: email.toLowerCase().trim() });
         if (existingEmail) {
             return res.status(409).json({ msg: 'Email already used.' });
         }
@@ -36,8 +55,8 @@ export const register = async (
         // Create new user
         const hashedPassword = hashSync(password, 10);
         const newUser = new UserModel({
-            username,
-            email,
+            username: trimmedUsername,
+            email: email.toLowerCase().trim(),
             passwordHash: hashedPassword,
             bio: bio || '',
             profilePictureUrl: profilePictureUrl || ''
@@ -75,8 +94,19 @@ export const login = async (
 ) => {
     const { username, password } = req.body;
     try {
+        if (!username || !password) {
+            return res.status(400).json({ message: 'Username and password are required' });
+        }
+
+        const usernameValidation = isValidUsername(username);
+        if (!usernameValidation.isValid) {
+            return res.status(400).json({ message: 'Invalid username format' });
+        }
+
+        const trimmedUsername = username.trim();
+
         // Get user from database
-        const user = await UserModel.findOne({ username });
+        const user = await UserModel.findOne({ username: trimmedUsername });
         if (!user?.username || !user.passwordHash) {
             return res.status(401).json({ message: 'Invalid credentials : user not found' });
         }
