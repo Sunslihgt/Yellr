@@ -5,7 +5,7 @@ import { BASE_URL } from '../../constants/config';
 
 const initialState: AuthState = {
     token: localStorage.getItem('token'),
-    user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null,
+    user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null,
     isAuthenticated: !!localStorage.getItem('token'),
     isLoading: false,
     error: null,

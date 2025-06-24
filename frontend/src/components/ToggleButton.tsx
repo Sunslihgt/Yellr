@@ -33,4 +33,4 @@ const ToggleButton: React.FC<ToggleButtonProps> = ({ checked, onChange, label, c
     );
 };
 
-export default ToggleButton; 
+export default ToggleButton;
