@@ -5,7 +5,7 @@ import { BASE_URL } from '../../constants/config';
 
 const initialState: AuthState = {
     token: localStorage.getItem('token'),
-    user: null,
+    user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null,
     isAuthenticated: !!localStorage.getItem('token'),
     isLoading: false,
     error: null,
@@ -71,12 +71,14 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
             state.error = null;
             localStorage.removeItem('token');
+            localStorage.removeItem('user');
         },
         clearError: (state) => {
             state.error = null;
         },
         setUser: (state, action: PayloadAction<User>) => {
             state.user = action.payload;
+            localStorage.setItem('user', JSON.stringify(action.payload));
         },
     },
     extraReducers: (builder) => {
@@ -95,6 +97,7 @@ const authSlice = createSlice({
                 state.user = action.payload.user;
                 state.error = null;
                 localStorage.setItem('token', action.payload.token);
+                localStorage.setItem('user', JSON.stringify(action.payload.user));
             })
             .addCase(login.rejected, (state, action) => {
                 console.log(action.payload);
@@ -113,6 +116,7 @@ const authSlice = createSlice({
                 state.user = action.payload.user;
                 state.error = null;
                 localStorage.setItem('token', action.payload.token);
+                localStorage.setItem('user', JSON.stringify(action.payload.user));
             })
             .addCase(register.rejected, (state, action) => {
                 state.isLoading = false;

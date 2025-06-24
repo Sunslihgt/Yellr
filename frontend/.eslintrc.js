@@ -27,7 +27,7 @@ module.exports = {
   rules: {
     'quotes': ['warn', 'single'],
     'semi': ['off'],
-    'max-len': ['warn', { code: 140, tabWidth: 2 }],
+    'max-len': ['warn', { code: 200, tabWidth: 2 }],
     'no-console': 'warn',
     '@typescript-eslint/semi': ['warn', 'always'],
     '@typescript-eslint/quotes': ['warn', 'single'],

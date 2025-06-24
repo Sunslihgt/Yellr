@@ -26,6 +26,7 @@ export interface PostWithAuthor extends Omit<Post, 'authorId'> {
 export interface PostsResponse {
   message: string;
   count: number;
+  totalCount: number;
   limit: number;
   offset: number;
   posts: PostWithAuthor[];
