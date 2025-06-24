@@ -106,11 +106,11 @@ function PostsWithSkeleton() {
                     <div className="lg:col-span-1">
                         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden">
                             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Friends</h1>
+                                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Followed</h1>
                             </div>
                             <div className="overflow-y-auto h-[calc(100%-4rem)] p-4 scrollbar-hide">
                                 <div className="text-center py-8">
-                                    <p className="text-gray-500 dark:text-gray-400">Please log in to view friends.</p>
+                                    <p className="text-gray-500 dark:text-gray-400">Please log in to view followed users.</p>
                                 </div>
                             </div>
                         </div>
@@ -195,7 +195,7 @@ function PostsWithSkeleton() {
                 <div className="lg:col-span-1">
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden">
                         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Friends</h1>
+                            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Followed</h1>
                         </div>
                         <div className="overflow-y-auto h-[calc(100%-4rem)] p-4 scrollbar-hide">
                             {loading ? (

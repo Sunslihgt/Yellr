@@ -12,6 +12,8 @@ interface CommentSectionProps {
     setCommentsCount: (count: number) => void;
 }
 
+const MAX_COMMENT_LENGTH = 280;
+
 const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, setCommentsCount }) => {
     const { apiCall } = useApi();
     const { user } = useAppSelector((state) => state.auth);
@@ -269,10 +271,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, 
                         className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
                         rows={2}
                         placeholder="Write a comment..."
-                        maxLength={280}
+                        maxLength={MAX_COMMENT_LENGTH}
                         disabled={submitting}
                     />
-                    <div className="flex justify-end">
+                    <div className="flex items-center space-x-2">
                         <button
                             type="submit"
                             disabled={submitting || !newComment.trim()}
@@ -280,6 +282,9 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, 
                         >
                             Comment
                         </button>
+                        <div className={`text-sm ${newComment.length === MAX_COMMENT_LENGTH ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'}`}>
+                            {newComment.length}/{MAX_COMMENT_LENGTH}
+                        </div>
                     </div>
                 </form>
             )}

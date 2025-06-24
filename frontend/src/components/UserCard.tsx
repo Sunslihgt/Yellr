@@ -11,14 +11,11 @@ function UserCard() {
                 />
                 <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-            Rafael Nadal
+                        Rafael Nadal
                     </h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-            @rafaelnadal
-                    </p>
                 </div>
                 <button className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-full transition-colors">
-          Follow
+                    Follow
                 </button>
             </div>
         </div>
