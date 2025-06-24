@@ -18,6 +18,11 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
     const [editedContent, setEditedContent] = useState(post.content);
     const { apiCall } = useApi();
     const { user } = useAppSelector((state) => state.auth);
+    const [isLiking, setIsLiking] = useState(false);
+    const [userHasLiked, setUserHasLiked] = useState(
+        user ? post.likes.includes(user._id) : false
+    );
+    const [likesCount, setLikesCount] = useState(post.likes.length);
 
     const formatTimeAgo = (dateString: string) => {
         const date = new Date(dateString);
@@ -107,6 +112,24 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
             }
         }
         setShowDropdown(false);
+    };
+
+    const handleLike = async () => {
+        if (!user || isLiking) return;
+        setIsLiking(true);
+        try {
+            const response = await apiCall(`${BASE_URL}/api/posts/${post._id}/like`, {
+                method: 'POST',
+            });
+            if (!response.ok) throw new Error('Failed to like/unlike post');
+            const data = await response.json();
+            setUserHasLiked(data.userHasLiked);
+            setLikesCount(data.likesCount);
+        } catch (error) {
+            console.error('Error liking post:', error);
+        } finally {
+            setIsLiking(false);
+        }
     };
 
     const isAuthor = user?._id === post.author._id;
@@ -215,11 +238,16 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                         </button>
 
                         {/* Like */}
-                        <button className="flex items-center space-x-2 text-gray-500 hover:text-red-500 transition-colors group">
-                            <svg className="w-5 h-5 group-hover:bg-red-50 dark:group-hover:bg-red-900/20 rounded-full p-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button
+                            onClick={handleLike}
+                            disabled={!user || isLiking}
+                            className={`flex items-center space-x-2 transition-colors group ${userHasLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
+                            aria-pressed={userHasLiked}
+                        >
+                            <svg className={`w-5 h-5 group-hover:bg-red-50 dark:group-hover:bg-red-900/20 rounded-full p-1 ${userHasLiked ? 'fill-red-500' : 'fill-none'}`} stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>
-                            <span className="text-sm">{post.likes.length}</span>
+                            <span className="text-sm">{likesCount}</span>
                         </button>
 
                         {/* Share */}
