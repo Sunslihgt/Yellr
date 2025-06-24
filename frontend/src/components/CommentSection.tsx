@@ -8,9 +8,11 @@ import { formatTimeAgo } from '../utils/displayNumbers';
 
 interface CommentSectionProps {
     postId: string;
+    commentsCount: number;
+    setCommentsCount: (count: number) => void;
 }
 
-const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
+const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, setCommentsCount }) => {
     const { apiCall } = useApi();
     const { user } = useAppSelector((state) => state.auth);
     const [comments, setComments] = useState<CommentWithAuthor[]>([]);
@@ -84,6 +86,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
             setNewComment('');
             setReplyingTo(null);
             await fetchComments();
+            setCommentsCount(commentsCount + 1);
         } catch (err) {
             // Optionally show error
         } finally {

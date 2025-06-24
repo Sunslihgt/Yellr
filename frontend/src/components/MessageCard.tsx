@@ -27,7 +27,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
     );
     const [likesCount, setLikesCount] = useState(post.likes.length);
     const [likesDisplayed, setLikesDisplayed] = useState('0');
-    const [commentsCount, setCommentsCount] = useState(0);
+    const [commentsCount, setCommentsCount] = useState(post.commentsCount || 0);
     const [commentsDisplayed, setCommentsDisplayed] = useState('0');
     const [showCommentSection, setShowCommentSection] = useState(false);
 
@@ -252,7 +252,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                         {/* Comments */}
                         <button
                             onClick={() => setShowCommentSection(!showCommentSection)}
-                            className="flex items-center space-x-2 text-gray-500 hover:text-blue-500 transition-colors group"
+                            className={`flex items-center space-x-2 hover:text-blue-500 transition-colors group ${showCommentSection ? 'text-blue-500' : 'text-gray-500'}`}
                         >
                             {showCommentSection ? (
                                 <AiOutlineClose />
@@ -279,7 +279,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
             </div>
             {showCommentSection && (
                 <div className="flex items-center justify-between max-w-full">
-                    <CommentSection postId={post._id} />
+                    <CommentSection postId={post._id} commentsCount={commentsCount} setCommentsCount={setCommentsCount} />
                 </div>
             )}
         </article>
