@@ -13,8 +13,8 @@
   scrollbar-width: none;  /* Firefox */
 }
 
-body.dark {
-  background-color: #1a202c;
+body {
+  @apply bg-gray-100 dark:bg-gray-900;
 }
 
 .rainbow-skeleton {

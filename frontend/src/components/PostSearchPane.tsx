@@ -1,18 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import ToggleButton from './ToggleButton';
 import TagInput from './TagInput';
 import { AiFillCaretDown, AiFillCaretUp } from 'react-icons/ai';
 
 interface PostSearchPaneProps {
     onFoldChange?: (folded: boolean) => void;
+    onSearch?: (searchRequest: SearchRequestBody) => void;
 }
 
-const PostSearchPane: React.FC<PostSearchPaneProps> = ({ onFoldChange }) => {
-    const [searchQuery, setSearchQuery] = useState('');
+export interface SearchRequestBody {
+    content: string;
+    authors: string[];
+    tags: string[];
+    subscribedOnly: boolean;
+}
+
+const PostSearchPane = forwardRef<
+    { getSearchRequest: () => SearchRequestBody },
+    PostSearchPaneProps
+>(({ onFoldChange, onSearch }, ref) => {
+    const [content, setContent] = useState('');
     const [authors, setAuthors] = useState<string[]>([]);
     const [tags, setTags] = useState<string[]>([]);
     const [subscribedOnly, setSubscribedOnly] = useState(false);
     const [folded, setFolded] = useState(true);
+
+    useImperativeHandle(ref, () => ({
+        getSearchRequest: () => ({
+            content,
+            authors,
+            tags,
+            subscribedOnly,
+        }),
+    }), [content, authors, tags, subscribedOnly]);
 
     const handleFoldChange = (newFolded: boolean) => {
         setFolded(newFolded);
@@ -23,10 +43,15 @@ const PostSearchPane: React.FC<PostSearchPaneProps> = ({ onFoldChange }) => {
         if (e) {
             e.preventDefault();
         }
-        console.log('Search query:', searchQuery);
-        console.log('Author query:', authors);
-        console.log('Tags:', tags);
-        console.log('Subscribed only:', subscribedOnly);
+        const searchRequest: SearchRequestBody = {
+            content,
+            authors,
+            tags,
+            subscribedOnly,
+        };
+        if (onSearch) {
+            onSearch(searchRequest);
+        }
     };
 
     return (
@@ -56,8 +81,8 @@ const PostSearchPane: React.FC<PostSearchPaneProps> = ({ onFoldChange }) => {
                             type="text"
                             className="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Search posts..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                     handleSearch(null);
@@ -86,6 +111,6 @@ const PostSearchPane: React.FC<PostSearchPaneProps> = ({ onFoldChange }) => {
             )}
         </div>
     );
-};
+});
 
 export default PostSearchPane;

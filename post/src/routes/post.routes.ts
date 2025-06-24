@@ -1,8 +1,10 @@
 import { Router } from 'express';
-import { createPost, editPost, deletePost, likePost, getUserPosts, getPosts, getPost } from '../controllers/post.controller';
+import { createPost, editPost, deletePost, likePost, getUserPosts, getPosts, getPost, searchPosts } from '../controllers/post.controller';
 import { currentUser } from '../middlewares/currentUser.middleware';
 
 const router = Router();
+
+router.post('/search/', currentUser(true), searchPosts);
 
 router.post('/', currentUser(true), createPost);
 router.get('/', getPosts);
