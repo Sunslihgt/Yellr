@@ -3,8 +3,9 @@ import { PostWithAuthor } from '../@types/post';
 import { BASE_URL } from '../constants/config';
 import { useApi } from '../hooks/useApi';
 import { useAppSelector } from '../store/hooks';
-import { AiOutlineComment, AiOutlineHeart, AiOutlinePlus, AiFillHeart, AiOutlineShareAlt, AiOutlineMore } from 'react-icons/ai';
-import { displayCount } from '../utils/displayCount';
+import { AiOutlineComment, AiOutlineHeart, AiOutlinePlus, AiFillHeart, AiOutlineShareAlt, AiOutlineMore, AiOutlineClose } from 'react-icons/ai';
+import { displayCount, formatTimeAgo } from '../utils/displayNumbers';
+import CommentSection from './CommentSection';
 
 interface MessageCardProps {
     post: PostWithAuthor;
@@ -28,6 +29,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
     const [likesDisplayed, setLikesDisplayed] = useState('0');
     const [commentsCount, setCommentsCount] = useState(0);
     const [commentsDisplayed, setCommentsDisplayed] = useState('0');
+    const [showCommentSection, setShowCommentSection] = useState(false);
 
     // Display count with K, M, B for likes and comments
     useEffect(() => {
@@ -37,18 +39,6 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
     useEffect(() => {
         setLikesDisplayed(displayCount(likesCount));
     }, [likesCount]);
-
-    const formatTimeAgo = (dateString: string) => {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-        if (diffInSeconds <= 3) return 'just now';
-        if (diffInSeconds < 60) return `${diffInSeconds}s`;
-        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
-        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;
-        return `${Math.floor(diffInSeconds / 86400)}d`;
-    };
 
     const handleImageError = () => {
         setImageError(true);
@@ -202,10 +192,11 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                         <span className="font-bold text-gray-900 dark:text-white hover:underline cursor-pointer">
                             {post.author.username}
                         </span>
-                        <span className="text-gray-500 dark:text-gray-400">·</span>
-                        <span className="text-gray-500 dark:text-gray-400 hover:underline cursor-pointer">
-                            {formatTimeAgo(post.createdAt)}
+                        <span className="text-gray-500 dark:text-gray-400">· {formatTimeAgo(post.createdAt)}
                         </span>
+                        {post.updatedAt && post.updatedAt > post.createdAt && (
+                            <span className="text-gray-500 dark:text-gray-400">· Edited {formatTimeAgo(post.updatedAt)}</span>
+                        )}
                     </div>
 
                     {/* Message content */}
@@ -242,23 +233,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                     )}
 
                     {/* Actions */}
-                    <div className="flex items-center justify-between max-w-full">
-                        <div className="flex items-center space-x-2">
-                            {/* Reply */}
-                            <button
-                                onClick={handleReply}
-                                className="flex items-center space-x-2 text-gray-500 hover:text-blue-500 transition-colors group"
-                            >
-                                <AiOutlinePlus />
-                            </button>
-
-                            {/* Comments */}
-                            <button className="flex items-center space-x-2 text-gray-500 hover:text-blue-500 transition-colors group">
-                                <AiOutlineComment />
-                                <span className="text-sm">{commentsDisplayed}</span>
-                            </button>
-                        </div>
-
+                    <div className="flex items-center space-x-4">
                         {/* Like */}
                         <button
                             onClick={handleLike}
@@ -272,6 +247,19 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                                 <AiOutlineHeart className="w-5 h-5 group-hover:bg-red-50 dark:group-hover:bg-red-900/20 rounded-full p-1"/>
                             )}
                             <span className="text-sm">{likesDisplayed}</span>
+                        </button>
+
+                        {/* Comments */}
+                        <button
+                            onClick={() => setShowCommentSection(!showCommentSection)}
+                            className="flex items-center space-x-2 text-gray-500 hover:text-blue-500 transition-colors group"
+                        >
+                            {showCommentSection ? (
+                                <AiOutlineClose />
+                            ) : (
+                                <AiOutlineComment />
+                            )}
+                            <span className="text-sm">{commentsDisplayed}</span>
                         </button>
 
                         {/* Share */}
@@ -289,6 +277,11 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                     </div>
                 </div>
             </div>
+            {showCommentSection && (
+                <div className="flex items-center justify-between max-w-full">
+                    <CommentSection postId={post._id} />
+                </div>
+            )}
         </article>
     );
 };
