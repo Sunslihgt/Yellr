@@ -28,7 +28,7 @@ All users have:
 - User roles (user/admin)
 
 ### Posts
-The dummy data includes 8 posts with:
+The dummy data includes 23 posts with:
 - Content (under 280 characters as per model)
 - Author references (linking to user IDs)
 - Tags (extracted from hashtags in content)
@@ -48,9 +48,10 @@ make import-dummy-data
 ```
 
 This will:
-1. Clear existing users and posts from the MongoDB database
+1. Clear existing users, posts and follows from the MongoDB database
 2. Import users from `tests/users.json`
 3. Import posts from `tests/posts.json`
+3. Import follows from `tests/follows.json`
 
 ### Option 2: Using MongoDB Compass or mongoimport
 
@@ -62,23 +63,9 @@ mongoimport --db yellr --collection users --file tests/users.json --jsonArray
 
 # Import posts
 mongoimport --db yellr --collection posts --file tests/posts.json --jsonArray
-```
 
-### Option 4: Using MongoDB shell
-
-```javascript
-// Connect to your database
-use yellr
-
-// Load the data
-const users = JSON.parse(cat('tests/users.json'))
-const posts = JSON.parse(cat('tests/posts.json'))
-
-// Insert users
-db.users.insertMany(users)
-
-// Insert posts
-db.posts.insertMany(posts)
+# Import follows
+mongoimport --db yellr --collection follows --file tests/follows.json --jsonArray
 ```
 
 ## Notes
