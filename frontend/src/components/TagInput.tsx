@@ -58,4 +58,4 @@ const TagInput: React.FC<TagInputProps> = ({ tags, setTags, placeholder = 'Tags.
     );
 };
 
-export default TagInput; 
+export default TagInput;

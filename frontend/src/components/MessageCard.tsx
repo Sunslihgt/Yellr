@@ -24,6 +24,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
         const now = new Date();
         const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
+        if (diffInSeconds <= 3) return 'just now';
         if (diffInSeconds < 60) return `${diffInSeconds}s`;
         if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
         if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;
@@ -177,7 +178,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                             <textarea
                                 value={editedContent}
                                 onChange={(e) => setEditedContent(e.target.value)}
-                                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg 
+                                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg
                                          focus:ring-2 focus:ring-blue-500 focus:border-transparent
                                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                                          resize-none"

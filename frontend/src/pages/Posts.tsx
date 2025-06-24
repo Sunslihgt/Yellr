@@ -34,18 +34,18 @@ function PostsWithSkeleton() {
             setError(null);
             console.log('Fetching posts with offset:', fetchOffset);
             const response = await apiCall(`${BASE_URL}/api/posts?limit=${POSTS_FETCH_LIMIT}&offset=${fetchOffset}`);
-            
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to fetch posts');
             }
-            
+
             const data: PostsResponse = await response.json();
             console.log('Fetched posts:', data);
-            
+
             setTotalCount(data.totalCount);
             setOffset(fetchOffset + data.count);
-            
+
             if (append) {
                 setPosts((prev) => {
                     let newPosts: (PostWithAuthor | null)[] = prev.concat(data.posts);
@@ -136,9 +136,9 @@ function PostsWithSkeleton() {
                                 <>
                                     {posts.map((post, i) => (
                                         post ? (
-                                            <MessageCard 
-                                                key={post._id} 
-                                                post={post} 
+                                            <MessageCard
+                                                key={post._id}
+                                                post={post}
                                                 onPostUpdated={() => fetchPosts(0, false)}
                                                 onPostDeleted={() => fetchPosts(0, false)}
                                             />

@@ -18,7 +18,7 @@ const PostHeader: React.FC<PostHeaderProps> = ({ onPostCreated }) => {
 
         setIsSubmitting(true);
         setError(null);
-        
+
         try {
             console.log('Attempting to create post with content:', content);
             const response = await apiCall(`${BASE_URL}/api/posts`, {
@@ -56,7 +56,7 @@ const PostHeader: React.FC<PostHeaderProps> = ({ onPostCreated }) => {
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     placeholder="What's on your mind?"
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg 
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg
                              focus:ring-2 focus:ring-blue-500 focus:border-transparent
                              bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                              placeholder-gray-500 dark:placeholder-gray-400
@@ -83,4 +83,4 @@ const PostHeader: React.FC<PostHeaderProps> = ({ onPostCreated }) => {
     );
 };
 
-export default PostHeader; 
+export default PostHeader;
