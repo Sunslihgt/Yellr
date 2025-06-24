@@ -1,6 +1,7 @@
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { login, logout, register, clearError } from '../store/slices/authSlice';
+import { login, logout, register, clearError, setUser } from '../store/slices/authSlice';
 import { LoginCredentials, RegisterData } from '../@types/auth';
+import { User } from '../@types/user';
 
 export const useAuth = () => {
     const dispatch = useAppDispatch();
@@ -23,5 +24,6 @@ export const useAuth = () => {
             dispatch(register(userData)),
         logout: () => dispatch(logout()),
         clearError: () => dispatch(clearError()),
+        updateUser: (user: User) => dispatch(setUser(user)),
     };
 };
