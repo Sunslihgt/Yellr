@@ -22,7 +22,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
         setError(null);
 
         try {
-            console.log('Attempting to create post with content:', content);
             const response = await apiCall(`${BASE_URL}/api/posts`, {
                 method: 'POST',
                 headers: {
@@ -32,7 +31,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
             });
 
             const data = await response.json();
-            console.log('API Response:', data);
 
             if (!response.ok) {
                 throw new Error(data.error || 'Failed to create post');
@@ -40,7 +38,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
 
             setContent('');
             if (onPostCreated) {
-                console.log('Calling onPostCreated callback');
                 onPostCreated();
             }
         } catch (error) {

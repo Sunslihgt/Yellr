@@ -116,12 +116,10 @@ const authSlice = createSlice({
         builder
         // Login
             .addCase(login.pending, (state) => {
-                console.log(state);
                 state.isLoading = true;
                 state.error = null;
             })
             .addCase(login.fulfilled, (state, action) => {
-                console.log(action.payload);
                 state.isLoading = false;
                 state.isAuthenticated = true;
                 state.token = action.payload.token;
@@ -131,7 +129,6 @@ const authSlice = createSlice({
                 localStorage.setItem('user', JSON.stringify(action.payload.user));
             })
             .addCase(login.rejected, (state, action) => {
-                console.log(action.payload);
                 state.isLoading = false;
                 state.error = action.payload as string;
             })

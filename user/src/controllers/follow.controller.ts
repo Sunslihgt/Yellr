@@ -3,6 +3,7 @@ import { JwtUserRequest } from '../@types/jwtRequest';
 import dotenv from 'dotenv';
 import FollowModel from '../models/follow.model';
 import { userIdExists } from '../utils/user.utils';
+import UserModel from '../models/user.model';
 
 dotenv.config({ path: './.env' });
 
@@ -12,8 +13,14 @@ export const getFollowers = async (req: Request, res: Response) => {
         if (!await userIdExists(userId)) {
             return res.status(400).json({ message: 'Invalid user ID' });
         }
-        const followers = await FollowModel.find({ following: userId }).populate('follower', '-passwordHash').lean();
-        return res.status(200).json(followers);
+        const followers = await FollowModel.find({ following: userId })
+            .populate('follower', '-passwordHash')
+            .lean();
+        const users = await Promise.all(followers.map(async (follow) => {
+            const user = await UserModel.findById(follow.follower).select('-passwordHash').lean();
+            return user;
+        }));
+        return res.status(200).json(users);
     } catch (error) {
         return res.status(500).json({ message: 'Error fetching followers', error });
     }
@@ -25,10 +32,64 @@ export const getFollowing = async (req: Request, res: Response) => {
         if (!await userIdExists(userId)) {
             return res.status(400).json({ message: 'Invalid user ID' });
         }
-        const following = await FollowModel.find({ follower: userId }).populate('following', '-passwordHash').lean();
-        return res.status(200).json(following);
+        const following = await FollowModel.find({ follower: userId })
+            .populate('following', '-passwordHash')
+            .lean();
+        const users = await Promise.all(following.map(async (follow) => {
+            const user = await UserModel.findById(follow.following).select('-passwordHash').lean();
+            return user;
+        }));
+        return res.status(200).json(users);
     } catch (error) {
         return res.status(500).json({ message: 'Error fetching following', error });
+    }
+};
+
+export const getFollowersCurrentUser = async (req: JwtUserRequest, res: Response) => {
+    try {
+        const userId = req.jwtUserId;
+        const followers = await FollowModel.find({ following: userId })
+            .populate('follower', '-passwordHash')
+            .lean();
+        const users = await Promise.all(followers.map(async (follow) => {
+            const user = await UserModel.findById(follow.follower).select('-passwordHash').lean();
+            return user;
+        }));
+        return res.status(200).json(users);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error fetching followers', error });
+    }
+};
+
+export const getFollowingCurrentUser = async (req: JwtUserRequest, res: Response) => {
+    try {
+        const userId = req.jwtUserId;
+        const following = await FollowModel.find({ follower: userId })
+            .populate('following', '-passwordHash')
+            .lean();
+        const users = await Promise.all(following.map(async (follow) => {
+            const user = await UserModel.findById(follow.following).select('-passwordHash').lean();
+            return user;
+        }));
+        return res.status(200).json(users);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error fetching following', error });
+    }
+};
+
+export const isFollowedByCurrentUser = async (req: JwtUserRequest, res: Response) => {
+    try {
+        const userId = req.params.id;
+        if (!await userIdExists(userId)) {
+            return res.status(400).json({ message: 'Invalid user ID' });
+        }
+        const follow = await FollowModel.findOne({ follower: req.jwtUserId, following: userId });
+        if (!follow) {
+            return res.status(200).json({ isFollowed: false });
+        }
+        return res.status(200).json({ isFollowed: true });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error checking if followed by current user', error });
     }
 };
 

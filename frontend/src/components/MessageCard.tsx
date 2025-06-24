@@ -137,10 +137,6 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
         }
     };
 
-    const handleReply = () => {
-        console.log('Reply');
-    };
-
     const isAuthor = user?._id === post.author._id;
 
     return (
@@ -178,7 +174,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                 {/* Avatar */}
                 <div className="flex-shrink-0">
                     <img
-                        className="h-12 w-12 rounded-full"
+                        className="h-14 w-14 rounded-full"
                         src={imageError || !post.author.profilePictureUrl ? '/assets/default-avatar.jpg' : post.author.profilePictureUrl}
                         alt={`${post.author.username} avatar`}
                         onError={handleImageError}
@@ -189,7 +185,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                 <div className="flex-1 min-w-0">
                     {/* Header */}
                     <div className="flex items-center space-x-2 mb-1">
-                        <span className="font-bold text-gray-900 dark:text-white hover:underline cursor-pointer">
+                        <span className="font-bold text-lg text-gray-900 dark:text-white hover:underline cursor-pointer">
                             {post.author.username}
                         </span>
                         <span className="text-gray-500 dark:text-gray-400">· {formatTimeAgo(post.createdAt)}

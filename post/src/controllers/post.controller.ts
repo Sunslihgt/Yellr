@@ -50,7 +50,6 @@ export const createPost = async (req: JwtUserRequest, res: Response) => {
         const authorId = req.jwtUserId;
 
         if (!content || !await userIdExists(authorId)) {
-            console.log(content, authorId, await userIdExists(authorId || ''));
             return res.status(400).json({
                 error: 'Content and author id are required'
             });
@@ -306,7 +305,6 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
 export const searchPosts = async (req: JwtUserRequest, res: Response) => {
     try {
         const { content, authors, tags, subscribedOnly, limit, offset } = req.body as SearchPostsQuery;
-        console.log(content, authors, tags, subscribedOnly, limit, offset);
 
         const query: any = {};
         if (content) query.content = { $regex: content, $options: 'i' };
@@ -325,7 +323,6 @@ export const searchPosts = async (req: JwtUserRequest, res: Response) => {
             userIds = [...new Set(userIds)];
             query.authorId = { $in: userIds };
         }
-        console.log('query', query);
 
         const totalCount = await PostModel.countDocuments(query);
         const requestLimit = limit ? Math.min(limit, MAX_POST_LIMIT) : DEFAULT_POST_LIMIT;
@@ -336,7 +333,6 @@ export const searchPosts = async (req: JwtUserRequest, res: Response) => {
             .limit(requestLimit)
             .skip(requestOffset)
             .populate('authorId');
-        console.log(posts.length);
 
         // Transform the data to match the expected frontend format
         const postsWithAuthor = await Promise.all(posts.map(async post => {

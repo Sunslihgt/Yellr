@@ -134,13 +134,18 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, 
                 const userHasLiked = user ? comment.likes.includes(user._id) : false;
                 const isAuthor = user && comment.author._id === user._id;
                 const isEditing = editingCommentId === comment._id;
+                const [imageError, setImageError] = useState(false);
+                const handleImageError = () => {
+                    setImageError(true);
+                };
                 return (
                     <li key={comment._id} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
                         <div className="flex items-start space-x-3">
                             <img
-                                src={comment.author.profilePictureUrl || '/assets/default-avatar.jpg'}
+                                src={imageError || !comment.author.profilePictureUrl ? '/assets/default-avatar.jpg' : comment.author.profilePictureUrl}
                                 alt={comment.author.username}
                                 className="w-8 h-8 rounded-full object-cover"
+                                onError={handleImageError}
                             />
                             <div className="flex-1">
                                 <div className="flex items-center space-x-2">

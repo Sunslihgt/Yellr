@@ -10,6 +10,7 @@ import { useApi } from '../hooks/useApi';
 import { useAppSelector } from '../store/hooks';
 import { PostWithAuthor, PostsResponse } from '../@types/post';
 import { BASE_URL } from '../constants/config';
+import { User } from '../@types/user';
 
 const POSTS_FETCH_LIMIT = 5;
 const POSTS_FETCH_DELAY = 150;
@@ -27,6 +28,7 @@ function PostsWithSkeleton() {
         tags: [],
         subscribedOnly: false,
     });
+    const [followedUsers, setFollowedUsers] = useState<User[]>([]);
     const { apiCall } = useApi();
     const { isAuthenticated } = useAppSelector((state) => state.auth);
 
@@ -53,7 +55,6 @@ function PostsWithSkeleton() {
             }
 
             const data: PostsResponse = await response.json();
-            console.log('Fetched posts:', data);
 
             setTotalCount(data.totalCount);
             setOffset(fetchOffset + data.count);
@@ -85,6 +86,25 @@ function PostsWithSkeleton() {
         setPosts([]);
         setOffset(0);
     };
+
+    const fetchFollowedUsers = async () => {
+        const response = await apiCall(`${BASE_URL}/api/follow/following`, {
+            method: 'GET',
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error fetching followed users:', errorData);
+            return;
+        }
+        const data: User[] = (await response.json()) || [];
+        setFollowedUsers(data);
+    };
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchFollowedUsers();
+        }
+    }, [isAuthenticated]);
 
     // Show loading or error state if not authenticated
     if (!isAuthenticated) {
@@ -202,8 +222,8 @@ function PostsWithSkeleton() {
                                 Array.from({ length: 3 }).map((_, i) => <SkeletonUserCard key={i} />)
                             ) : (
                                 <>
-                                    {Array.from({ length: 3 }).map((_, i) => (
-                                        <UserCard key={i} />
+                                    {followedUsers.map((user, i) => (
+                                        <UserCard key={i} user={user} />
                                     ))}
                                 </>
                             )}
