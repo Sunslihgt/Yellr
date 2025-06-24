@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export interface IUser extends Document {
     email: string;
@@ -26,7 +26,14 @@ userSchema.methods.toJSON = function () {
     return userObject;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const UserModel = mongoose.model<IUser>('User', userSchema);
+
+export const userIdExists = async (userId: string | undefined) => {
+    if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+        const userExists = await UserModel.exists({ _id: userId });
+        return userExists !== null;
+    }
+    return false;
+};
 
 export default UserModel;

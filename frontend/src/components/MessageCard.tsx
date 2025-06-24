@@ -186,9 +186,6 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                         <span className="font-bold text-gray-900 dark:text-white hover:underline cursor-pointer">
                             {post.author.username}
                         </span>
-                        <span className="text-gray-500 dark:text-gray-400">
-                            @{post.author.username}
-                        </span>
                         <span className="text-gray-500 dark:text-gray-400">·</span>
                         <span className="text-gray-500 dark:text-gray-400 hover:underline cursor-pointer">
                             {formatTimeAgo(post.createdAt)}

@@ -4,7 +4,7 @@ import MessageCard from '../components/MessageCard';
 import UserCard from '../components/UserCard';
 import SkeletonMessageCard from '../components/SkeletonMessageCard';
 import SkeletonUserCard from '../components/SkeletonUserCard';
-import PostSearchPane from '../components/PostSearchPane';
+import PostSearchPane, { SearchRequestBody } from '../components/PostSearchPane';
 import PostHeader from '../components/PostHeader';
 import { useApi } from '../hooks/useApi';
 import { useAppSelector } from '../store/hooks';
@@ -12,6 +12,7 @@ import { PostWithAuthor, PostsResponse } from '../@types/post';
 import { BASE_URL } from '../constants/config';
 
 const POSTS_FETCH_LIMIT = 5;
+const POSTS_FETCH_DELAY = 150;
 
 function PostsWithSkeleton() {
     const [loading, setLoading] = useState(true);
@@ -20,6 +21,12 @@ function PostsWithSkeleton() {
     const [offset, setOffset] = useState(0);
     const [totalCount, setTotalCount] = useState<number | null>(null);
     const [searchPaneFolded, setSearchPaneFolded] = useState(true);
+    const [searchRequestBody, setSearchRequestBody] = useState<SearchRequestBody>({
+        content: '',
+        authors: [],
+        tags: [],
+        subscribedOnly: false,
+    });
     const { apiCall } = useApi();
     const { isAuthenticated } = useAppSelector((state) => state.auth);
 
@@ -32,9 +39,14 @@ function PostsWithSkeleton() {
         try {
             setLoading(true);
             setError(null);
-            console.log('Fetching posts with offset:', fetchOffset);
-            const response = await apiCall(`${BASE_URL}/api/posts?limit=${POSTS_FETCH_LIMIT}&offset=${fetchOffset}`);
-
+            const response = await apiCall(`${BASE_URL}/api/posts/search`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    limit: POSTS_FETCH_LIMIT,
+                    offset: fetchOffset,
+                    ...searchRequestBody,
+                }),
+            });
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to fetch posts');
@@ -66,7 +78,13 @@ function PostsWithSkeleton() {
 
     useEffect(() => {
         fetchPosts(0, false);
-    }, [apiCall, isAuthenticated]);
+    }, [apiCall, isAuthenticated, searchRequestBody]);
+
+    const handleSearch = (searchRequest: SearchRequestBody) => {
+        setSearchRequestBody(searchRequest);
+        setPosts([]);
+        setOffset(0);
+    };
 
     // Show loading or error state if not authenticated
     if (!isAuthenticated) {
@@ -113,7 +131,7 @@ function PostsWithSkeleton() {
                         {/* Add PostHeader component */}
                         <PostHeader onPostCreated={() => fetchPosts(0, false)} />
                         {/* Search Pane UI */}
-                        <PostSearchPane onFoldChange={setSearchPaneFolded} />
+                        <PostSearchPane onFoldChange={setSearchPaneFolded} onSearch={handleSearch} />
                         {/* Posts */}
                         <div className={`overflow-y-auto scrollbar-hide p-4 ${searchPaneFolded ? 'h-[calc(100%-64px-64px-116px)]' : 'h-[calc(100%-64px-180px-116px)]'}`}>
                             {loading && posts.length === 0 ? (
@@ -154,9 +172,10 @@ function PostsWithSkeleton() {
                                                 onClick={() => {
                                                     // Show skeletons while loading
                                                     setPosts(posts.concat(Array.from({ length: 2 }).map((_, i) => null)));
+                                                    // Dummy wait to show loading skeletons
                                                     setTimeout(() => {
                                                         fetchPosts(offset, true);
-                                                    }, 1000);
+                                                    }, POSTS_FETCH_DELAY);
                                                 }}
                                                 disabled={loading}
                                             >

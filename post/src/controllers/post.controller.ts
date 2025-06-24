@@ -4,6 +4,8 @@ import { JwtUserRequest } from '../@types/jwtRequest';
 import { userIdExists } from '../utils/user.utils';
 import { postIdExists } from '../utils/post.utils';
 import { IPost } from '../models/post.model';
+import UserModel, { IUser } from '../models/user.model';
+import FollowModel from '../models/follow.model';
 
 export interface CreatePostBody {
     content: string;
@@ -19,6 +21,23 @@ export interface EditPostBody {
     imageUrl?: string;
     videoUrl?: string;
 }
+
+export interface SearchPostsQuery {
+    content?: string;
+    authors?: string[];
+    tags?: string[];
+    subscribedOnly?: boolean;
+    limit?: number;
+    offset?: number;
+}
+
+const DELETED_USER = {
+    _id: '',
+    username: 'Deleted User',
+    email: 'deleted@example.com',
+    bio: '',
+    profilePictureUrl: null
+};
 
 const POST_MAX_LENGTH = 280;
 const DEFAULT_POST_LIMIT = 5; // Amount of posts to return by default
@@ -234,7 +253,7 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
         const postsOffset = req.query.offset ? parseInt(req.query.offset as string) : 0;
 
         const posts = await PostModel.find()
-            .populate('authorId', 'username email bio profilePictureUrl')
+            .populate('authorId')
             .sort({ createdAt: -1 })
             .limit(postsLimit)
             .skip(postsOffset);
@@ -242,19 +261,13 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
         // Transform the data to match the expected frontend format
         const postsWithAuthor = posts.map(post => {
             const postObj = post.toObject();
-            const author = postObj.authorId as any; // Type assertion for populated field
+            const author = postObj.authorId as unknown as IUser; // Type assertion for populated field
 
             // Handle case where author might be null (user was deleted)
             if (!author) {
                 return {
                     ...postObj,
-                    author: {
-                        _id: postObj.authorId,
-                        username: 'Deleted User',
-                        email: 'deleted@example.com',
-                        bio: '',
-                        profilePictureUrl: null
-                    },
+                    author: DELETED_USER,
                     authorId: postObj.authorId
                 };
             }
@@ -262,7 +275,7 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
             return {
                 ...postObj,
                 author: author,
-                authorId: author._id || author
+                authorId: (author as any)._id || author
             };
         });
 
@@ -278,6 +291,78 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
         });
     } catch (error) {
         console.error('Error retrieving posts:', error);
+        return res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
+};
+
+export const searchPosts = async (req: JwtUserRequest, res: Response) => {
+    try {
+        const { content, authors, tags, subscribedOnly, limit, offset } = req.body as SearchPostsQuery;
+        console.log(content, authors, tags, subscribedOnly, limit, offset);
+
+        const query: any = {};
+        if (content) query.content = { $regex: content, $options: 'i' };
+        if (tags && tags.length > 0) query.tags = { $in: tags };
+
+        let userIds: string[] = [];
+        if (authors && authors.length > 0) {
+            const authorIds = await UserModel.find({ username: { $in: authors } }).select('_id');
+            userIds.push(...authorIds.map(author => author._id.toString()));
+        }
+        if (subscribedOnly && req.jwtUserId) {
+            const followingIds = await FollowModel.find({ follower: req.jwtUserId }).select('following');
+            userIds.push(...followingIds.map(follow => follow.following.toString()));
+        }
+        if (userIds.length > 0) {
+            userIds = [...new Set(userIds)];
+            query.authorId = { $in: userIds };
+        }
+        console.log('query', query);
+
+        const totalCount = await PostModel.countDocuments(query);
+        const requestLimit = limit ? Math.min(limit, MAX_POST_LIMIT) : DEFAULT_POST_LIMIT;
+        const requestOffset = offset || 0;
+
+        const posts = await PostModel.find(query)
+            .sort({ createdAt: -1 })
+            .limit(requestLimit)
+            .skip(requestOffset)
+            .populate('authorId');
+        console.log(posts.length);
+
+        // Transform the data to match the expected frontend format
+        const postsWithAuthor = posts.map(post => {
+            const postObj = post.toObject();
+            const author = postObj.authorId as unknown as IUser; // Type assertion for populated field
+
+            // Handle case where author might be null (user was deleted)
+            if (!author) {
+                return {
+                    ...postObj,
+                    author: DELETED_USER,
+                    authorId: postObj.authorId
+                };
+            }
+
+            return {
+                ...postObj,
+                author: author,
+                authorId: (author as any)._id || author
+            };
+        });
+
+        return res.status(200).json({
+            message: 'Posts searched successfully',
+            count: posts.length,
+            totalCount: totalCount,
+            limit: requestLimit,
+            offset: requestOffset,
+            posts: postsWithAuthor
+        });
+    } catch (error) {
+        console.error('Error searching posts:', error);
         return res.status(500).json({
             error: 'Internal server error'
         });

@@ -84,6 +84,8 @@ import-dummy-data:
 	@docker exec -i mongo mongoimport --username root --password example --authenticationDatabase admin --db yellr --collection users --jsonArray --parseGrace=autoCast --mode upsert < tests/users.json || echo "Error: Could not import users data"
 	@echo "Importing posts..."
 	@docker exec -i mongo mongoimport --username root --password example --authenticationDatabase admin --db yellr --collection posts --jsonArray --parseGrace=autoCast --mode upsert < tests/posts.json || echo "Error: Could not import posts data"
+	@echo "Importing follows..."
+	@docker exec -i mongo mongoimport --username root --password example --authenticationDatabase admin --db yellr --collection follows --jsonArray --parseGrace=autoCast --mode upsert < tests/follows.json || echo "Error: Could not import follows data"
 	@echo "Dummy data import completed!"
 	@echo "Note: If you see errors above, make sure MongoDB container is running (try: make run-dev)"
 
