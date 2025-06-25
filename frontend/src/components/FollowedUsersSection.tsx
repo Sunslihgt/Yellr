@@ -39,7 +39,7 @@ const FollowedUsersSection: React.FC = () => {
 
     useEffect(() => {
         fetchFollowedUsers();
-    });
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Show message if not authenticated
     if (!isAuthenticated) {
