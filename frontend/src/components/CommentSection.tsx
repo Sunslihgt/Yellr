@@ -56,7 +56,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, 
             if (!res.ok) throw new Error('Failed to like/unlike comment');
             await fetchComments();
         } catch (err) {
-            console.error();
+            console.error(err);
         } finally {
             setLiking(null);
         }
@@ -89,7 +89,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, 
             await fetchComments();
             setCommentsCount(commentsCount + 1);
         } catch (err) {
-            console.error();
+            console.error(err);
         } finally {
             setSubmitting(false);
         }
@@ -121,7 +121,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, 
             setEditContent('');
             await fetchComments();
         } catch (err) {
-            console.error();
+            console.error(err);
         } finally {
             setSubmitting(false);
         }
