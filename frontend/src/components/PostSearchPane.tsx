@@ -113,4 +113,6 @@ const PostSearchPane = forwardRef<{ getSearchRequest: () => SearchRequestBody },
         );
     });
 
+PostSearchPane.displayName = "PostSearchPane";
+
 export default PostSearchPane;

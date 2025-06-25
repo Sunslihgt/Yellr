@@ -29,4 +29,4 @@ connectDB().then(() => {
     app.listen(PORT, () => {
         console.log(`Comment Service started on port ${PORT}`);
     });
-}); 
+});

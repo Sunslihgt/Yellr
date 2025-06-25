@@ -4,9 +4,9 @@ import { JwtUserRequest } from '../@types/jwtRequest';
 
 export const currentUserMiddleware = (req: JwtUserRequest, res: Response, next: NextFunction): void => {
     const token = req.headers.authorization?.split(' ')[1];
-    
+
     console.log('Token received:', token);
-    
+
     if (!token) {
         res.status(401).json({ error: 'Token missing' });
         return;
@@ -15,7 +15,7 @@ export const currentUserMiddleware = (req: JwtUserRequest, res: Response, next: 
     try {
         const decoded = jwt.decode(token) as { userId?: string, exp?: number } | null;
         console.log('Token decoded successfully:', decoded);
-        
+
         if (decoded && decoded.userId) {
             req.jwtUserId = decoded.userId;
             next();
@@ -29,4 +29,4 @@ export const currentUserMiddleware = (req: JwtUserRequest, res: Response, next: 
         res.status(401).json({ error: 'Invalid token', details: errorMessage });
         return;
     }
-}; 
+};

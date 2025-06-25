@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Comment, { IComment } from '../models/comment.model';
+import Comment from '../models/comment.model';
 import { JwtUserRequest } from '../@types/jwtRequest';
 import { userIdExists } from '../utils/user.utils';
 import { commentIdExists } from '../utils/comment.utils';
@@ -45,7 +45,7 @@ export const createCommentOnPost = async (req: JwtUserRequest, res: Response) =>
 
         // Sanitize content to prevent XSS
         const sanitizedContent = sanitizeContent(content);
-        
+
         if (!sanitizedContent) {
             return res.status(400).json({
                 error: 'Content cannot be empty after sanitization'
@@ -120,7 +120,7 @@ export const replyToComment = async (req: JwtUserRequest, res: Response) => {
 
         // Sanitize content to prevent XSS
         const sanitizedContent = sanitizeContent(content);
-        
+
         if (!sanitizedContent) {
             return res.status(400).json({
                 error: 'Content cannot be empty after sanitization'
@@ -202,7 +202,7 @@ export const editComment = async (req: JwtUserRequest, res: Response) => {
 
         // Sanitize content to prevent XSS
         const sanitizedContent = sanitizeContent(content);
-        
+
         if (!sanitizedContent) {
             return res.status(400).json({
                 error: 'Content cannot be empty after sanitization'

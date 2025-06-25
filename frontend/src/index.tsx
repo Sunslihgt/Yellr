@@ -1,4 +1,4 @@
-import React, { useState, useEffect, StrictMode } from 'react';
+import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -11,7 +11,7 @@ import Logout from './pages/Logout';
 import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
 import PostsWithSkeleton from './pages/Posts';
-import Error404 from './pages/Error404';
+import ErrorPage from './pages/ErrorPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import Layout from './Layout';
@@ -23,19 +23,6 @@ if (container === null) {
 }
 
 const root = createRoot(container);
-
-function AppWithSkeleton() {
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 100);
-        return () => clearTimeout(timer);
-    }, []);
-
-    return (
-        <Error404 />
-    );
-}
 
 // Initialize favicon management
 initializeFavicon();
@@ -55,7 +42,7 @@ root.render(
                         <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                         <Route path="/posts" element={<ProtectedRoute><PostsWithSkeleton /></ProtectedRoute>} />
                         {/* Fallback route for any unmatched paths */}
-                        <Route path="*" element={<AppWithSkeleton />} />
+                        <Route path="*" element={<ErrorPage errorCode={404} />} />
                     </Routes>
                 </Layout>
             </BrowserRouter>

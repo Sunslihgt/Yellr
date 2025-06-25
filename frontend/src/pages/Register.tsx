@@ -34,11 +34,11 @@ const Register: React.FC = () => {
     // Real-time validation for username
     const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        
+
         const filteredValue = value.split('').filter(char => isAllowedUsernameChar(char)).join('');
-        
+
         setUsername(filteredValue);
-        
+
         const validation = validateUsername(filteredValue);
         setUsernameError(validation.isValid ? '' : validation.error || '');
     };
@@ -46,7 +46,7 @@ const Register: React.FC = () => {
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setEmail(value);
-        
+
         if (value.trim()) {
             const validation = validateEmail(value);
             setEmailError(validation.isValid ? '' : validation.error || '');
@@ -58,7 +58,7 @@ const Register: React.FC = () => {
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setPassword(value);
-        
+
         if (value.trim()) {
             const validation = validatePassword(value);
             setPasswordError(validation.isValid ? '' : validation.error || '');
@@ -69,19 +69,19 @@ const Register: React.FC = () => {
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         const usernameValidation = validateUsername(username);
         const emailValidation = validateEmail(email);
         const passwordValidation = validatePassword(password);
-        
+
         setUsernameError(usernameValidation.isValid ? '' : usernameValidation.error || '');
         setEmailError(emailValidation.isValid ? '' : emailValidation.error || '');
         setPasswordError(passwordValidation.isValid ? '' : passwordValidation.error || '');
-        
+
         if (!usernameValidation.isValid || !emailValidation.isValid || !passwordValidation.isValid) {
             return;
         }
-        
+
         await register({
             email: email.trim(),
             password,

@@ -3,7 +3,7 @@ import { PostWithAuthor } from '../@types/post';
 import { BASE_URL } from '../constants/config';
 import { useApi } from '../hooks/useApi';
 import { useAppSelector } from '../store/hooks';
-import { AiOutlineComment, AiOutlineHeart, AiOutlinePlus, AiFillHeart, AiOutlineShareAlt, AiOutlineMore, AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineComment, AiOutlineHeart, AiFillHeart, AiOutlineShareAlt, AiOutlineMore, AiOutlineClose } from 'react-icons/ai';
 import { displayCount, formatTimeAgo } from '../utils/displayNumbers';
 import CommentSection from './CommentSection';
 

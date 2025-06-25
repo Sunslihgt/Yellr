@@ -27,9 +27,9 @@ const Login: React.FC = () => {
     const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         const filteredValue = value.split('').filter(char => isAllowedUsernameChar(char)).join('');
-        
+
         setUsername(filteredValue);
-        
+
         if (filteredValue.trim()) {
             const validation = validateUsername(filteredValue);
             setUsernameError(validation.isValid ? '' : 'Invalid username format');
@@ -40,13 +40,13 @@ const Login: React.FC = () => {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         const usernameValidation = validateUsername(username);
         if (!usernameValidation.isValid) {
             setUsernameError('Invalid username format');
             return;
         }
-        
+
         await login({ username: username.trim(), password });
     };
 
@@ -125,7 +125,7 @@ const Login: React.FC = () => {
                             onClick={() => navigate('/register')}
                             className="text-indigo-600 hover:text-indigo-500 text-sm"
                         >
-                            Don't have an account? Register
+                            Don&apos;t have an account? Register
                         </button>
                     </div>
                 </form>

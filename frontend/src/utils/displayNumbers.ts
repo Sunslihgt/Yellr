@@ -8,7 +8,7 @@ export const displayCount = (count: number) => {
     } else {
         return `${count}`;
     }
-}
+};
 
 export const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -19,4 +19,4 @@ export const formatTimeAgo = (dateString: string) => {
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
     if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;
     return `${Math.floor(diffInSeconds / 86400)}d`;
-}
+};
