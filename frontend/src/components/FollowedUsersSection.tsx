@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import UserCard from './UserCard';
 import SkeletonUserCard from './SkeletonUserCard';
 import { useApi } from '../hooks/useApi';
+import { useAppContext } from '../contexts/AppContext';
 import { useAppSelector } from '../store/hooks';
 import { User } from '../@types/user';
 import { BASE_URL } from '../constants/config';
 
 const FollowedUsersSection: React.FC = () => {
     const [loading, setLoading] = useState(true);
-    const [followedUsers, setFollowedUsers] = useState<User[]>([]);
     const { apiCall } = useApi();
-    const { isAuthenticated } = useAppSelector((state) => state.auth);
+    const { followedUsers, setFollowedUsers } = useAppContext();
+    const { isAuthenticated, user } = useAppSelector((state) => state.auth);
 
     const fetchFollowedUsers = async () => {
         if (!isAuthenticated) {
@@ -40,6 +41,13 @@ const FollowedUsersSection: React.FC = () => {
     useEffect(() => {
         fetchFollowedUsers();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Update followed users when context changes
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchFollowedUsers();
+        }
+    }, [followedUsers.length]);
 
     // Show message if not authenticated
     if (!isAuthenticated) {
@@ -75,7 +83,7 @@ const FollowedUsersSection: React.FC = () => {
                     ) : (
                         <>
                             {followedUsers.map((user, i) => (
-                                <UserCard key={i} user={user} />
+                                <UserCard key={user._id} user={user} />
                             ))}
                         </>
                     )}

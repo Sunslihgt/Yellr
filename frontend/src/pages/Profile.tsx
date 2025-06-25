@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useApi } from '../hooks/useApi';
+import { useAppContext } from '../contexts/AppContext';
 import MessageCard from '../components/MessageCard';
 import SkeletonMessageCard from '../components/SkeletonMessageCard';
 import { PostWithAuthor } from '../@types/post';
@@ -14,8 +15,9 @@ interface UserStats {
 const Profile: React.FC = () => {
     const { user, isAuthenticated, updateUser } = useAuth();
     const { apiCall } = useApi();
-
+    const { refreshLikedPosts, triggerLikedPostsRefresh } = useAppContext();
     const [userPosts, setUserPosts] = useState<PostWithAuthor[]>([]);
+    const [likedPosts, setLikedPosts] = useState<PostWithAuthor[]>([]);
     const [stats, setStats] = useState<UserStats>({
         postsCount: 0,
         followersCount: 0,
@@ -23,6 +25,7 @@ const Profile: React.FC = () => {
     });
     const [activeTab, setActiveTab] = useState<'posts' | 'likes'>('posts');
     const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+    const [isLoadingLikes, setIsLoadingLikes] = useState(true);
     const [isLoadingStats, setIsLoadingStats] = useState(true);
     const [imageError, setImageError] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -64,6 +67,26 @@ const Profile: React.FC = () => {
         }
     };
 
+    const fetchUserLikedPosts = async () => {
+        if (!user?._id) return;
+        
+        setIsLoadingLikes(true);
+        try {
+            const response = await apiCall(`/api/posts/user/${user._id}/liked`, {
+                method: 'GET'
+            });
+            const data = await response.json();
+            
+            if (data.posts) {
+                setLikedPosts(data.posts);
+            }
+        } catch (error) {
+            console.error('Error fetching liked posts:', error);
+        } finally {
+            setIsLoadingLikes(false);
+        }
+    };
+
     const fetchUserStats = async () => {
         if (!user?._id) return;
 
@@ -92,8 +115,15 @@ const Profile: React.FC = () => {
     };
 
     useEffect(() => {
+        if (!user) return;
+        
+        fetchUserLikedPosts();
+    }, [user, refreshLikedPosts]);
+
+    useEffect(() => {
         if (isAuthenticated && user) {
             fetchUserPosts();
+            fetchUserLikedPosts();
             fetchUserStats();
             setEditForm({
                 profilePictureUrl: user.profilePictureUrl || '',
@@ -237,9 +267,9 @@ const Profile: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-white dark:bg-gray-900">
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-800">
             {/* Profile Header */}
-            <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+            <div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                 <div className="max-w-2xl mx-auto px-4 py-6">
                     {/* Back Button */}
                     <div className="flex items-center mb-6">
@@ -329,7 +359,7 @@ const Profile: React.FC = () => {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+            <div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                 <div className="max-w-2xl mx-auto">
                     <nav className="flex">
                         <button
@@ -392,16 +422,32 @@ const Profile: React.FC = () => {
                 )}
 
                 {activeTab === 'likes' && (
-                    <div className="text-center py-16">
-                        <svg className="w-16 h-16 mx-auto text-gray-400 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                            No likes yet
-                        </h3>
-                        <p className="text-gray-500 dark:text-gray-400">
-                            When you like posts, they will appear here.
-                        </p>
+                    <div>
+                        {isLoadingLikes ? (
+                            <div>
+                                {[...Array(3)].map((_, index) => (
+                                    <SkeletonMessageCard key={index} />
+                                ))}
+                            </div>
+                        ) : likedPosts.length > 0 ? (
+                            <div>
+                                {likedPosts.map((post) => (
+                                    <MessageCard key={post._id} post={post} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-16">
+                                <svg className="w-16 h-16 mx-auto text-gray-400 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                                    No likes yet
+                                </h3>
+                                <p className="text-gray-500 dark:text-gray-400">
+                                    When you like posts, they will appear here.
+                                </p>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
