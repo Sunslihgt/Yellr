@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 import MessageCard from '../components/MessageCard';
-import UserCard from '../components/UserCard';
 import SkeletonMessageCard from '../components/SkeletonMessageCard';
-import SkeletonUserCard from '../components/SkeletonUserCard';
 import PostSearchPane, { SearchRequestBody } from '../components/PostSearchPane';
-import PostHeader from '../components/PostHeader';
+import CreatePost from '../components/CreatePost';
+import FollowedUsersSection from '../components/FollowedUsersSection';
 import { useApi } from '../hooks/useApi';
 import { useAppSelector } from '../store/hooks';
 import { PostWithAuthor, PostsResponse } from '../@types/post';
@@ -53,7 +52,6 @@ function PostsWithSkeleton() {
             }
 
             const data: PostsResponse = await response.json();
-            console.log('Fetched posts:', data);
 
             setTotalCount(data.totalCount);
             setOffset(fetchOffset + data.count);
@@ -103,18 +101,7 @@ function PostsWithSkeleton() {
                             </div>
                         </div>
                     </div>
-                    <div className="lg:col-span-1">
-                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden">
-                            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Friends</h1>
-                            </div>
-                            <div className="overflow-y-auto h-[calc(100%-4rem)] p-4 scrollbar-hide">
-                                <div className="text-center py-8">
-                                    <p className="text-gray-500 dark:text-gray-400">Please log in to view friends.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <FollowedUsersSection />
                 </div>
             </div>
         );
@@ -129,7 +116,7 @@ function PostsWithSkeleton() {
                             <h1 className="text-xl font-semibold text-gray-900 dark:text-white">What&apos;s new ?</h1>
                         </div>
                         {/* Add PostHeader component */}
-                        <PostHeader onPostCreated={() => fetchPosts(0, false)} />
+                        <CreatePost onPostCreated={() => fetchPosts(0, false)} />
                         {/* Search Pane UI */}
                         <PostSearchPane onFoldChange={setSearchPaneFolded} onSearch={handleSearch} />
                         {/* Posts */}
@@ -192,23 +179,8 @@ function PostsWithSkeleton() {
                         </div>
                     </div>
                 </div>
-                <div className="lg:col-span-1">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden">
-                        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Friends</h1>
-                        </div>
-                        <div className="overflow-y-auto h-[calc(100%-4rem)] p-4 scrollbar-hide">
-                            {loading ? (
-                                Array.from({ length: 3 }).map((_, i) => <SkeletonUserCard key={i} />)
-                            ) : (
-                                <>
-                                    {Array.from({ length: 3 }).map((_, i) => (
-                                        <UserCard key={i} />
-                                    ))}
-                                </>
-                            )}
-                        </div>
-                    </div>
+                <div className="hidden lg:block lg:col-span-1">
+                    <FollowedUsersSection />
                 </div>
             </div>
         </div>

@@ -61,6 +61,37 @@ export const register = createAsyncThunk(
     }
 );
 
+export const validateToken = createAsyncThunk(
+    'auth/validateToken',
+    async (_, { getState, rejectWithValue }) => {
+        try {
+            const state = getState() as { auth: AuthState };
+            const token = state.auth.token;
+            
+            if (!token) {
+                return rejectWithValue('No token available');
+            }
+
+            const response = await fetch(`${BASE_URL}/api/auth/authenticate`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                return rejectWithValue(errorData.message || 'Token validation failed');
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            return rejectWithValue('Network error during token validation');
+        }
+    }
+);
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -85,12 +116,10 @@ const authSlice = createSlice({
         builder
         // Login
             .addCase(login.pending, (state) => {
-                console.log(state);
                 state.isLoading = true;
                 state.error = null;
             })
             .addCase(login.fulfilled, (state, action) => {
-                console.log(action.payload);
                 state.isLoading = false;
                 state.isAuthenticated = true;
                 state.token = action.payload.token;
@@ -100,7 +129,6 @@ const authSlice = createSlice({
                 localStorage.setItem('user', JSON.stringify(action.payload.user));
             })
             .addCase(login.rejected, (state, action) => {
-                console.log(action.payload);
                 state.isLoading = false;
                 state.error = action.payload as string;
             })
@@ -121,6 +149,25 @@ const authSlice = createSlice({
             .addCase(register.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
+            })
+        // Validate Token
+            .addCase(validateToken.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(validateToken.fulfilled, (state) => {
+                state.isLoading = false;
+                state.isAuthenticated = true;
+                state.error = null;
+            })
+            .addCase(validateToken.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isAuthenticated = false;
+                state.token = null;
+                state.user = null;
+                state.error = action.payload as string;
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
             });
     },
 });

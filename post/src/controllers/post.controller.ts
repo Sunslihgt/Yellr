@@ -6,6 +6,7 @@ import { postIdExists } from '../utils/post.utils';
 import { IPost } from '../models/post.model';
 import UserModel, { IUser } from '../models/user.model';
 import FollowModel from '../models/follow.model';
+import Comment from '../models/comment.model';
 
 export interface CreatePostBody {
     content: string;
@@ -49,7 +50,6 @@ export const createPost = async (req: JwtUserRequest, res: Response) => {
         const authorId = req.jwtUserId;
 
         if (!content || !await userIdExists(authorId)) {
-            console.log(content, authorId, await userIdExists(authorId || ''));
             return res.status(400).json({
                 error: 'Content and author id are required'
             });
@@ -259,25 +259,30 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
             .skip(postsOffset);
 
         // Transform the data to match the expected frontend format
-        const postsWithAuthor = posts.map(post => {
+        const postsWithAuthor = await Promise.all(posts.map(async post => {
             const postObj = post.toObject();
             const author = postObj.authorId as unknown as IUser; // Type assertion for populated field
+
+            // Count comments for this post
+            const commentsCount = await Comment.countDocuments({ postId: postObj._id });
 
             // Handle case where author might be null (user was deleted)
             if (!author) {
                 return {
                     ...postObj,
                     author: DELETED_USER,
-                    authorId: postObj.authorId
+                    authorId: postObj.authorId,
+                    commentsCount: commentsCount
                 };
             }
 
             return {
                 ...postObj,
                 author: author,
-                authorId: (author as any)._id || author
+                authorId: (author as any)._id || author,
+                commentsCount: commentsCount
             };
-        });
+        }));
 
         const totalCount = await PostModel.countDocuments();
 
@@ -300,7 +305,6 @@ export const getPosts = async (req: JwtUserRequest, res: Response) => {
 export const searchPosts = async (req: JwtUserRequest, res: Response) => {
     try {
         const { content, authors, tags, subscribedOnly, limit, offset } = req.body as SearchPostsQuery;
-        console.log(content, authors, tags, subscribedOnly, limit, offset);
 
         const query: any = {};
         if (content) query.content = { $regex: content, $options: 'i' };
@@ -319,7 +323,6 @@ export const searchPosts = async (req: JwtUserRequest, res: Response) => {
             userIds = [...new Set(userIds)];
             query.authorId = { $in: userIds };
         }
-        console.log('query', query);
 
         const totalCount = await PostModel.countDocuments(query);
         const requestLimit = limit ? Math.min(limit, MAX_POST_LIMIT) : DEFAULT_POST_LIMIT;
@@ -330,28 +333,32 @@ export const searchPosts = async (req: JwtUserRequest, res: Response) => {
             .limit(requestLimit)
             .skip(requestOffset)
             .populate('authorId');
-        console.log(posts.length);
 
         // Transform the data to match the expected frontend format
-        const postsWithAuthor = posts.map(post => {
+        const postsWithAuthor = await Promise.all(posts.map(async post => {
             const postObj = post.toObject();
             const author = postObj.authorId as unknown as IUser; // Type assertion for populated field
+
+            // Count comments for this post
+            const commentsCount = await Comment.countDocuments({ postId: postObj._id });
 
             // Handle case where author might be null (user was deleted)
             if (!author) {
                 return {
                     ...postObj,
                     author: DELETED_USER,
-                    authorId: postObj.authorId
+                    authorId: postObj.authorId,
+                    commentsCount: commentsCount
                 };
             }
 
             return {
                 ...postObj,
                 author: author,
-                authorId: (author as any)._id || author
+                authorId: (author as any)._id || author,
+                commentsCount: commentsCount
             };
-        });
+        }));
 
         return res.status(200).json({
             message: 'Posts searched successfully',

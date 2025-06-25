@@ -8,6 +8,10 @@ function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
+    const [imageError, setImageError] = useState(false);
+    const handleImageError = () => {
+        setImageError(true);
+    };
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -57,7 +61,12 @@ function Navbar() {
                             onClick={() => setUserMenuOpen(!userMenuOpen)}
                         >
                             <span className="sr-only">Open user menu</span>
-                            <img className="w-8 h-8 rounded-full object-cover object-center" src={user?.profilePictureUrl || '/assets/default-avatar.jpg'} alt="user photo" />
+                            <img
+                                className="w-8 h-8 rounded-full object-cover object-center"
+                                src={imageError || !user?.profilePictureUrl ? '/assets/default-avatar.jpg' : user?.profilePictureUrl}
+                                alt="user photo"
+                                onError={handleImageError}
+                            />
                         </button>
 
                         {userMenuOpen && (

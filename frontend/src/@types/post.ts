@@ -8,6 +8,7 @@ export interface Post {
   updatedAt: string;
   imageUrl?: string;
   videoUrl?: string;
+  commentsCount?: number;
 }
 
 export interface PostAuthor {
