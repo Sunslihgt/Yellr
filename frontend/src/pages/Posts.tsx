@@ -90,11 +90,11 @@ function PostsWithSkeleton() {
             <div className='bg-gray-100 dark:bg-gray-800 min-h-screen flex flex-col'>
                 <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
                     <div className="lg:col-span-3">
-                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
                             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                                 <h1 className="text-xl font-semibold text-gray-900 dark:text-white">What&apos;s new ?</h1>
                             </div>
-                            <div className="overflow-y-auto h-[calc(100%-4rem)] scrollbar-hide p-4">
+                            <div className="scrollbar-hide p-4">
                                 <div className="text-center py-8">
                                     <p className="text-gray-500 dark:text-gray-400">Please log in to view posts.</p>
                                 </div>
@@ -111,7 +111,7 @@ function PostsWithSkeleton() {
         <div className='bg-gray-100 dark:bg-gray-800'>
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
                 <div className="lg:col-span-3 h-full">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden overflow-y-auto scrollbar-hide">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm scrollbar-hide">
                         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                             <h1 className="text-xl font-semibold text-gray-900 dark:text-white">What&apos;s new ?</h1>
                         </div>
