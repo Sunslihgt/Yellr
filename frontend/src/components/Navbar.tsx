@@ -55,7 +55,7 @@ function Navbar() {
                     <div className="relative">
                         <button
                             type="button"
-                            className="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                            className="flex items-center space-x-2 text-sm rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 bg-gray-800 hover:bg-gray-700 transition-colors pl-2 pr-3 py-1.5"
                             id="user-menu-button"
                             aria-expanded="false"
                             onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -67,6 +67,9 @@ function Navbar() {
                                 alt="user photo"
                                 onError={handleImageError}
                             />
+                            <span className="text-white font-medium hidden md:block text-sm">
+                                {user?.username || 'User'}
+                            </span>
                         </button>
 
                         {userMenuOpen && (
