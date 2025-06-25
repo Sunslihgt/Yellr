@@ -8,6 +8,7 @@ import SkeletonMessageCard from '../components/SkeletonMessageCard';
 import FollowButton from '../components/FollowButton';
 import { PostWithAuthor } from '../@types/post';
 import { User } from '../@types/user';
+import { isImageOnlyUrl, isImageUrlData } from '../utils/image';
 
 interface UserStats {
     postsCount: number;
@@ -18,7 +19,7 @@ interface UserStats {
 const UserProfile: React.FC = () => {
     const { username } = useParams<{ username: string }>();
     const navigate = useNavigate();
-    const { user: currentUser, isAuthenticated } = useAuth();
+    const { user: currentUser, isAuthenticated, updateUser } = useAuth();
     const { apiCall } = useApi();
     const { followersCount, updateFollowersCount, refreshLikedPosts, triggerLikedPostsRefresh } = useAppContext();
 
@@ -291,8 +292,8 @@ const UserProfile: React.FC = () => {
             });
             if (response.ok) {
                 const updatedUser = await response.json();
-                if (currentUser && currentUser._id === updatedUser._id && typeof window !== 'undefined') {
-                    window.location.reload();
+                if (currentUser && currentUser._id === updatedUser._id) {
+                    updateUser(updatedUser);
                 }
                 setImageError(false);
                 setImagePreviewError(false);
@@ -576,7 +577,7 @@ const UserProfile: React.FC = () => {
 
             {isOwnProfile && showEditModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg max-w-xl w-full max-h-[90vh] overflow-y-auto">
                         {/* Modal Header */}
                         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -618,6 +619,18 @@ const UserProfile: React.FC = () => {
                                         or paste URL below
                                     </span>
                                 </div>
+                                {/* Clear Image Button */}
+                                {editForm.profilePictureUrl && (!isImageOnlyUrl(editForm.profilePictureUrl) || isValidImageUrl(editForm.profilePictureUrl)) && (
+                                    <div className="mb-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditForm(prev => ({ ...prev, profilePictureUrl: '' }))}
+                                            className="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                                        >
+                                            Clear Image
+                                        </button>
+                                    </div>
+                                )}
                                 {/* URL Input */}
                                 <textarea
                                     id="profilePictureUrl"
@@ -627,7 +640,7 @@ const UserProfile: React.FC = () => {
                                         setEditForm(prev => ({ ...prev, profilePictureUrl: e.target.value }));
                                         setImagePreviewError(false);
                                     }}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
+                                    className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm resize-none break-all ${isImageUrlData(editForm.profilePictureUrl) ? 'hidden' : ''}`}
                                     placeholder="https://example.com/your-photo.jpg ou data:image/jpeg;base64,..."
                                 />
                                 <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -635,7 +648,7 @@ const UserProfile: React.FC = () => {
                                     <ul className="list-disc list-inside space-y-1">
                                         <li>Image file (max 5MB): JPEG, PNG, GIF, WebP</li>
                                         <li>Image URL: https://example.com/photo.jpg</li>
-                                        <li>Base64 image: data:image/jpeg;base64,/9j/4AAQ...</li>
+                                        <li>Base64 image: data:image/jpeg;base64...</li>
                                     </ul>
                                 </div>
                             </div>

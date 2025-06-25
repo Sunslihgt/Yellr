@@ -62,12 +62,15 @@ const CommentItem: React.FC<CommentItemProps> = ({
                     onError={handleImageError}
                 />
                 <div className="flex-1">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1 flex-wrap">
                         <span className="font-semibold text-gray-900 dark:text-white text-sm">{comment.author.username}</span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">· {formatTimeAgo(comment.createdAt)}</span>
-                        {comment.updatedAt && comment.updatedAt > comment.createdAt && (
-                            <span className="text-xs text-gray-500 dark:text-gray-400">· Edited {formatTimeAgo(comment.updatedAt)}</span>
-                        )}
+                        <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center whitespace-nowrap">
+                            <span className="hidden sm:inline mx-1">·</span>
+                            {formatTimeAgo(comment.createdAt)}
+                            {comment.updatedAt && comment.updatedAt > comment.createdAt && (
+                                <> · Edited {formatTimeAgo(comment.updatedAt)}</>
+                            )}
+                        </span>
                     </div>
                     {/* Edit form or comment content */}
                     {isEditing ? (

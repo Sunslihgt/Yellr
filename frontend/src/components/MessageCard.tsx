@@ -206,17 +206,17 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                     {/* Header */}
-                    <div className="flex items-center space-x-2 mb-1 w-full flex-wrap">
+                    <div className="flex items-center space-x-2 mb-1 w-full flex-wrap pr-7">
                         <span className="font-bold text-lg text-gray-900 dark:text-white hover:underline cursor-pointer break-words" onClick={handleUserClick}>
                             {post.author.username}
                         </span>
-                        <div>
-                            <span className="text-gray-500 dark:text-gray-400">· {formatTimeAgo(post.createdAt)}
-                            </span>
+                        <span className="text-gray-500 dark:text-gray-400 flex items-center">
+                            <span className="hidden sm:inline mx-1">·</span>
+                            {formatTimeAgo(post.createdAt)}
                             {post.updatedAt && post.updatedAt > post.createdAt && (
-                                <span className="text-gray-500 dark:text-gray-400">· Edited {formatTimeAgo(post.updatedAt)}</span>
+                                <> · Edited {formatTimeAgo(post.updatedAt)}</>
                             )}
-                        </div>
+                        </span>
                     </div>
 
                     {/* Message content */}
