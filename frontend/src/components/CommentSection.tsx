@@ -75,7 +75,7 @@ const CommentItem: React.FC<{
                         <span className="font-semibold text-gray-900 dark:text-white text-sm">{comment.author.username}</span>
                         <span className="text-xs text-gray-500 dark:text-gray-400">· {formatTimeAgo(comment.createdAt)}</span>
                         {comment.updatedAt && comment.updatedAt > comment.createdAt && (
-                            <span className="text-gray-500 dark:text-gray-400">· Edited {formatTimeAgo(comment.updatedAt)}</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">· Edited {formatTimeAgo(comment.updatedAt)}</span>
                         )}
                     </div>
                     {/* Edit form or comment content */}
