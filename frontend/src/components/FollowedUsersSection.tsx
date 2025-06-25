@@ -2,15 +2,23 @@ import React, { useState, useEffect } from 'react';
 import UserCard from './UserCard';
 import SkeletonUserCard from './SkeletonUserCard';
 import { useApi } from '../hooks/useApi';
+import { useFollowEvents } from '../hooks/useFollowEvents';
 import { useAppSelector } from '../store/hooks';
 import { User } from '../@types/user';
 import { BASE_URL } from '../constants/config';
+
+interface FollowEvent {
+    type: 'follow' | 'unfollow';
+    userId: string;
+    targetUserId: string;
+}
 
 const FollowedUsersSection: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [followedUsers, setFollowedUsers] = useState<User[]>([]);
     const { apiCall } = useApi();
-    const { isAuthenticated } = useAppSelector((state) => state.auth);
+    const { subscribeToFollowEvents } = useFollowEvents();
+    const { isAuthenticated, user } = useAppSelector((state) => state.auth);
 
     const fetchFollowedUsers = async () => {
         if (!isAuthenticated) {
@@ -40,6 +48,26 @@ const FollowedUsersSection: React.FC = () => {
     useEffect(() => {
         fetchFollowedUsers();
     }, [isAuthenticated]);
+
+    // Listen to follow events for real-time updates
+    useEffect(() => {
+        if (!user) return;
+
+        const unsubscribe = subscribeToFollowEvents((event: FollowEvent) => {
+            if (event.userId === user._id) {
+                // Current user followed/unfollowed someone
+                if (event.type === 'follow') {
+                    // Add user to followed list (we'll need to fetch user details)
+                    fetchFollowedUsers();
+                } else if (event.type === 'unfollow') {
+                    // Remove user from followed list
+                    setFollowedUsers(prev => prev.filter(u => u._id !== event.targetUserId));
+                }
+            }
+        });
+
+        return unsubscribe;
+    }, [user, subscribeToFollowEvents]);
 
     // Show message if not authenticated
     if (!isAuthenticated) {
@@ -75,7 +103,7 @@ const FollowedUsersSection: React.FC = () => {
                     ) : (
                         <>
                             {followedUsers.map((user, i) => (
-                                <UserCard key={i} user={user} />
+                                <UserCard key={user._id} user={user} />
                             ))}
                         </>
                     )}

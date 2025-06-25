@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useApi } from '../hooks/useApi';
+import { useFollowEvents } from '../hooks/useFollowEvents';
+import { useAppSelector } from '../store/hooks';
 import { BASE_URL } from '../constants/config';
 import { FollowedByCurrentUserResponse } from '../@types/follow';
 import { AiOutlineCheck, AiOutlinePlus } from 'react-icons/ai';
@@ -7,12 +9,15 @@ import { AiOutlineCheck, AiOutlinePlus } from 'react-icons/ai';
 interface FollowButtonProps {
     userId: string;
     className?: string;
+    onFollowChange?: (isFollowing: boolean) => void;
 }
 
-const FollowButton: React.FC<FollowButtonProps> = ({ userId, className = "" }) => {
+const FollowButton: React.FC<FollowButtonProps> = ({ userId, className = "", onFollowChange }) => {
     const [isFollowing, setIsFollowing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const { apiCall } = useApi();
+    const { emitFollowEvent } = useFollowEvents();
+    const { user } = useAppSelector((state) => state.auth);
 
     const fetchIsFollowing = async () => {
         const response = await apiCall(`${BASE_URL}/api/follow/followed/${userId}`, {
@@ -32,6 +37,8 @@ const FollowButton: React.FC<FollowButtonProps> = ({ userId, className = "" }) =
     }, [userId]);
 
     const handleFollow = async (action: 'follow' | 'unfollow') => {
+        if (!user) return;
+        
         setIsLoading(true);
         try {
             const response = await apiCall(`${BASE_URL}/api/follow/${userId}`, {
@@ -42,8 +49,16 @@ const FollowButton: React.FC<FollowButtonProps> = ({ userId, className = "" }) =
                 console.error('Error following user:', errorData);
                 return;
             }
-            setIsFollowing(action === 'follow');
-            // Don't refetch immediately to avoid flickering
+            const newFollowingState = action === 'follow';
+            setIsFollowing(newFollowingState);
+            
+            // Emit follow event for real-time updates
+            emitFollowEvent(action, user._id, userId);
+            
+            // Notify parent component of the change
+            if (onFollowChange) {
+                onFollowChange(newFollowingState);
+            }
         } catch (error) {
             console.error('Error following user:', error);
         } finally {
@@ -109,4 +124,4 @@ const FollowButton: React.FC<FollowButtonProps> = ({ userId, className = "" }) =
     );
 };
 
-export default FollowButton; 
+export default FollowButton;

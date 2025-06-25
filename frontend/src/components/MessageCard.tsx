@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PostWithAuthor } from '../@types/post';
 import { BASE_URL } from '../constants/config';
 import { useApi } from '../hooks/useApi';
@@ -14,6 +15,7 @@ interface MessageCardProps {
 }
 
 const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDeleted }) => {
+    const navigate = useNavigate();
     const [imageError, setImageError] = useState(false);
     const [showCopiedMessage, setShowCopiedMessage] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -42,6 +44,10 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
 
     const handleImageError = () => {
         setImageError(true);
+    };
+
+    const handleUserClick = () => {
+        navigate(`/user/${post.author.username}`);
     };
 
     const handleShare = async () => {
@@ -174,10 +180,11 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                 {/* Avatar */}
                 <div className="flex-shrink-0">
                     <img
-                        className="h-14 w-14 rounded-full"
+                        className="h-14 w-14 rounded-full cursor-pointer hover:opacity-80 transition-opacity"
                         src={imageError || !post.author.profilePictureUrl ? '/assets/default-avatar.jpg' : post.author.profilePictureUrl}
                         alt={`${post.author.username} avatar`}
                         onError={handleImageError}
+                        onClick={handleUserClick}
                     />
                 </div>
 
@@ -185,7 +192,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                 <div className="flex-1 min-w-0">
                     {/* Header */}
                     <div className="flex items-center space-x-2 mb-1">
-                        <span className="font-bold text-lg text-gray-900 dark:text-white hover:underline cursor-pointer">
+                        <span className="font-bold text-lg text-gray-900 dark:text-white hover:underline cursor-pointer" onClick={handleUserClick}>
                             {post.author.username}
                         </span>
                         <span className="text-gray-500 dark:text-gray-400">· {formatTimeAgo(post.createdAt)}

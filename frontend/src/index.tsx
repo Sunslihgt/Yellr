@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import Logout from './pages/Logout';
 import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
+import UserProfile from './pages/UserProfile';
 import PostsWithSkeleton from './pages/Posts';
 import Error404 from './pages/Error404';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -51,7 +52,7 @@ root.render(
                         <Route path="/logout" element={<Logout />} />
                         <Route path="/" element={<ProtectedRoute><PostsWithSkeleton /></ProtectedRoute>} />
                         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                        <Route path="/user/:id" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                        <Route path="/user/:username" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
                         <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                         <Route path="/posts" element={<ProtectedRoute><PostsWithSkeleton /></ProtectedRoute>} />
                         {/* Fallback route for any unmatched paths */}

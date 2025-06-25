@@ -262,7 +262,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, 
         setSubmitting(true);
         try {
             let url = '';
-            let method = 'POST';
+            const method = 'POST';
             if (replyingTo) {
                 url = `${BASE_URL}/api/comments/reply/${replyingTo}`;
             } else {
