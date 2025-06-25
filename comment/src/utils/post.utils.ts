@@ -18,4 +18,4 @@ export const postIdExists = async (postId: string | undefined) => {
         return postExists !== null;
     }
     return false;
-}; 
+};

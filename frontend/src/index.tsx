@@ -1,4 +1,4 @@
-import React, { useState, useEffect, StrictMode } from 'react';
+import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -13,7 +13,7 @@ import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
 import UserProfile from './pages/UserProfile';
 import PostsWithSkeleton from './pages/Posts';
-import Error404 from './pages/Error404';
+import ErrorPage from './pages/ErrorPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import Layout from './Layout';
@@ -25,19 +25,6 @@ if (container === null) {
 }
 
 const root = createRoot(container);
-
-function AppWithSkeleton() {
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 100);
-        return () => clearTimeout(timer);
-    }, []);
-
-    return (
-        <Error404 />
-    );
-}
 
 // Initialize favicon management
 initializeFavicon();

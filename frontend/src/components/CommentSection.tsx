@@ -215,6 +215,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, 
     const [liking, setLiking] = useState<string | null>(null); // commentId being liked
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
     const [editContent, setEditContent] = useState('');
+    const [imageErrors, setImageErrors] = useState<{ [commentId: string]: boolean }>({});
 
     const fetchComments = async () => {
         setLoading(true);
@@ -233,7 +234,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, 
 
     useEffect(() => {
         fetchComments();
-    }, [postId]);
+    }, [postId, fetchComments]);
 
     const handleLike = async (commentId: string) => {
         if (!user || liking) return;
@@ -262,14 +263,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, 
         setSubmitting(true);
         try {
             let url = '';
-            let method = 'POST';
             if (replyingTo) {
                 url = `${BASE_URL}/api/comments/reply/${replyingTo}`;
             } else {
                 url = `${BASE_URL}/api/comments/post/${postId}`;
             }
             const res = await apiCall(url, {
-                method,
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ content: newComment }),
             });

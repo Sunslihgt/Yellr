@@ -18,7 +18,7 @@ const FollowedUsersSection: React.FC = () => {
             setLoading(false);
             return;
         }
-        
+
         try {
             setLoading(true);
             const response = await apiCall(`${BASE_URL}/api/follow/following`, {
@@ -40,7 +40,7 @@ const FollowedUsersSection: React.FC = () => {
 
     useEffect(() => {
         fetchFollowedUsers();
-    }, [isAuthenticated]);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Update followed users when context changes
     useEffect(() => {
@@ -93,4 +93,4 @@ const FollowedUsersSection: React.FC = () => {
     );
 };
 
-export default FollowedUsersSection; 
+export default FollowedUsersSection;
