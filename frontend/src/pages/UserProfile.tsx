@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useApi } from '../hooks/useApi';
+import { useAppContext } from '../contexts/AppContext';
 import MessageCard from '../components/MessageCard';
 import SkeletonMessageCard from '../components/SkeletonMessageCard';
 import FollowButton from '../components/FollowButton';
@@ -19,9 +20,11 @@ const UserProfile: React.FC = () => {
     const navigate = useNavigate();
     const { user: currentUser, isAuthenticated } = useAuth();
     const { apiCall } = useApi();
+    const { followersCount, updateFollowersCount, refreshLikedPosts, triggerLikedPostsRefresh } = useAppContext();
     
     const [profileUser, setProfileUser] = useState<User | null>(null);
     const [userPosts, setUserPosts] = useState<PostWithAuthor[]>([]);
+    const [likedPosts, setLikedPosts] = useState<PostWithAuthor[]>([]);
     const [stats, setStats] = useState<UserStats>({
         postsCount: 0,
         followersCount: 0,
@@ -30,6 +33,7 @@ const UserProfile: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'posts' | 'likes'>('posts');
     const [isLoadingUser, setIsLoadingUser] = useState(true);
     const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+    const [isLoadingLikes, setIsLoadingLikes] = useState(true);
     const [isLoadingStats, setIsLoadingStats] = useState(true);
     const [imageError, setImageError] = useState(false);
     const [userNotFound, setUserNotFound] = useState(false);
@@ -100,6 +104,26 @@ const UserProfile: React.FC = () => {
         }
     };
 
+    const fetchUserLikedPosts = async () => {
+        if (!profileUser?._id) return;
+        
+        setIsLoadingLikes(true);
+        try {
+            const response = await apiCall(`/api/posts/user/${profileUser._id}/liked`, {
+                method: 'GET'
+            });
+            const data = await response.json();
+            
+            if (data.posts) {
+                setLikedPosts(data.posts);
+            }
+        } catch (error) {
+            console.error('Error fetching liked posts:', error);
+        } finally {
+            setIsLoadingLikes(false);
+        }
+    };
+
     const fetchUserStats = async () => {
         if (!profileUser?._id) return;
         
@@ -134,9 +158,16 @@ const UserProfile: React.FC = () => {
     useEffect(() => {
         if (profileUser) {
             fetchUserPosts();
+            fetchUserLikedPosts();
             fetchUserStats();
         }
     }, [profileUser]);
+
+    useEffect(() => {
+        if (!currentUser || !profileUser) return;
+        
+        fetchUserLikedPosts();
+    }, [currentUser, profileUser, refreshLikedPosts]);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -152,10 +183,12 @@ const UserProfile: React.FC = () => {
 
     const handlePostUpdated = () => {
         fetchUserPosts();
+        fetchUserLikedPosts();
     };
 
     const handlePostDeleted = () => {
         fetchUserPosts();
+        fetchUserLikedPosts();
     };
 
     const handleFollowChange = (isFollowing: boolean) => {
@@ -222,9 +255,9 @@ const UserProfile: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-white dark:bg-gray-900">
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-800">
             {/* Profile Header */}
-            <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+            <div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                 <div className="max-w-2xl mx-auto px-4 py-6">
                     {/* Back Button */}
                     <div className="flex items-center mb-6">
@@ -315,7 +348,7 @@ const UserProfile: React.FC = () => {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+            <div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                 <div className="max-w-2xl mx-auto">
                     <nav className="flex">
                         <button
@@ -370,10 +403,27 @@ const UserProfile: React.FC = () => {
                 )}
 
                 {activeTab === 'likes' && (
-                    <div className="text-center py-8">
-                        <p className="text-gray-500 dark:text-gray-400">
-                            Posts liked by {profileUser.username} will be shown here.
-                        </p>
+                    <div>
+                        {isLoadingLikes ? (
+                            Array.from({ length: 3 }).map((_, i) => (
+                                <SkeletonMessageCard key={i} />
+                            ))
+                        ) : likedPosts.length === 0 ? (
+                            <div className="text-center py-8">
+                                <p className="text-gray-500 dark:text-gray-400">
+                                    {profileUser.username} hasn't liked any posts yet.
+                                </p>
+                            </div>
+                        ) : (
+                            likedPosts.map((post) => (
+                                <MessageCard
+                                    key={post._id}
+                                    post={post}
+                                    onPostUpdated={handlePostUpdated}
+                                    onPostDeleted={handlePostDeleted}
+                                />
+                            ))
+                        )}
                     </div>
                 )}
             </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useApi } from '../hooks/useApi';
-import { useFollowEvents } from '../hooks/useFollowEvents';
+import { useAppContext } from '../contexts/AppContext';
 import { useAppSelector } from '../store/hooks';
 import { BASE_URL } from '../constants/config';
 import { FollowedByCurrentUserResponse } from '../@types/follow';
@@ -16,7 +16,7 @@ const FollowButton: React.FC<FollowButtonProps> = ({ userId, className = "", onF
     const [isFollowing, setIsFollowing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const { apiCall } = useApi();
-    const { emitFollowEvent } = useFollowEvents();
+    const { updateFollowersCount, addFollowedUser, removeFollowedUser } = useAppContext();
     const { user } = useAppSelector((state) => state.auth);
 
     const fetchIsFollowing = async () => {
@@ -51,9 +51,6 @@ const FollowButton: React.FC<FollowButtonProps> = ({ userId, className = "", onF
             }
             const newFollowingState = action === 'follow';
             setIsFollowing(newFollowingState);
-            
-            // Emit follow event for real-time updates
-            emitFollowEvent(action, user._id, userId);
             
             // Notify parent component of the change
             if (onFollowChange) {

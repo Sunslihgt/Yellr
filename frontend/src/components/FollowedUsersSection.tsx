@@ -2,22 +2,15 @@ import React, { useState, useEffect } from 'react';
 import UserCard from './UserCard';
 import SkeletonUserCard from './SkeletonUserCard';
 import { useApi } from '../hooks/useApi';
-import { useFollowEvents } from '../hooks/useFollowEvents';
+import { useAppContext } from '../contexts/AppContext';
 import { useAppSelector } from '../store/hooks';
 import { User } from '../@types/user';
 import { BASE_URL } from '../constants/config';
 
-interface FollowEvent {
-    type: 'follow' | 'unfollow';
-    userId: string;
-    targetUserId: string;
-}
-
 const FollowedUsersSection: React.FC = () => {
     const [loading, setLoading] = useState(true);
-    const [followedUsers, setFollowedUsers] = useState<User[]>([]);
     const { apiCall } = useApi();
-    const { subscribeToFollowEvents } = useFollowEvents();
+    const { followedUsers, setFollowedUsers } = useAppContext();
     const { isAuthenticated, user } = useAppSelector((state) => state.auth);
 
     const fetchFollowedUsers = async () => {
@@ -49,25 +42,12 @@ const FollowedUsersSection: React.FC = () => {
         fetchFollowedUsers();
     }, [isAuthenticated]);
 
-    // Listen to follow events for real-time updates
+    // Update followed users when context changes
     useEffect(() => {
-        if (!user) return;
-
-        const unsubscribe = subscribeToFollowEvents((event: FollowEvent) => {
-            if (event.userId === user._id) {
-                // Current user followed/unfollowed someone
-                if (event.type === 'follow') {
-                    // Add user to followed list (we'll need to fetch user details)
-                    fetchFollowedUsers();
-                } else if (event.type === 'unfollow') {
-                    // Remove user from followed list
-                    setFollowedUsers(prev => prev.filter(u => u._id !== event.targetUserId));
-                }
-            }
-        });
-
-        return unsubscribe;
-    }, [user, subscribeToFollowEvents]);
+        if (isAuthenticated) {
+            fetchFollowedUsers();
+        }
+    }, [followedUsers.length]);
 
     // Show message if not authenticated
     if (!isAuthenticated) {

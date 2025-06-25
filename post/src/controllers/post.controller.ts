@@ -403,3 +403,54 @@ export const getPost = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const getUserLikedPosts = async (req: Request, res: Response) => {
+    try {
+        const { id: userId } = req.params;
+
+        if (!userId || !await userIdExists(userId)) {
+            return res.status(400).json({
+                error: 'Valid user ID required'
+            });
+        }
+
+        const likedPosts = await PostModel.find({ likes: userId })
+            .populate('authorId')
+            .sort({ createdAt: -1 });
+
+        const postsWithAuthor = await Promise.all(likedPosts.map(async post => {
+            const postObj = post.toObject();
+            const author = postObj.authorId as unknown as IUser; // Type assertion for populated field
+
+            const commentsCount = await Comment.countDocuments({ postId: postObj._id });
+
+            if (!author) {
+                return {
+                    ...postObj,
+                    author: DELETED_USER,
+                    authorId: postObj.authorId,
+                    commentsCount: commentsCount
+                };
+            }
+
+            return {
+                ...postObj,
+                author: author,
+                authorId: (author as any)._id || author,
+                commentsCount: commentsCount
+            };
+        }));
+
+        return res.status(200).json({
+            message: 'User liked posts retrieved successfully',
+            userId: userId,
+            count: postsWithAuthor.length,
+            posts: postsWithAuthor
+        });
+    } catch (error) {
+        console.error('Error retrieving user liked posts:', error);
+        return res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
+};

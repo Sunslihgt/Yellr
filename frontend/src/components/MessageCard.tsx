@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PostWithAuthor } from '../@types/post';
 import { BASE_URL } from '../constants/config';
 import { useApi } from '../hooks/useApi';
+import { useAppContext } from '../contexts/AppContext';
 import { useAppSelector } from '../store/hooks';
 import { AiOutlineComment, AiOutlineHeart, AiOutlinePlus, AiFillHeart, AiOutlineShareAlt, AiOutlineMore, AiOutlineClose } from 'react-icons/ai';
 import { displayCount, formatTimeAgo } from '../utils/displayNumbers';
@@ -22,6 +23,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
     const [isEditing, setIsEditing] = useState(false);
     const [editedContent, setEditedContent] = useState(post.content);
     const { apiCall } = useApi();
+    const { triggerLikedPostsRefresh } = useAppContext();
     const { user } = useAppSelector((state) => state.auth);
     const [isLiking, setIsLiking] = useState(false);
     const [userHasLiked, setUserHasLiked] = useState(
@@ -136,6 +138,10 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
             const data = await response.json();
             setUserHasLiked(data.userHasLiked);
             setLikesCount(data.likesCount);
+            
+            if (user) {
+                triggerLikedPostsRefresh(user._id);
+            }
         } catch (error) {
             console.error('Error liking post:', error);
         } finally {
