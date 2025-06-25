@@ -35,6 +35,15 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
     const [commentsDisplayed, setCommentsDisplayed] = useState('0');
     const [showCommentSection, setShowCommentSection] = useState(false);
 
+    useEffect(() => {
+        setUserHasLiked(user ? post.likes.includes(user._id) : false);
+        setLikesCount(post.likes.length);
+    }, [post.likes, user]);
+
+    useEffect(() => {
+        setCommentsCount(post.commentsCount || 0);
+    }, [post.commentsCount]);
+
     // Display count with K, M, B for likes and comments
     useEffect(() => {
         setCommentsDisplayed(displayCount(commentsCount));

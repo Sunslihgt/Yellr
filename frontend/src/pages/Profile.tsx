@@ -363,7 +363,10 @@ const Profile: React.FC = () => {
                 <div className="max-w-2xl mx-auto">
                     <nav className="flex">
                         <button
-                            onClick={() => setActiveTab('posts')}
+                            onClick={() => {
+                                setActiveTab('posts');
+                                fetchUserPosts();
+                            }}
                             className={`flex-1 py-4 px-1 text-center text-sm font-medium border-b-2 ${
                                 activeTab === 'posts'
                                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
@@ -373,7 +376,10 @@ const Profile: React.FC = () => {
                             Posts
                         </button>
                         <button
-                            onClick={() => setActiveTab('likes')}
+                            onClick={() => {
+                                setActiveTab('likes');
+                                fetchUserLikedPosts();
+                            }}
                             className={`flex-1 py-4 px-1 text-center text-sm font-medium border-b-2 ${
                                 activeTab === 'likes'
                                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
