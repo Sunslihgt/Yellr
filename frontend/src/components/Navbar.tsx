@@ -20,7 +20,15 @@ function Navbar() {
     // Close user menu when clicking outside
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
-            if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+            // Check if the click target is the button itself
+            const target = event.target as HTMLElement;
+            const button = document.getElementById('user-menu-button');
+            
+            if (button && button.contains(target)) {
+                return; // Don't close if clicking on the button
+            }
+            
+            if (userMenuRef.current && !userMenuRef.current.contains(target)) {
                 setUserMenuOpen(false);
             }
         }
@@ -55,7 +63,7 @@ function Navbar() {
                     <div className="relative">
                         <button
                             type="button"
-                            className="flex items-center space-x-2 text-sm rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 md:bg-gray-800 md:pr-2 hover:bg-gray-700 transition-colors"
+                            className="flex items-center space-x-2 text-sm rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 md:bg-gray-300 md:dark:bg-gray-800 md:pr-2 hover:bg-gray-700 transition-colors"
                             id="user-menu-button"
                             aria-expanded="false"
                             onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -69,13 +77,16 @@ function Navbar() {
                                     onError={handleImageError}
                                 />
                             </div>
-                            <span className="text-white font-medium hidden md:block text-sm">
+                            <span className="text-gray-900 dark:text-white font-medium hidden md:block text-sm font-semibold">
                                 {user?.username || 'User'}
                             </span>
                         </button>
 
                         {userMenuOpen && (
-                            <div className="absolute right-0 mt-2 z-50 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600" ref={userMenuRef}>
+                            <div
+                                className="absolute right-0 mt-2 z-50 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"
+                                ref={userMenuRef}
+                            >
                                 <div className="px-4 py-3">
                                     <span className="block text-sm text-gray-900 dark:text-white">
                                         {user?.username || ''}
