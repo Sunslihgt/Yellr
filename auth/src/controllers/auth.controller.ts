@@ -20,7 +20,7 @@ export const register = async (
 ) => {
     try {
         const { username, email, password, bio, profilePictureUrl } = req.body;
-        
+
         if (!username || !email || !password) {
             return res.status(400).json({ msg: 'Username, email and password are required.' });
         }

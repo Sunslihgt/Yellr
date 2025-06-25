@@ -14,7 +14,7 @@ interface UserStats {
 const Profile: React.FC = () => {
     const { user, isAuthenticated, updateUser } = useAuth();
     const { apiCall } = useApi();
-    
+
     const [userPosts, setUserPosts] = useState<PostWithAuthor[]>([]);
     const [stats, setStats] = useState<UserStats>({
         postsCount: 0,
@@ -35,14 +35,14 @@ const Profile: React.FC = () => {
 
     const fetchUserPosts = async () => {
         if (!user?._id) return;
-        
+
         setIsLoadingPosts(true);
         try {
             const response = await apiCall(`/api/posts/user/${user._id}`, {
                 method: 'GET'
             });
             const data = await response.json();
-            
+
             if (data.posts) {
                 const postsWithAuthor = data.posts.map((post: any) => ({
                     ...post,
@@ -66,19 +66,19 @@ const Profile: React.FC = () => {
 
     const fetchUserStats = async () => {
         if (!user?._id) return;
-        
+
         setIsLoadingStats(true);
         try {
             const followersResponse = await apiCall(`/api/follow/followers/${user._id}`, {
                 method: 'GET'
             });
             const followersData = await followersResponse.json();
-            
+
             const followingResponse = await apiCall(`/api/follow/following/${user._id}`, {
                 method: 'GET'
             });
             const followingData = await followingResponse.json();
-            
+
             setStats(prev => ({
                 ...prev,
                 followersCount: Array.isArray(followersData) ? followersData.length : 0,
@@ -112,12 +112,12 @@ const Profile: React.FC = () => {
 
     const isValidImageUrl = (url: string): boolean => {
         if (!url) return true;
-        
+
         if (url.startsWith('data:image/')) {
             const base64Pattern = /^data:image\/(jpeg|jpg|png|gif|webp|svg\+xml);base64,/;
             return base64Pattern.test(url);
         }
-        
+
         try {
             const urlObj = new URL(url);
             return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
@@ -170,23 +170,23 @@ const Profile: React.FC = () => {
 
     const handleUpdateProfile = async () => {
         if (!user?._id) return;
-        
+
         setIsUpdating(true);
         try {
             const profilePictureUrl = editForm.profilePictureUrl.trim();
-            
+
             if (profilePictureUrl && !isValidImageUrl(profilePictureUrl)) {
                 alert('Please enter a valid image URL or base64 image.');
                 setIsUpdating(false);
                 return;
             }
-            
+
             console.log('Updating profile with:', {
                 profilePictureUrl: profilePictureUrl ? `${profilePictureUrl.substring(0, 50)}...` : 'empty',
                 bio: editForm.bio.trim(),
                 userId: user._id
             });
-            
+
             const response = await apiCall(`/api/users/${user._id}`, {
                 method: 'PUT',
                 headers: {
@@ -201,12 +201,12 @@ const Profile: React.FC = () => {
             if (response.ok) {
                 const updatedUser = await response.json();
                 console.log('Profile updated successfully:', updatedUser);
-                
+
                 updateUser(updatedUser);
-                
+
                 setImageError(false);
                 setImagePreviewError(false);
-                
+
                 setShowEditModal(false);
             } else {
                 const errorData = await response.json();
@@ -243,7 +243,7 @@ const Profile: React.FC = () => {
                 <div className="max-w-2xl mx-auto px-4 py-6">
                     {/* Back Button */}
                     <div className="flex items-center mb-6">
-                        <button 
+                        <button
                             onClick={() => window.history.back()}
                             className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                         >
@@ -277,9 +277,9 @@ const Profile: React.FC = () => {
                                         @{user.username}
                                     </p>
                                 </div>
-                                
+
                                 {/* Edit Profile Button */}
-                                <button 
+                                <button
                                     onClick={handleEditProfile}
                                     className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                                 >
@@ -432,7 +432,7 @@ const Profile: React.FC = () => {
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Profile Picture
                                 </label>
-                                
+
                                 {/* File Upload Button */}
                                 <div className="mb-3">
                                     <input

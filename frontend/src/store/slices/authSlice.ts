@@ -67,7 +67,7 @@ export const validateToken = createAsyncThunk(
         try {
             const state = getState() as { auth: AuthState };
             const token = state.auth.token;
-            
+
             if (!token) {
                 return rejectWithValue('No token available');
             }

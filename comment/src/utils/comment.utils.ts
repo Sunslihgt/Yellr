@@ -7,4 +7,4 @@ export const commentIdExists = async (commentId: string | undefined) => {
         return commentExists !== null;
     }
     return false;
-}; 
+};

@@ -17,7 +17,7 @@ const FollowedUsersSection: React.FC = () => {
             setLoading(false);
             return;
         }
-        
+
         try {
             setLoading(true);
             const response = await apiCall(`${BASE_URL}/api/follow/following`, {
@@ -39,7 +39,7 @@ const FollowedUsersSection: React.FC = () => {
 
     useEffect(() => {
         fetchFollowedUsers();
-    }, [isAuthenticated]);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Show message if not authenticated
     if (!isAuthenticated) {
@@ -85,4 +85,4 @@ const FollowedUsersSection: React.FC = () => {
     );
 };
 
-export default FollowedUsersSection; 
+export default FollowedUsersSection;
