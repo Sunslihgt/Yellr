@@ -21,7 +21,7 @@ const UserProfile: React.FC = () => {
     const { user: currentUser, isAuthenticated } = useAuth();
     const { apiCall } = useApi();
     const { followersCount, updateFollowersCount, refreshLikedPosts, triggerLikedPostsRefresh } = useAppContext();
-    
+
     const [profileUser, setProfileUser] = useState<User | null>(null);
     const [userPosts, setUserPosts] = useState<PostWithAuthor[]>([]);
     const [likedPosts, setLikedPosts] = useState<PostWithAuthor[]>([]);
@@ -37,52 +37,61 @@ const UserProfile: React.FC = () => {
     const [isLoadingStats, setIsLoadingStats] = useState(true);
     const [imageError, setImageError] = useState(false);
     const [userNotFound, setUserNotFound] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editForm, setEditForm] = useState({ profilePictureUrl: '', bio: '' });
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [imagePreviewError, setImagePreviewError] = useState(false);
 
-    const fetchUserByUsername = async () => {
-        if (!username) return;
-        
-        if (currentUser && username === currentUser.username) {
-            navigate('/profile', { replace: true });
+    const isOwnProfile = !username || (currentUser && profileUser && currentUser._id === profileUser._id);
+
+    useEffect(() => {
+        if (!username) { // Show current user if no username was provided
+            if (currentUser) {
+                setProfileUser(currentUser);
+                setIsLoadingUser(false);
+                setUserNotFound(false);
+            } else {
+                setIsLoadingUser(false);
+                setUserNotFound(true);
+            }
             return;
         }
-        
-        setIsLoadingUser(true);
-        try {
-            const response = await apiCall(`/api/users`, {
-                method: 'GET'
-            });
-            
-            if (response.ok) {
-                const users = await response.json();
-                const foundUser = users.find((u: User) => u.username === username);
-                
-                if (foundUser) {
-                    setProfileUser(foundUser);
-                    setUserNotFound(false);
+        // /user/:username route: fetch by username
+        const fetchUserByUsername = async () => {
+            setIsLoadingUser(true);
+            try {
+                const response = await apiCall(`/api/users`, { method: 'GET' });
+                if (response.ok) {
+                    const users = await response.json();
+                    const foundUser = users.find((u: User) => u.username === username);
+                    if (foundUser) {
+                        setProfileUser(foundUser);
+                        setUserNotFound(false);
+                    } else {
+                        setUserNotFound(true);
+                    }
                 } else {
                     setUserNotFound(true);
                 }
-            } else {
+            } catch (error) {
                 setUserNotFound(true);
+            } finally {
+                setIsLoadingUser(false);
             }
-        } catch (error) {
-            console.error('Error fetching user:', error);
-            setUserNotFound(true);
-        } finally {
-            setIsLoadingUser(false);
-        }
-    };
+        };
+        fetchUserByUsername();
+    }, [username, currentUser]);
 
     const fetchUserPosts = async () => {
         if (!profileUser?._id) return;
-        
+
         setIsLoadingPosts(true);
         try {
             const response = await apiCall(`/api/posts/user/${profileUser._id}`, {
                 method: 'GET'
             });
             const data = await response.json();
-            
+
             if (data.posts) {
                 const postsWithAuthor = data.posts.map((post: any) => ({
                     ...post,
@@ -106,14 +115,14 @@ const UserProfile: React.FC = () => {
 
     const fetchUserLikedPosts = async () => {
         if (!profileUser?._id) return;
-        
+
         setIsLoadingLikes(true);
         try {
             const response = await apiCall(`/api/posts/user/${profileUser._id}/liked`, {
                 method: 'GET'
             });
             const data = await response.json();
-            
+
             if (data.posts) {
                 setLikedPosts(data.posts);
             }
@@ -126,19 +135,19 @@ const UserProfile: React.FC = () => {
 
     const fetchUserStats = async () => {
         if (!profileUser?._id) return;
-        
+
         setIsLoadingStats(true);
         try {
             const followersResponse = await apiCall(`/api/follow/followers/${profileUser._id}`, {
                 method: 'GET'
             });
             const followersData = await followersResponse.json();
-            
+
             const followingResponse = await apiCall(`/api/follow/following/${profileUser._id}`, {
                 method: 'GET'
             });
             const followingData = await followingResponse.json();
-            
+
             setStats(prev => ({
                 ...prev,
                 followersCount: Array.isArray(followersData) ? followersData.length : 0,
@@ -152,10 +161,6 @@ const UserProfile: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchUserByUsername();
-    }, [username, currentUser]);
-
-    useEffect(() => {
         if (profileUser) {
             fetchUserPosts();
             fetchUserLikedPosts();
@@ -165,9 +170,18 @@ const UserProfile: React.FC = () => {
 
     useEffect(() => {
         if (!currentUser || !profileUser) return;
-        
+
         fetchUserLikedPosts();
     }, [currentUser, profileUser, refreshLikedPosts]);
+
+    useEffect(() => {
+        if (profileUser) {
+            setEditForm({
+                profilePictureUrl: profileUser.profilePictureUrl || '',
+                bio: profileUser.bio || ''
+            });
+        }
+    }, [profileUser]);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -203,6 +217,95 @@ const UserProfile: React.FC = () => {
             navigate(-1);
         } else {
             navigate('/');
+        }
+    };
+
+    const isValidImageUrl = (url: string): boolean => {
+        if (!url) return true;
+        if (url.startsWith('data:image/')) {
+            const base64Pattern = /^data:image\/(jpeg|jpg|png|gif|webp|svg\+xml);base64,/;
+            return base64Pattern.test(url);
+        }
+        try {
+            const urlObj = new URL(url);
+            return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+        } catch {
+            return false;
+        }
+    };
+
+    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image size cannot exceed 5MB.');
+            return;
+        }
+        if (!file.type.startsWith('image/')) {
+            alert('Please select a valid image file.');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const base64String = e.target?.result as string;
+            setEditForm(prev => ({ ...prev, profilePictureUrl: base64String }));
+            setImagePreviewError(false);
+        };
+        reader.onerror = () => {
+            alert('Error reading the file.');
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleEditProfile = () => {
+        setShowEditModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowEditModal(false);
+        if (profileUser) {
+            setEditForm({
+                profilePictureUrl: profileUser.profilePictureUrl || '',
+                bio: profileUser.bio || ''
+            });
+        }
+    };
+
+    const handleUpdateProfile = async () => {
+        if (!profileUser?._id) return;
+        setIsUpdating(true);
+        try {
+            const profilePictureUrl = editForm.profilePictureUrl.trim();
+            if (profilePictureUrl && !isValidImageUrl(profilePictureUrl)) {
+                alert('Please enter a valid image URL or base64 image.');
+                setIsUpdating(false);
+                return;
+            }
+            const response = await apiCall(`/api/users/${profileUser._id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    profilePictureUrl: profilePictureUrl,
+                    bio: editForm.bio.trim()
+                })
+            });
+            if (response.ok) {
+                const updatedUser = await response.json();
+                if (currentUser && currentUser._id === updatedUser._id && typeof window !== 'undefined') {
+                    window.location.reload();
+                }
+                setImageError(false);
+                setImagePreviewError(false);
+                setShowEditModal(false);
+                setProfileUser(updatedUser);
+            } else {
+                const errorData = await response.json();
+                alert(`Error updating profile: ${errorData.message || 'Please try again.'}`);
+            }
+        } catch (error) {
+            alert('Error updating profile. Please try again.');
+        } finally {
+            setIsUpdating(false);
         }
     };
 
@@ -292,12 +395,21 @@ const UserProfile: React.FC = () => {
                                         {profileUser.username}
                                     </h1>
                                 </div>
-                                {currentUser && currentUser._id !== profileUser._id && (
-                                    <FollowButton
-                                        userId={profileUser._id}
-                                        className="mt-2 md:mt-0 md:ml-4 lg:mt-0 lg:ml-4"
-                                        onFollowChange={handleFollowChange}
-                                    />
+                                {isOwnProfile ? (
+                                    <button
+                                        onClick={handleEditProfile}
+                                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors mt-2 md:mt-0 md:ml-4 lg:mt-0 lg:ml-4"
+                                    >
+                                        Edit Profile
+                                    </button>
+                                ) : (
+                                    currentUser && currentUser._id !== profileUser._id && (
+                                        <FollowButton
+                                            userId={profileUser._id}
+                                            className="mt-2 md:mt-0 md:ml-4 lg:mt-0 lg:ml-4"
+                                            onFollowChange={handleFollowChange}
+                                        />
+                                    )
                                 )}
                             </div>
 
@@ -461,6 +573,145 @@ const UserProfile: React.FC = () => {
                     </div>
                 )}
             </div>
+
+            {isOwnProfile && showEditModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                Edit Profile
+                            </h2>
+                            <button
+                                onClick={handleCloseModal}
+                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        {/* Modal Content */}
+                        <div className="p-4 space-y-4">
+                            {/* Profile Picture */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Profile Picture
+                                </label>
+                                {/* File Upload Button */}
+                                <div className="mb-3">
+                                    <input
+                                        type="file"
+                                        id="imageUpload"
+                                        accept="image/*"
+                                        onChange={handleFileUpload}
+                                        className="hidden"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => document.getElementById('imageUpload')?.click()}
+                                        className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                                    >
+                                        Choose Image
+                                    </button>
+                                    <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+                                        or paste URL below
+                                    </span>
+                                </div>
+                                {/* URL Input */}
+                                <textarea
+                                    id="profilePictureUrl"
+                                    rows={3}
+                                    value={editForm.profilePictureUrl}
+                                    onChange={(e) => {
+                                        setEditForm(prev => ({ ...prev, profilePictureUrl: e.target.value }));
+                                        setImagePreviewError(false);
+                                    }}
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
+                                    placeholder="https://example.com/your-photo.jpg ou data:image/jpeg;base64,..."
+                                />
+                                <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                    <p className="mb-1">Accepted formats:</p>
+                                    <ul className="list-disc list-inside space-y-1">
+                                        <li>Image file (max 5MB): JPEG, PNG, GIF, WebP</li>
+                                        <li>Image URL: https://example.com/photo.jpg</li>
+                                        <li>Base64 image: data:image/jpeg;base64,/9j/4AAQ...</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            {/* Preview */}
+                            {editForm.profilePictureUrl && (
+                                <div>
+                                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview:</p>
+                                    <div className="flex items-center space-x-4">
+                                        <img
+                                            src={editForm.profilePictureUrl}
+                                            alt="Profile preview"
+                                            className="w-20 h-20 rounded-full border-2 border-gray-300 dark:border-gray-600 object-cover"
+                                            onError={() => setImagePreviewError(true)}
+                                            onLoad={() => setImagePreviewError(false)}
+                                            style={{ display: imagePreviewError ? 'none' : 'block' }}
+                                        />
+                                        {imagePreviewError && (
+                                            <div className="w-20 h-20 rounded-full border-2 border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+                                                <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                                </svg>
+                                            </div>
+                                        )}
+                                        <div className="flex-1">
+                                            {imagePreviewError ? (
+                                                <p className="text-sm text-red-600 dark:text-red-400">
+                                                    Cannot load image. Please check URL or format.
+                                                </p>
+                                            ) : (
+                                                <p className="text-sm text-green-600 dark:text-green-400">
+                                                    Valid image ✓
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {/* Bio */}
+                            <div>
+                                <label htmlFor="bio" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Bio
+                                </label>
+                                <textarea
+                                    id="bio"
+                                    rows={4}
+                                    value={editForm.bio}
+                                    onChange={(e) => setEditForm(prev => ({ ...prev, bio: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                    placeholder="Tell us about yourself..."
+                                    maxLength={200}
+                                />
+                                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                    {editForm.bio.length}/200 characters
+                                </p>
+                            </div>
+                        </div>
+                        {/* Modal Footer */}
+                        <div className="flex items-center justify-end space-x-3 p-4 border-t border-gray-200 dark:border-gray-700">
+                            <button
+                                onClick={handleCloseModal}
+                                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                                disabled={isUpdating}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleUpdateProfile}
+                                disabled={isUpdating}
+                                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                {isUpdating ? 'Saving...' : 'Save Changes'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
