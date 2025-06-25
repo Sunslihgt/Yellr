@@ -461,19 +461,19 @@ const UserProfile: React.FC = () => {
                                         <span className="font-bold text-gray-900 dark:text-white">
                                             {isLoadingStats ? '...' : stats.postsCount}
                                         </span>
-                                        <span className="text-gray-500 dark:text-gray-400 ml-1">Posts</span>
-                                    </div>
-                                    <div className="text-sm">
-                                        <span className="font-bold text-gray-900 dark:text-white">
-                                            {isLoadingStats ? '...' : stats.followingCount}
-                                        </span>
-                                        <span className="text-gray-500 dark:text-gray-400 ml-1">Following</span>
+                                        <span className="text-gray-500 dark:text-gray-400 ml-1">Post{stats.postsCount != 1 ? 's' : ''}</span>
                                     </div>
                                     <div className="text-sm">
                                         <span className="font-bold text-gray-900 dark:text-white">
                                             {isLoadingStats ? '...' : stats.followersCount}
                                         </span>
-                                        <span className="text-gray-500 dark:text-gray-400 ml-1">Followers</span>
+                                        <span className="text-gray-500 dark:text-gray-400 ml-1">Follower{stats.followersCount != 1 ? 's' : ''}</span>
+                                    </div>
+                                    <div className="text-sm">
+                                        <span className="font-bold text-gray-900 dark:text-white">
+                                            {isLoadingStats ? '...' : stats.followingCount}
+                                        </span>
+                                        <span className="text-gray-500 dark:text-gray-400 ml-1">Follow{stats.followingCount != 1 ? 's' : ''}</span>
                                     </div>
                                 </div>
                             </div>
@@ -498,19 +498,19 @@ const UserProfile: React.FC = () => {
                                 <span className="font-bold text-gray-900 dark:text-white">
                                     {isLoadingStats ? '...' : stats.postsCount}
                                 </span>
-                                <span className="text-gray-500 dark:text-gray-400 ml-1">Posts</span>
-                            </div>
-                            <div className="text-sm">
-                                <span className="font-bold text-gray-900 dark:text-white">
-                                    {isLoadingStats ? '...' : stats.followingCount}
-                                </span>
-                                <span className="text-gray-500 dark:text-gray-400 ml-1">Following</span>
+                                <span className="text-gray-500 dark:text-gray-400 ml-1">Post{stats.postsCount != 1 ? 's' : ''}</span>
                             </div>
                             <div className="text-sm">
                                 <span className="font-bold text-gray-900 dark:text-white">
                                     {isLoadingStats ? '...' : stats.followersCount}
                                 </span>
-                                <span className="text-gray-500 dark:text-gray-400 ml-1">Followers</span>
+                                <span className="text-gray-500 dark:text-gray-400 ml-1">Follower{stats.followersCount !== 1 ? 's' : ''}</span>
+                            </div>
+                            <div className="text-sm">
+                                <span className="font-bold text-gray-900 dark:text-white">
+                                    {isLoadingStats ? '...' : stats.followingCount}
+                                </span>
+                                <span className="text-gray-500 dark:text-gray-400 ml-1">Follow{stats.followingCount != 1 ? 's' : ''}</span>
                             </div>
                         </div>
                     </div>

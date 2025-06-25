@@ -11,7 +11,6 @@ import { PostWithAuthor, PostsResponse } from '../@types/post';
 import { BASE_URL } from '../constants/config';
 
 const POSTS_FETCH_LIMIT = 5;
-const POSTS_FETCH_DELAY = 150;
 
 function PostsWithSkeleton() {
     const [loading, setLoading] = useState(true);
@@ -159,10 +158,7 @@ function PostsWithSkeleton() {
                                                 onClick={() => {
                                                     // Show skeletons while loading
                                                     setPosts(posts.concat(Array.from({ length: 2 }).map((_, i) => null)));
-                                                    // Dummy wait to show loading skeletons
-                                                    setTimeout(() => {
-                                                        fetchPosts(offset, true);
-                                                    }, POSTS_FETCH_DELAY);
+                                                    fetchPosts(offset, true);
                                                 }}
                                                 disabled={loading}
                                             >
