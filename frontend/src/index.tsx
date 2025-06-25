@@ -45,7 +45,7 @@ root.render(
                             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                             <Route path="/posts" element={<ProtectedRoute><PostsWithSkeleton /></ProtectedRoute>} />
                             {/* Fallback route for any unmatched paths */}
-                            <Route path="*" element={<AppWithSkeleton />} />
+                            <Route path="*" element={<ErrorPage errorCode={404} />} />
                         </Routes>
                     </Layout>
                 </BrowserRouter>
