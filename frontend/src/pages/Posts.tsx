@@ -110,8 +110,8 @@ function PostsWithSkeleton() {
     return (
         <div className='bg-gray-100 dark:bg-gray-800'>
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
-                <div className="lg:col-span-3">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden">
+                <div className="lg:col-span-3 h-full">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden overflow-y-auto scrollbar-hide">
                         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                             <h1 className="text-xl font-semibold text-gray-900 dark:text-white">What&apos;s new ?</h1>
                         </div>
@@ -120,7 +120,7 @@ function PostsWithSkeleton() {
                         {/* Search Pane UI */}
                         <PostSearchPane onFoldChange={setSearchPaneFolded} onSearch={handleSearch} />
                         {/* Posts */}
-                        <div className={`overflow-y-auto scrollbar-hide p-4 ${searchPaneFolded ? 'h-[calc(100%-64px-64px-116px)]' : 'h-[calc(100%-64px-180px-116px)]'}`}>
+                        <div className="p-4">
                             {loading && posts.length === 0 ? (
                                 Array.from({ length: 2 }).map((_, i) => <SkeletonMessageCard key={i} />)
                             ) : error ? (

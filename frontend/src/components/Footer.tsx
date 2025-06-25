@@ -2,7 +2,7 @@ import React from 'react';
 
 function Footer() {
     return (
-        <footer className="bg-white shadow-sm dark:bg-gray-900 fixed bottom-0 left-0 w-full z-50">
+        <footer className="hidden md:block bg-white shadow-sm dark:bg-gray-900 fixed bottom-0 left-0 w-full z-50 hidden md:block">
             <div className="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
                 <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
                     <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">

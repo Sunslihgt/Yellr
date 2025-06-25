@@ -237,7 +237,7 @@ const UserProfile: React.FC = () => {
                         User not found
                     </h2>
                     <p className="text-gray-600 dark:text-gray-400 mb-4">
-                        The user @{username} does not exist.
+                        The user {username} does not exist.
                     </p>
                     <button
                         onClick={() => navigate('/')}
@@ -277,7 +277,7 @@ const UserProfile: React.FC = () => {
                         {/* Avatar */}
                         <div className="flex-shrink-0">
                             <img
-                                className="h-24 w-24 rounded-full border-4 border-white dark:border-gray-800 shadow-lg"
+                                className="h-16 w-16 lg:h-24 lg:w-24 rounded-full border-4 border-white dark:border-gray-800 shadow-lg"
                                 src={imageError || !profileUser.profilePictureUrl ? '/assets/default-avatar.jpg' : profileUser.profilePictureUrl}
                                 alt={`${profileUser.username} avatar`}
                                 onError={handleImageError}
@@ -286,61 +286,89 @@ const UserProfile: React.FC = () => {
 
                         {/* User Info */}
                         <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col md:flex-row lg:flex-row flex-wrap items-start gap-x-4 gap-y-2 md:justify-between lg:justify-between">
                                 <div>
-                                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white break-words">
                                         {profileUser.username}
                                     </h1>
-                                    <p className="text-gray-500 dark:text-gray-400">
-                                        @{profileUser.username}
-                                    </p>
                                 </div>
-                                
-                                {/* Follow Button */}
                                 {currentUser && currentUser._id !== profileUser._id && (
-                                    <FollowButton 
-                                        userId={profileUser._id} 
-                                        className="ml-4" 
+                                    <FollowButton
+                                        userId={profileUser._id}
+                                        className="mt-2 md:mt-0 md:ml-4 lg:mt-0 lg:ml-4"
                                         onFollowChange={handleFollowChange}
                                     />
                                 )}
                             </div>
 
-                            {/* Bio */}
-                            {profileUser.bio && (
-                                <p className="mt-3 text-gray-900 dark:text-white">
-                                    {profileUser.bio}
-                                </p>
-                            )}
-
-                            {/* Join Date */}
-                            <div className="flex items-center mt-3 text-gray-500 dark:text-gray-400">
-                                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                Joined {formatDate(profileUser.createdAt.toString())}
+                            {/* Bio, Join Date, Stats for md+ screens */}
+                            <div className="hidden md:block">
+                                {profileUser.bio && (
+                                    <p className="mt-3 text-gray-900 dark:text-white">
+                                        {profileUser.bio}
+                                    </p>
+                                )}
+                                <div className="flex items-center mt-3 text-gray-500 dark:text-gray-400">
+                                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    Joined {formatDate(profileUser.createdAt.toString())}
+                                </div>
+                                <div className="flex items-center space-x-6 mt-4">
+                                    <div className="text-sm">
+                                        <span className="font-bold text-gray-900 dark:text-white">
+                                            {isLoadingStats ? '...' : stats.postsCount}
+                                        </span>
+                                        <span className="text-gray-500 dark:text-gray-400 ml-1">Posts</span>
+                                    </div>
+                                    <div className="text-sm">
+                                        <span className="font-bold text-gray-900 dark:text-white">
+                                            {isLoadingStats ? '...' : stats.followingCount}
+                                        </span>
+                                        <span className="text-gray-500 dark:text-gray-400 ml-1">Following</span>
+                                    </div>
+                                    <div className="text-sm">
+                                        <span className="font-bold text-gray-900 dark:text-white">
+                                            {isLoadingStats ? '...' : stats.followersCount}
+                                        </span>
+                                        <span className="text-gray-500 dark:text-gray-400 ml-1">Followers</span>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+                    </div>
 
-                            {/* Stats */}
-                            <div className="flex items-center space-x-6 mt-4">
-                                <div className="text-sm">
-                                    <span className="font-bold text-gray-900 dark:text-white">
-                                        {isLoadingStats ? '...' : stats.postsCount}
-                                    </span>
-                                    <span className="text-gray-500 dark:text-gray-400 ml-1">Posts</span>
-                                </div>
-                                <div className="text-sm">
-                                    <span className="font-bold text-gray-900 dark:text-white">
-                                        {isLoadingStats ? '...' : stats.followingCount}
-                                    </span>
-                                    <span className="text-gray-500 dark:text-gray-400 ml-1">Following</span>
-                                </div>
-                                <div className="text-sm">
-                                    <span className="font-bold text-gray-900 dark:text-white">
-                                        {isLoadingStats ? '...' : stats.followersCount}
-                                    </span>
-                                    <span className="text-gray-500 dark:text-gray-400 ml-1">Followers</span>
-                                </div>
+                    {/* Bio, Join Date, Stats for small screens */}
+                    <div className="block md:hidden mt-4 w-full">
+                        {profileUser.bio && (
+                            <p className="text-gray-900 dark:text-white">
+                                {profileUser.bio}
+                            </p>
+                        )}
+                        <div className="flex items-center mt-3 text-gray-500 dark:text-gray-400">
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Joined {formatDate(profileUser.createdAt.toString())}
+                        </div>
+                        <div className="flex flex-row flex-wrap gap-x-4 gap-y-2 mt-4">
+                            <div className="text-sm">
+                                <span className="font-bold text-gray-900 dark:text-white">
+                                    {isLoadingStats ? '...' : stats.postsCount}
+                                </span>
+                                <span className="text-gray-500 dark:text-gray-400 ml-1">Posts</span>
+                            </div>
+                            <div className="text-sm">
+                                <span className="font-bold text-gray-900 dark:text-white">
+                                    {isLoadingStats ? '...' : stats.followingCount}
+                                </span>
+                                <span className="text-gray-500 dark:text-gray-400 ml-1">Following</span>
+                            </div>
+                            <div className="text-sm">
+                                <span className="font-bold text-gray-900 dark:text-white">
+                                    {isLoadingStats ? '...' : stats.followersCount}
+                                </span>
+                                <span className="text-gray-500 dark:text-gray-400 ml-1">Followers</span>
                             </div>
                         </div>
                     </div>
@@ -437,4 +465,4 @@ const UserProfile: React.FC = () => {
     );
 };
 
-export default UserProfile; 
+export default UserProfile;

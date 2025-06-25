@@ -58,7 +58,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                 <img
                     src={imageError || !comment.author.profilePictureUrl ? '/assets/default-avatar.jpg' : comment.author.profilePictureUrl}
                     alt={comment.author.username}
-                    className="w-8 h-8 rounded-full object-cover"
+                    className="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover"
                     onError={handleImageError}
                 />
                 <div className="flex-1">

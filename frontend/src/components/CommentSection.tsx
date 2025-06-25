@@ -44,7 +44,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, 
 
     useEffect(() => {
         fetchComments();
-    }, [postId, fetchComments]);
+    }, [postId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleLike = async (commentId: string) => {
         if (!user || liking) return;

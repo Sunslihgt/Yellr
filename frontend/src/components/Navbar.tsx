@@ -76,10 +76,10 @@ function Navbar() {
                             <div className="absolute right-0 mt-2 z-50 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600" ref={userMenuRef}>
                                 <div className="px-4 py-3">
                                     <span className="block text-sm text-gray-900 dark:text-white">
-                                        {user?.username || 'User'}
+                                        {user?.username || ''}
                                     </span>
                                     <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
-                                        {user?.email || 'user@example.com'}
+                                        {user?.email || ''}
                                     </span>
                                 </div>
                                 <ul className="py-2">

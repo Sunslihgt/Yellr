@@ -147,7 +147,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
             const data = await response.json();
             setUserHasLiked(data.userHasLiked);
             setLikesCount(data.likesCount);
-            
+
             if (user) {
                 triggerLikedPostsRefresh(user._id);
             }
@@ -195,7 +195,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                 {/* Avatar */}
                 <div className="flex-shrink-0">
                     <img
-                        className="h-14 w-14 rounded-full cursor-pointer hover:opacity-80 transition-opacity"
+                        className="h-10 w-10 md:h-14 md:w-14 rounded-full cursor-pointer hover:opacity-80 transition-opacity"
                         src={imageError || !post.author.profilePictureUrl ? '/assets/default-avatar.jpg' : post.author.profilePictureUrl}
                         alt={`${post.author.username} avatar`}
                         onError={handleImageError}
@@ -206,15 +206,17 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                     {/* Header */}
-                    <div className="flex items-center space-x-2 mb-1">
-                        <span className="font-bold text-lg text-gray-900 dark:text-white hover:underline cursor-pointer" onClick={handleUserClick}>
+                    <div className="flex items-center space-x-2 mb-1 w-full flex-wrap">
+                        <span className="font-bold text-lg text-gray-900 dark:text-white hover:underline cursor-pointer break-words" onClick={handleUserClick}>
                             {post.author.username}
                         </span>
-                        <span className="text-gray-500 dark:text-gray-400">· {formatTimeAgo(post.createdAt)}
-                        </span>
-                        {post.updatedAt && post.updatedAt > post.createdAt && (
-                            <span className="text-gray-500 dark:text-gray-400">· Edited {formatTimeAgo(post.updatedAt)}</span>
-                        )}
+                        <div>
+                            <span className="text-gray-500 dark:text-gray-400">· {formatTimeAgo(post.createdAt)}
+                            </span>
+                            {post.updatedAt && post.updatedAt > post.createdAt && (
+                                <span className="text-gray-500 dark:text-gray-400">· Edited {formatTimeAgo(post.updatedAt)}</span>
+                            )}
+                        </div>
                     </div>
 
                     {/* Message content */}
@@ -245,7 +247,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                             </div>
                         </div>
                     ) : (
-                        <p className="text-gray-900 dark:text-white text-base leading-relaxed mb-3">
+                        <p className="text-gray-900 dark:text-white text-base leading-relaxed mb-3 break-words">
                             {post.content}
                         </p>
                     )}
