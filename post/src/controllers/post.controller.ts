@@ -193,11 +193,11 @@ export const likePost = async (req: JwtUserRequest, res: Response) => {
         const updatedPost = hasLiked ? await PostModel.findByIdAndUpdate(
             id,
             { $pull: { likes: userId } },
-            { new: true }
+            { new: true, timestamps: false }
         ) : await PostModel.findByIdAndUpdate(
             id,
             { $addToSet: { likes: userId } },
-            { new: true }
+            { new: true, timestamps: false }
         );
 
         if (!updatedPost) {
@@ -314,6 +314,17 @@ export const searchPosts = async (req: JwtUserRequest, res: Response) => {
         if (authors && authors.length > 0) {
             const authorIds = await UserModel.find({ username: { $in: authors } }).select('_id');
             userIds.push(...authorIds.map(author => author._id.toString()));
+
+            if (userIds.length === 0) {
+                return res.status(200).json({
+                    message: 'No authors found',
+                    count: 0,
+                    totalCount: 0,
+                    limit: limit,
+                    offset: offset,
+                    posts: []
+                });
+            }
         }
         if (subscribedOnly && req.jwtUserId) {
             const followingIds = await FollowModel.find({ follower: req.jwtUserId }).select('following');

@@ -115,10 +115,10 @@ function PostsWithSkeleton() {
                         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                             <h1 className="text-xl font-semibold text-gray-900 dark:text-white">What&apos;s new ?</h1>
                         </div>
-                        {/* Add PostHeader component */}
-                        <CreatePost onPostCreated={() => fetchPosts(0, false)} />
                         {/* Search Pane UI */}
                         <PostSearchPane onFoldChange={setSearchPaneFolded} onSearch={handleSearch} />
+                        {/* Add PostHeader component */}
+                        <CreatePost onPostCreated={() => fetchPosts(0, false)} />
                         {/* Posts */}
                         <div className="p-4">
                             {loading && posts.length === 0 ? (

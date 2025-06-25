@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { AiOutlineHeart, AiFillHeart, AiOutlinePlus } from 'react-icons/ai';
 import { formatTimeAgo } from '../utils/displayNumbers';
+import { extractHashtags } from '../utils/hashtags';
 import { CommentWithAuthor } from '../@types/comment';
+import HashtagContent from './HashtagContent';
 
 interface CommentItemProps {
     comment: CommentWithAuthor;
@@ -83,6 +85,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
                                 maxLength={280}
                                 disabled={submitting}
                             />
+                            {/* Display extracted hashtags */}
+                            {extractHashtags(editContent).length > 0 && (
+                                <div className="text-xs mt-1 text-blue-600 dark:text-blue-100 flex flex-wrap gap-1">
+                                    {extractHashtags(editContent).map((tag, idx) => (
+                                        <span key={idx} className="font-medium bg-blue-100 dark:bg-blue-900 rounded px-1.5 py-0.5 break-words max-w-full">{tag}</span>
+                                    ))}
+                                </div>
+                            )}
                             <div className="flex justify-end space-x-2">
                                 <button
                                     type="button"
@@ -102,7 +112,9 @@ const CommentItem: React.FC<CommentItemProps> = ({
                             </div>
                         </form>
                     ) : (
-                        <div className="text-gray-900 dark:text-gray-100 text-sm mt-1 mb-2">{comment.content}</div>
+                        <div className="text-gray-900 dark:text-gray-100 text-sm mt-1 mb-2">
+                            <HashtagContent content={comment.content} />
+                        </div>
                     )}
                     {/* Actions */}
                     <div className="flex items-center space-x-4 text-xs">
@@ -144,6 +156,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
                                 maxLength={280}
                                 disabled={submitting}
                             />
+                            {/* Display extracted hashtags */}
+                            {extractHashtags(newComment).length > 0 && (
+                                <div className="text-xs mt-1 text-blue-600 dark:text-blue-100 flex flex-wrap gap-1">
+                                    {extractHashtags(newComment).map((tag, idx) => (
+                                        <span key={idx} className="font-medium bg-blue-100 dark:bg-blue-900 rounded px-1.5 py-0.5 break-words max-w-full">{tag}</span>
+                                    ))}
+                                </div>
+                            )}
                             <div className="flex justify-end space-x-2">
                                 <button
                                     type="button"

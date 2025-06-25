@@ -8,6 +8,8 @@ import { useAppSelector } from '../store/hooks';
 import { AiOutlineComment, AiOutlineHeart, AiFillHeart, AiOutlineShareAlt, AiOutlineMore, AiOutlineClose } from 'react-icons/ai';
 import { displayCount, formatTimeAgo } from '../utils/displayNumbers';
 import CommentSection from './CommentSection';
+import { extractHashtags } from '../utils/hashtags';
+import HashtagContent from './HashtagContent';
 
 interface MessageCardProps {
     post: PostWithAuthor;
@@ -99,7 +101,10 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ content: editedContent }),
+                body: JSON.stringify({
+                    content: editedContent,
+                    tags: editHashtags,
+                }),
             });
 
             if (!response.ok) {
@@ -159,6 +164,8 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
     };
 
     const isAuthor = user?._id === post.author._id;
+
+    const editHashtags = extractHashtags(editedContent);
 
     return (
         <article className="border-b border-gray-200 dark:border-gray-700 py-2 lg:py-4 px-2 sm:px-2 md:px-8 lg:px-20 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors relative">
@@ -231,6 +238,13 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                                          resize-none"
                                 rows={3}
                             />
+                            {editHashtags.length > 0 && (
+                                <div className="text-sm mt-1 text-blue-600 dark:text-blue-100 flex flex-wrap gap-2">
+                                    {editHashtags.map((tag, idx) => (
+                                        <span key={idx} className="font-semibold bg-blue-100 dark:bg-blue-900 rounded px-2 py-0.5 break-words max-w-full">{tag}</span>
+                                    ))}
+                                </div>
+                            )}
                             <div className="flex justify-end space-x-2 mt-2">
                                 <button
                                     onClick={() => setIsEditing(false)}
@@ -248,7 +262,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                         </div>
                     ) : (
                         <p className="text-gray-900 dark:text-white text-base leading-relaxed mb-3 break-words">
-                            {post.content}
+                            <HashtagContent content={post.content} />
                         </p>
                     )}
 
@@ -258,13 +272,13 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                         <button
                             onClick={handleLike}
                             disabled={!user || isLiking}
-                            className={`flex items-center space-x-2 transition-colors group ${userHasLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
+                            className="flex items-center space-x-2 text-gray-500 hover:text-red-500 transition-colors group"
                             aria-pressed={userHasLiked}
                         >
                             {userHasLiked ? (
-                                <AiFillHeart className="w-5 h-5 group-hover:bg-red-50 dark:group-hover:bg-red-900/20 rounded-full p-1"/>
+                                <AiFillHeart className={`w-5 h-5 rounded-full p-1 ${userHasLiked ? 'text-red-500' : ''}`}/>
                             ) : (
-                                <AiOutlineHeart className="w-5 h-5 group-hover:bg-red-50 dark:group-hover:bg-red-900/20 rounded-full p-1"/>
+                                <AiOutlineHeart className={`w-5 h-5 rounded-full p-1 ${userHasLiked ? 'text-red-500' : ''}`}/>
                             )}
                             <span className="text-sm">{likesDisplayed}</span>
                         </button>
@@ -282,10 +296,10 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                             <span className="text-sm">{commentsDisplayed}</span>
                         </button>
 
-                        {/* Share */}
+                        {/* Share, not implemented yet */}
                         <button
                             onClick={handleShare}
-                            className="flex items-center space-x-2 text-gray-500 hover:text-blue-500 transition-colors group relative"
+                            className="hidden flex items-center space-x-2 text-gray-500 hover:text-blue-500 transition-colors group relative"
                         >
                             <AiOutlineShareAlt />
                             {showCopiedMessage && (
