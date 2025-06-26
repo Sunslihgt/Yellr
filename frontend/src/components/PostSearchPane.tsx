@@ -20,7 +20,7 @@ const PostSearchPane = forwardRef<{ getSearchRequest: () => SearchRequestBody },
         { onFoldChange, onSearch }, ref
     ) => {
         const [content, setContent] = useState('');
-        const [authors, setAuthors] = useState<string[]>([]);
+        const [author, setAuthor] = useState('');
         const [tags, setTags] = useState<string[]>([]);
         const [subscribedOnly, setSubscribedOnly] = useState(false);
         const [folded, setFolded] = useState(true);
@@ -28,11 +28,11 @@ const PostSearchPane = forwardRef<{ getSearchRequest: () => SearchRequestBody },
         useImperativeHandle(ref, () => ({
             getSearchRequest: () => ({
                 content,
-                authors,
+                authors: [author],
                 tags,
                 subscribedOnly,
             }),
-        }), [content, authors, tags, subscribedOnly]);
+        }), [content, author, tags, subscribedOnly]);
 
         const handleFoldChange = (newFolded: boolean) => {
             setFolded(newFolded);
@@ -45,7 +45,7 @@ const PostSearchPane = forwardRef<{ getSearchRequest: () => SearchRequestBody },
             }
             const searchRequest: SearchRequestBody = {
                 content,
-                authors,
+                authors: [author],
                 tags,
                 subscribedOnly,
             };
@@ -96,15 +96,26 @@ const PostSearchPane = forwardRef<{ getSearchRequest: () => SearchRequestBody },
                         </div>
                         {/* Second row: checkbox and post selector */}
                         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
-                            {/* Author selector search bar (improved multi-tag input) */}
-                            <TagInput tags={authors} setTags={setAuthors} placeholder="Authors..." />
+                            {/* Author search input */}
+                            <input
+                                type="text"
+                                className="flex-1 px-4 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Author..."
+                                value={author}
+                                onChange={(e) => setAuthor(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleSearch(null);
+                                    }
+                                }}
+                            />
                             {/* Tags selector search bar (improved multi-tag input) */}
                             <TagInput tags={tags} setTags={setTags} placeholder="Tags..." />
                             {/* Subscribers only toggle button */}
                             <ToggleButton
                                 checked={subscribedOnly}
                                 onChange={setSubscribedOnly}
-                                label="Subscribed only"
+                                label="Followed only"
                             />
                         </div>
                     </form>

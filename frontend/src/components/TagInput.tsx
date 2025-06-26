@@ -14,10 +14,12 @@ const TagInput: React.FC<TagInputProps> = ({ tags, setTags, placeholder = 'Tags.
         if ((e.key === 'Enter' || e.key === ' ' || e.key === ',') && tagInput.trim()) {
             e.preventDefault();
             const newTag = tagInput.trim();
-            if (newTag && !tags.includes(newTag)) {
+            if (newTag && newTag.startsWith('#') && newTag.length > 1 && !tags.includes(newTag)) {
                 setTags([...tags, newTag]);
+            } else if (newTag && !newTag.startsWith('#') && !tags.includes(newTag)) {
+                setTags([...tags, '#' + newTag]);
             }
-            setTagInput('');
+            setTagInput('#');
         } else if (e.key === 'Backspace' && !tagInput && tags.length > 0) {
             // Remove last tag if input is empty and backspace is pressed
             setTags(tags.slice(0, -1));
@@ -28,12 +30,27 @@ const TagInput: React.FC<TagInputProps> = ({ tags, setTags, placeholder = 'Tags.
         setTags(tags.filter((_, i) => i !== index));
     };
 
+    const handleOnFocus = () => {
+        if (tagInput === '') {
+            setTagInput('#');
+        }
+    };
+
+    // Add tag when input is blurred
+    const handleTagInputBlur = () => {
+        const newTag = tagInput.trim();
+        if (newTag && newTag.startsWith('#') && newTag.length > 1 && !tags.includes(newTag)) {
+            setTags([...tags, newTag]);
+        }
+        setTagInput('');
+    };
+
     return (
         <div className="flex-1 flex flex-wrap items-center gap-2 px-4 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800">
             {tags.map((tag, idx) => (
                 <span
                     key={tag}
-                    className="flex items-center bg-blue-100 text-blue-800 pl-3 pr-2 rounded-full text-s"
+                    className="flex items-center bg-blue-100 text-blue-800 pl-3 pr-2 rounded-full text-sm"
                 >
                     {tag}
                     <button
@@ -53,6 +70,8 @@ const TagInput: React.FC<TagInputProps> = ({ tags, setTags, placeholder = 'Tags.
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleTagInputKeyDown}
+                onFocus={handleOnFocus}
+                onBlur={handleTagInputBlur}
             />
         </div>
     );

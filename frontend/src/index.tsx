@@ -10,7 +10,6 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Logout from './pages/Logout';
 import Notifications from './pages/Notifications';
-import Profile from './pages/Profile';
 import UserProfile from './pages/UserProfile';
 import PostsWithSkeleton from './pages/Posts';
 import ErrorPage from './pages/ErrorPage';
@@ -40,7 +39,7 @@ root.render(
                             <Route path="/register" element={<Register />} />
                             <Route path="/logout" element={<Logout />} />
                             <Route path="/" element={<ProtectedRoute><PostsWithSkeleton /></ProtectedRoute>} />
-                            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                            <Route path="/user" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
                             <Route path="/user/:username" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
                             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                             <Route path="/posts" element={<ProtectedRoute><PostsWithSkeleton /></ProtectedRoute>} />

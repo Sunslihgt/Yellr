@@ -8,6 +8,9 @@ import { useAppSelector } from '../store/hooks';
 import { AiOutlineComment, AiOutlineHeart, AiFillHeart, AiOutlineShareAlt, AiOutlineMore, AiOutlineClose } from 'react-icons/ai';
 import { displayCount, formatTimeAgo } from '../utils/displayNumbers';
 import CommentSection from './CommentSection';
+import { extractHashtags } from '../utils/hashtags';
+import HashtagContent from './HashtagContent';
+import { copyToClipboard } from '../utils/copyToClipboard';
 
 interface MessageCardProps {
     post: PostWithAuthor;
@@ -63,28 +66,12 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
 
     const handleShare = async () => {
         const shareUrl = `${BASE_URL}/posts/${post._id}`;
+        copyToClipboard(shareUrl);
 
-        try {
-            await navigator.clipboard.writeText(shareUrl);
-            setShowCopiedMessage(true);
-
-            setTimeout(() => {
-                setShowCopiedMessage(false);
-            }, 2000);
-        } catch (err) {
-            console.error('Failed to copy URL:', err);
-            const textArea = document.createElement('textarea');
-            textArea.value = shareUrl;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-
-            setShowCopiedMessage(true);
-            setTimeout(() => {
-                setShowCopiedMessage(false);
-            }, 2000);
-        }
+        setShowCopiedMessage(true);
+        setTimeout(() => {
+            setShowCopiedMessage(false);
+        }, 2000);
     };
 
     const handleEdit = async () => {
@@ -99,7 +86,10 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ content: editedContent }),
+                body: JSON.stringify({
+                    content: editedContent,
+                    tags: editHashtags,
+                }),
             });
 
             if (!response.ok) {
@@ -147,7 +137,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
             const data = await response.json();
             setUserHasLiked(data.userHasLiked);
             setLikesCount(data.likesCount);
-            
+
             if (user) {
                 triggerLikedPostsRefresh(user._id);
             }
@@ -159,6 +149,8 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
     };
 
     const isAuthor = user?._id === post.author._id;
+
+    const editHashtags = extractHashtags(editedContent);
 
     return (
         <article className="border-b border-gray-200 dark:border-gray-700 py-2 lg:py-4 px-2 sm:px-2 md:px-8 lg:px-20 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors relative">
@@ -195,7 +187,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                 {/* Avatar */}
                 <div className="flex-shrink-0">
                     <img
-                        className="h-14 w-14 rounded-full cursor-pointer hover:opacity-80 transition-opacity"
+                        className="h-10 w-10 md:h-14 md:w-14 rounded-full cursor-pointer hover:opacity-80 transition-opacity"
                         src={imageError || !post.author.profilePictureUrl ? '/assets/default-avatar.jpg' : post.author.profilePictureUrl}
                         alt={`${post.author.username} avatar`}
                         onError={handleImageError}
@@ -206,15 +198,17 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                     {/* Header */}
-                    <div className="flex items-center space-x-2 mb-1">
-                        <span className="font-bold text-lg text-gray-900 dark:text-white hover:underline cursor-pointer" onClick={handleUserClick}>
+                    <div className="flex items-center space-x-2 mb-1 w-full flex-wrap pr-7">
+                        <span className="font-bold text-lg text-gray-900 dark:text-white hover:underline cursor-pointer break-words" onClick={handleUserClick}>
                             {post.author.username}
                         </span>
-                        <span className="text-gray-500 dark:text-gray-400">· {formatTimeAgo(post.createdAt)}
+                        <span className="text-gray-500 dark:text-gray-400 flex items-center">
+                            <span className="hidden sm:inline mx-1">·</span>
+                            {formatTimeAgo(post.createdAt)}
+                            {post.updatedAt && post.updatedAt > post.createdAt && (
+                                <> · Edited {formatTimeAgo(post.updatedAt)}</>
+                            )}
                         </span>
-                        {post.updatedAt && post.updatedAt > post.createdAt && (
-                            <span className="text-gray-500 dark:text-gray-400">· Edited {formatTimeAgo(post.updatedAt)}</span>
-                        )}
                     </div>
 
                     {/* Message content */}
@@ -229,6 +223,13 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                                          resize-none"
                                 rows={3}
                             />
+                            {editHashtags.length > 0 && (
+                                <div className="text-sm mt-1 text-blue-600 dark:text-blue-100 flex flex-wrap gap-2">
+                                    {editHashtags.map((tag, idx) => (
+                                        <span key={idx} className="font-semibold bg-blue-100 dark:bg-blue-900 rounded px-2 py-0.5 break-words max-w-full">{tag}</span>
+                                    ))}
+                                </div>
+                            )}
                             <div className="flex justify-end space-x-2 mt-2">
                                 <button
                                     onClick={() => setIsEditing(false)}
@@ -247,8 +248,8 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                     ) : (
                         <>
                             {post.content && (
-                                <p className="text-gray-900 dark:text-white text-base leading-relaxed mb-3">
-                                    {post.content}
+                                <p className="text-gray-900 dark:text-white text-base leading-relaxed mb-3 break-words">
+                                    <HashtagContent content={post.content} />
                                 </p>
                             )}
                             
@@ -289,13 +290,13 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                         <button
                             onClick={handleLike}
                             disabled={!user || isLiking}
-                            className={`flex items-center space-x-2 transition-colors group ${userHasLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
+                            className="flex items-center space-x-2 text-gray-500 hover:text-red-500 transition-colors group"
                             aria-pressed={userHasLiked}
                         >
                             {userHasLiked ? (
-                                <AiFillHeart className="w-5 h-5 group-hover:bg-red-50 dark:group-hover:bg-red-900/20 rounded-full p-1"/>
+                                <AiFillHeart className={`w-5 h-5 rounded-full p-1 ${userHasLiked ? 'text-red-500' : ''}`}/>
                             ) : (
-                                <AiOutlineHeart className="w-5 h-5 group-hover:bg-red-50 dark:group-hover:bg-red-900/20 rounded-full p-1"/>
+                                <AiOutlineHeart className={`w-5 h-5 rounded-full p-1 ${userHasLiked ? 'text-red-500' : ''}`}/>
                             )}
                             <span className="text-sm">{likesDisplayed}</span>
                         </button>
@@ -313,10 +314,10 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                             <span className="text-sm">{commentsDisplayed}</span>
                         </button>
 
-                        {/* Share */}
+                        {/* Share, not implemented yet */}
                         <button
                             onClick={handleShare}
-                            className="flex items-center space-x-2 text-gray-500 hover:text-blue-500 transition-colors group relative"
+                            className="hidden flex items-center space-x-2 text-gray-500 hover:text-blue-500 transition-colors group relative"
                         >
                             <AiOutlineShareAlt />
                             {showCopiedMessage && (

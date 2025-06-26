@@ -18,7 +18,6 @@ export const currentUser = (requireAuth: boolean) => {
         } else {
             try {
                 const token = req.headers.authorization.replace('Bearer ', '');
-                console.log(token);
                 if (token) {
                     const payload = jwt.decode(token) as { userId?: string, exp?: number } | null;
                     if (payload && payload.userId) {

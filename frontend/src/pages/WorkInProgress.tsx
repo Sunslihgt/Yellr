@@ -10,7 +10,7 @@ function WorkInProgress() {
 
     return (
         <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden flex items-center justify-center">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm flex items-center justify-center">
                 <div className="text-center px-4">
                     {loading ? (
                         <p className="text-gray-500 dark:text-gray-300 text-xl">Loading...</p>

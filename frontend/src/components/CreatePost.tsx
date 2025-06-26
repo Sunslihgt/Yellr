@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApi } from '../hooks/useApi';
 import { BASE_URL } from '../constants/config';
+import { extractHashtags } from '../utils/hashtags';
 import { AiOutlineFileImage, AiOutlineVideoCamera, AiOutlineClose } from 'react-icons/ai';
 
 interface CreatePostProps {
@@ -19,6 +20,10 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { apiCall } = useApi();
+    const [isFocused, setIsFocused] = useState(false);
+
+    // Extract hashtags from content
+    const hashtags = extractHashtags(content);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,7 +33,10 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
         setError(null);
 
         try {
-            const postData: any = { content };
+            const postData: any = {
+                content,
+                tags: hashtags,
+            };
             if (imageUrl) postData.imageUrl = imageUrl;
             if (videoUrl) postData.videoUrl = videoUrl;
 
@@ -73,6 +81,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
         const sanitizedValue = e.target.value.replace(/[\r\n]/g, '');
         setContent(sanitizedValue);
     };
+
+    const handleFocus = () => setIsFocused(true);
+    const handleBlur = () => setIsFocused(false);
 
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'video') => {
         const file = event.target.files?.[0];
@@ -128,16 +139,13 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
                     <textarea
                         value={content}
                         onChange={handleInputChange}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
                         placeholder="What's on your mind?"
-                        className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg
-                                 focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                                 bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                                 placeholder-gray-500 dark:placeholder-gray-400
-                                 resize-none"
-                        rows={3}
+                        className={`w-full p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none transition-all duration-200 ${isFocused || content ? 'border border-gray-300 dark:border-gray-600' : 'border-b border-b-gray-200 dark:border-b-gray-700 border-x-0 border-t-0'}`}
+                        rows={(isFocused || content) ? 3 : 1}
                         maxLength={MAX_POST_LENGTH}
                     />
-                    
                     {/* Media Preview */}
                     {mediaPreview && (
                         <div className="relative">
@@ -202,21 +210,24 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
                                 <span className="text-sm">Video</span>
                             </button>
                         </div>
-
-                        <div className="flex items-center space-x-4">
-                            <div className={`text-sm ${content.length === MAX_POST_LENGTH ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'}`}>
-                                {content.length}/{MAX_POST_LENGTH}
-                            </div>
-                            <button
-                                type="submit"
-                                disabled={isSubmitting || !isFormValid}
-                                className={`px-6 py-2 rounded-lg text-white whitespace-nowrap bg-blue-500
-                                        ${isSubmitting || !isFormValid
-                                        ? 'cursor-not-allowed opacity-50'
-                                        : 'hover:bg-blue-600'}`}
-                            >
-                                {isSubmitting ? 'Posting...' : 'Post'}
-                            </button>
+                    </div>
+                    {hashtags.length > 0 && (
+                        <div className="text-sm mt-1 text-blue-600 dark:text-blue-100 flex flex-wrap gap-2">
+                            {hashtags.map((tag, idx) => (
+                                <span key={idx} className="font-semibold bg-blue-100 dark:bg-blue-900 rounded px-2 py-0.5 break-words max-w-full">{tag}</span>
+                            ))}
+                        </div>
+                    )}
+                    <div className={`flex space-x-4 items-center ${isFocused || content || mediaPreview ? '' : ' hidden'}`}>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting || !isFormValid}
+                            className={`px-6 py-2 rounded-lg text-white whitespace-nowrap bg-blue-500 ${isSubmitting || !isFormValid ? 'cursor-not-allowed opacity-50' : 'hover:bg-blue-600'}`}
+                        >
+                            {isSubmitting ? 'Posting...' : 'Post'}
+                        </button>
+                        <div className={`text-sm ${content.length === MAX_POST_LENGTH ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'}`}>
+                            {content.length}/{MAX_POST_LENGTH}
                         </div>
                     </div>
                 </div>

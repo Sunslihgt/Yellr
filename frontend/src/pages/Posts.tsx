@@ -11,7 +11,6 @@ import { PostWithAuthor, PostsResponse } from '../@types/post';
 import { BASE_URL } from '../constants/config';
 
 const POSTS_FETCH_LIMIT = 5;
-const POSTS_FETCH_DELAY = 150;
 
 function PostsWithSkeleton() {
     const [loading, setLoading] = useState(true);
@@ -90,11 +89,11 @@ function PostsWithSkeleton() {
             <div className='bg-gray-100 dark:bg-gray-800 min-h-screen flex flex-col'>
                 <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
                     <div className="lg:col-span-3">
-                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
                             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                                 <h1 className="text-xl font-semibold text-gray-900 dark:text-white">What&apos;s new ?</h1>
                             </div>
-                            <div className="overflow-y-auto h-[calc(100%-4rem)] scrollbar-hide p-4">
+                            <div className="scrollbar-hide p-4">
                                 <div className="text-center py-8">
                                     <p className="text-gray-500 dark:text-gray-400">Please log in to view posts.</p>
                                 </div>
@@ -110,17 +109,17 @@ function PostsWithSkeleton() {
     return (
         <div className='bg-gray-100 dark:bg-gray-800'>
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
-                <div className="lg:col-span-3">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm h-[calc(100vh-8rem)] overflow-hidden">
+                <div className="lg:col-span-3 h-full">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm scrollbar-hide">
                         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                             <h1 className="text-xl font-semibold text-gray-900 dark:text-white">What&apos;s new ?</h1>
                         </div>
-                        {/* Add PostHeader component */}
-                        <CreatePost onPostCreated={() => fetchPosts(0, false)} />
                         {/* Search Pane UI */}
                         <PostSearchPane onFoldChange={setSearchPaneFolded} onSearch={handleSearch} />
+                        {/* Add PostHeader component */}
+                        <CreatePost onPostCreated={() => fetchPosts(0, false)} />
                         {/* Posts */}
-                        <div className={`overflow-y-auto scrollbar-hide p-4 ${searchPaneFolded ? 'h-[calc(100%-64px-64px-116px)]' : 'h-[calc(100%-64px-180px-116px)]'}`}>
+                        <div className="p-4">
                             {loading && posts.length === 0 ? (
                                 Array.from({ length: 2 }).map((_, i) => <SkeletonMessageCard key={i} />)
                             ) : error ? (
@@ -159,10 +158,7 @@ function PostsWithSkeleton() {
                                                 onClick={() => {
                                                     // Show skeletons while loading
                                                     setPosts(posts.concat(Array.from({ length: 2 }).map((_, i) => null)));
-                                                    // Dummy wait to show loading skeletons
-                                                    setTimeout(() => {
-                                                        fetchPosts(offset, true);
-                                                    }, POSTS_FETCH_DELAY);
+                                                    fetchPosts(offset, true);
                                                 }}
                                                 disabled={loading}
                                             >
