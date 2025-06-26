@@ -310,6 +310,7 @@ const UserProfile: React.FC = () => {
                 throw new Error('Erreur du serveur. L\'image est peut-être trop volumineuse.');
             }
             if (response.ok) {
+                const updatedUser = await response.json();
                 if (currentUser && currentUser._id === updatedUser._id) {
                     updateUser(updatedUser);
                 }
@@ -451,7 +452,7 @@ const UserProfile: React.FC = () => {
                             {/* Bio, Join Date, Stats for md+ screens */}
                             <div className="hidden md:block">
                                 {profileUser.bio && (
-                                    <p className="mt-3 text-gray-900 dark:text-white">
+                                    <p className="mt-3 text-gray-900 dark:text-white break-words">
                                         {profileUser.bio}
                                     </p>
                                 )}
@@ -488,7 +489,7 @@ const UserProfile: React.FC = () => {
                     {/* Bio, Join Date, Stats for small screens */}
                     <div className="block md:hidden mt-4 w-full">
                         {profileUser.bio && (
-                            <p className="text-gray-900 dark:text-white">
+                            <p className="text-gray-900 dark:text-white break-words">
                                 {profileUser.bio}
                             </p>
                         )}

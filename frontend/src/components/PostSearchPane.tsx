@@ -28,7 +28,7 @@ const PostSearchPane = forwardRef<{ getSearchRequest: () => SearchRequestBody },
         useImperativeHandle(ref, () => ({
             getSearchRequest: () => ({
                 content,
-                authors: [author],
+                authors: author.trim() ? [author.trim()] : [],
                 tags,
                 subscribedOnly,
             }),
@@ -45,7 +45,7 @@ const PostSearchPane = forwardRef<{ getSearchRequest: () => SearchRequestBody },
             }
             const searchRequest: SearchRequestBody = {
                 content,
-                authors: [author],
+                authors: author.trim() ? [author.trim()] : [],
                 tags,
                 subscribedOnly,
             };
