@@ -310,7 +310,6 @@ const UserProfile: React.FC = () => {
                 throw new Error('Erreur du serveur. L\'image est peut-être trop volumineuse.');
             }
             if (response.ok) {
-                const updatedUser = await response.json();
                 if (currentUser && currentUser._id === updatedUser._id) {
                     updateUser(updatedUser);
                 }
