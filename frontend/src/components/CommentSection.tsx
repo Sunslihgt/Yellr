@@ -4,6 +4,7 @@ import { useApi } from '../hooks/useApi';
 import { useAppSelector } from '../store/hooks';
 import { BASE_URL } from '../constants/config';
 import CommentItem from './CommentItem';
+import { extractHashtags } from '../utils/hashtags';
 
 interface CommentSectionProps {
     postId: string;
@@ -44,7 +45,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, 
 
     useEffect(() => {
         fetchComments();
-    }, [postId, fetchComments]);
+    }, [postId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleLike = async (commentId: string) => {
         if (!user || liking) return;
@@ -180,6 +181,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, 
                         maxLength={MAX_COMMENT_LENGTH}
                         disabled={submitting}
                     />
+                    {/* Display extracted hashtags */}
+                    {extractHashtags(newComment).length > 0 && (
+                        <div className="text-sm mt-2 text-blue-600 dark:text-blue-100 flex flex-wrap gap-1">
+                            {extractHashtags(newComment).map((tag, idx) => (
+                                <span key={idx} className="font-medium bg-blue-100 dark:bg-blue-900 rounded px-1.5 py-0.5 break-words max-w-full">{tag}</span>
+                            ))}
+                        </div>
+                    )}
                     <div className="flex items-center space-x-2">
                         <button
                             type="submit"

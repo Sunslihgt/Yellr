@@ -10,7 +10,7 @@ interface UserCardProps {
 const UserCard: React.FC<UserCardProps> = ({ user }) => {
     const navigate = useNavigate();
     const [imageError, setImageError] = useState(false);
-    
+
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
         setImageError(true);
     };

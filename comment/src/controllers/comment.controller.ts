@@ -300,11 +300,11 @@ export const likeComment = async (req: JwtUserRequest, res: Response) => {
         const updatedComment = hasLiked ? await Comment.findByIdAndUpdate(
             id,
             { $pull: { likes: userId } },
-            { new: true }
+            { new: true, timestamps: false }
         ) : await Comment.findByIdAndUpdate(
             id,
             { $addToSet: { likes: userId } },
-            { new: true }
+            { new: true, timestamps: false }
         );
 
         if (!updatedComment) {

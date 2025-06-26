@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { AiOutlineHeart, AiFillHeart, AiOutlinePlus } from 'react-icons/ai';
 import { formatTimeAgo } from '../utils/displayNumbers';
+import { extractHashtags } from '../utils/hashtags';
 import { CommentWithAuthor } from '../@types/comment';
+import HashtagContent from './HashtagContent';
 
 interface CommentItemProps {
     comment: CommentWithAuthor;
@@ -58,16 +60,19 @@ const CommentItem: React.FC<CommentItemProps> = ({
                 <img
                     src={imageError || !comment.author.profilePictureUrl ? '/assets/default-avatar.jpg' : comment.author.profilePictureUrl}
                     alt={comment.author.username}
-                    className="w-8 h-8 rounded-full object-cover"
+                    className="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover"
                     onError={handleImageError}
                 />
                 <div className="flex-1">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1 flex-wrap">
                         <span className="font-semibold text-gray-900 dark:text-white text-sm">{comment.author.username}</span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">· {formatTimeAgo(comment.createdAt)}</span>
-                        {comment.updatedAt && comment.updatedAt > comment.createdAt && (
-                            <span className="text-xs text-gray-500 dark:text-gray-400">· Edited {formatTimeAgo(comment.updatedAt)}</span>
-                        )}
+                        <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center whitespace-nowrap">
+                            <span className="hidden sm:inline mx-1">·</span>
+                            {formatTimeAgo(comment.createdAt)}
+                            {comment.updatedAt && comment.updatedAt > comment.createdAt && (
+                                <> · Edited {formatTimeAgo(comment.updatedAt)}</>
+                            )}
+                        </span>
                     </div>
                     {/* Edit form or comment content */}
                     {isEditing ? (
@@ -80,6 +85,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
                                 maxLength={280}
                                 disabled={submitting}
                             />
+                            {/* Display extracted hashtags */}
+                            {extractHashtags(editContent).length > 0 && (
+                                <div className="text-xs mt-1 text-blue-600 dark:text-blue-100 flex flex-wrap gap-1">
+                                    {extractHashtags(editContent).map((tag, idx) => (
+                                        <span key={idx} className="font-medium bg-blue-100 dark:bg-blue-900 rounded px-1.5 py-0.5 break-words max-w-full">{tag}</span>
+                                    ))}
+                                </div>
+                            )}
                             <div className="flex justify-end space-x-2">
                                 <button
                                     type="button"
@@ -99,7 +112,9 @@ const CommentItem: React.FC<CommentItemProps> = ({
                             </div>
                         </form>
                     ) : (
-                        <div className="text-gray-900 dark:text-gray-100 text-sm mt-1 mb-2">{comment.content}</div>
+                        <div className="text-gray-900 dark:text-gray-100 text-sm mt-1 mb-2">
+                            <HashtagContent content={comment.content} />
+                        </div>
                     )}
                     {/* Actions */}
                     <div className="flex items-center space-x-4 text-xs">
@@ -141,6 +156,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
                                 maxLength={280}
                                 disabled={submitting}
                             />
+                            {/* Display extracted hashtags */}
+                            {extractHashtags(newComment).length > 0 && (
+                                <div className="text-xs mt-1 text-blue-600 dark:text-blue-100 flex flex-wrap gap-1">
+                                    {extractHashtags(newComment).map((tag, idx) => (
+                                        <span key={idx} className="font-medium bg-blue-100 dark:bg-blue-900 rounded px-1.5 py-0.5 break-words max-w-full">{tag}</span>
+                                    ))}
+                                </div>
+                            )}
                             <div className="flex justify-end space-x-2">
                                 <button
                                     type="button"
