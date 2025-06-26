@@ -10,7 +10,7 @@ import { useAppSelector } from '../store/hooks';
 import { PostWithAuthor, PostsResponse } from '../@types/post';
 import { BASE_URL } from '../constants/config';
 
-const POSTS_FETCH_LIMIT = 5;
+const POSTS_FETCH_LIMIT = 10;
 
 function PostsWithSkeleton() {
     const [loading, setLoading] = useState(true);
@@ -18,7 +18,6 @@ function PostsWithSkeleton() {
     const [error, setError] = useState<string | null>(null);
     const [offset, setOffset] = useState(0);
     const [totalCount, setTotalCount] = useState<number | null>(null);
-    const [searchPaneFolded, setSearchPaneFolded] = useState(true);
     const [searchRequestBody, setSearchRequestBody] = useState<SearchRequestBody>({
         content: '',
         authors: [],
@@ -108,14 +107,14 @@ function PostsWithSkeleton() {
 
     return (
         <div className='bg-gray-100 dark:bg-gray-800'>
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-5 xl:grid-cols-4 gap-4 p-4">
                 <div className="lg:col-span-3 h-full">
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm scrollbar-hide">
                         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                             <h1 className="text-xl font-semibold text-gray-900 dark:text-white">What&apos;s new ?</h1>
                         </div>
                         {/* Search Pane UI */}
-                        <PostSearchPane onFoldChange={setSearchPaneFolded} onSearch={handleSearch} />
+                        <PostSearchPane onSearch={handleSearch} />
                         {/* Add PostHeader component */}
                         <CreatePost onPostCreated={() => fetchPosts(0, false)} />
                         {/* Posts */}
@@ -175,7 +174,7 @@ function PostsWithSkeleton() {
                         </div>
                     </div>
                 </div>
-                <div className="hidden lg:block lg:col-span-1">
+                <div className="hidden lg:block lg:col-span-2 xl:col-span-1">
                     <FollowedUsersSection />
                 </div>
             </div>

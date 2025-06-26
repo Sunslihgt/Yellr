@@ -23,7 +23,7 @@ const UserProfile: React.FC = () => {
     const navigate = useNavigate();
     const { user: currentUser, isAuthenticated, updateUser } = useAuth();
     const { apiCall } = useApi();
-    const { followersCount, updateFollowersCount, refreshLikedPosts, triggerLikedPostsRefresh } = useAppContext();
+    const { refreshLikedPosts } = useAppContext();
 
     const [profileUser, setProfileUser] = useState<User | null>(null);
     const [userPosts, setUserPosts] = useState<PostWithAuthor[]>([]);
@@ -64,7 +64,7 @@ const UserProfile: React.FC = () => {
         const fetchUserByUsername = async () => {
             setIsLoadingUser(true);
             try {
-                const response = await apiCall(`/api/users`, { method: 'GET' });
+                const response = await apiCall('/api/users', { method: 'GET' });
                 if (response.ok) {
                     const users = await response.json();
                     const foundUser = users.find((u: User) => u.username === username);
@@ -568,7 +568,7 @@ const UserProfile: React.FC = () => {
                         ) : userPosts.length === 0 ? (
                             <div className="text-center py-8">
                                 <p className="text-gray-500 dark:text-gray-400">
-                                    {profileUser.username} hasn't posted anything yet.
+                                    {profileUser.username} hasn&apos;t posted anything yet.
                                 </p>
                             </div>
                         ) : (
@@ -593,7 +593,7 @@ const UserProfile: React.FC = () => {
                         ) : likedPosts.length === 0 ? (
                             <div className="text-center py-8">
                                 <p className="text-gray-500 dark:text-gray-400">
-                                    {profileUser.username} hasn't liked any posts yet.
+                                    {profileUser.username} hasn&apos;t liked any posts yet.
                                 </p>
                             </div>
                         ) : (

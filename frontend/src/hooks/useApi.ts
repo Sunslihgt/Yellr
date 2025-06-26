@@ -43,7 +43,7 @@ export const useApi = () => {
             if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
                 throw new Error('Erreur de connexion. Vérifiez votre connexion internet.');
             }
-            
+
             // Re-throw other errors as-is
             throw error;
         }

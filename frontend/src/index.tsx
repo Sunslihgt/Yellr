@@ -14,6 +14,9 @@ import UserProfile from './pages/UserProfile';
 import PostsWithSkeleton from './pages/Posts';
 import ErrorPage from './pages/ErrorPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import About from './pages/About';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Contact from './pages/Contact';
 
 import Layout from './Layout';
 import { initializeFavicon } from './utils/favicon';
@@ -43,6 +46,9 @@ root.render(
                             <Route path="/user/:username" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
                             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                             <Route path="/posts" element={<ProtectedRoute><PostsWithSkeleton /></ProtectedRoute>} />
+                            <Route path="/about" element={<About />} />
+                            <Route path="/privacy" element={<PrivacyPolicy />} />
+                            <Route path="/contact" element={<Contact />} />
                             {/* Fallback route for any unmatched paths */}
                             <Route path="*" element={<ErrorPage errorCode={404} />} />
                         </Routes>

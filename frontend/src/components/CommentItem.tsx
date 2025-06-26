@@ -217,4 +217,4 @@ const CommentItem: React.FC<CommentItemProps> = ({
     );
 };
 
-export default CommentItem; 
+export default CommentItem;

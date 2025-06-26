@@ -252,7 +252,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                                     <HashtagContent content={post.content} />
                                 </p>
                             )}
-                            
+
                             {/* Media Display */}
                             {post.imageUrl && (
                                 <div className="mb-3">
