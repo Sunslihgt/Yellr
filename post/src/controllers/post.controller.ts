@@ -9,7 +9,7 @@ import FollowModel from '../models/follow.model';
 import Comment from '../models/comment.model';
 
 export interface CreatePostBody {
-    content: string;
+    content?: string;
     authorId?: string;
     tags?: string[];
     imageUrl?: string;
@@ -49,19 +49,26 @@ export const createPost = async (req: JwtUserRequest, res: Response) => {
         const { content, tags, imageUrl, videoUrl }: CreatePostBody = req.body;
         const authorId = req.jwtUserId;
 
-        if (!content || !await userIdExists(authorId)) {
+        if (!await userIdExists(authorId)) {
             return res.status(400).json({
-                error: 'Content and author id are required'
+                error: 'Author id is required'
             });
         }
-        if (content.length > POST_MAX_LENGTH) {
+
+        if (!content?.trim() && !imageUrl && !videoUrl) {
+            return res.status(400).json({
+                error: 'Post must contain either text content or media'
+            });
+        }
+
+        if (content && content.length > POST_MAX_LENGTH) {
             return res.status(400).json({
                 error: `Content cannot exceed ${POST_MAX_LENGTH} characters`
             });
         }
 
         const newPost = new PostModel({
-            content,
+            content: content || '',
             authorId,
             tags: tags || [],
             likes: [],

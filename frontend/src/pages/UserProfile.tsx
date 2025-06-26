@@ -303,6 +303,12 @@ const UserProfile: React.FC = () => {
                     bio: editForm.bio.trim()
                 })
             });
+            let updatedUser;
+            try {
+                updatedUser = await response.json();
+            } catch (jsonError) {
+                throw new Error('Erreur du serveur. L\'image est peut-être trop volumineuse.');
+            }
             if (response.ok) {
                 const updatedUser = await response.json();
                 if (currentUser && currentUser._id === updatedUser._id) {
@@ -313,8 +319,8 @@ const UserProfile: React.FC = () => {
                 setShowEditModal(false);
                 setProfileUser(updatedUser);
             } else {
-                const errorData = await response.json();
-                alert(`Error updating profile: ${errorData.message || 'Please try again.'}`);
+                console.error('Error updating profile:', updatedUser);
+                alert(`Error updating profile: ${updatedUser.message || 'Veuillez réessayer.'}`);
             }
         } catch (error) {
             alert('Error updating profile. Please try again.');
