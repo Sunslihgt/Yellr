@@ -4,7 +4,6 @@ import TagInput from './TagInput';
 import { AiFillCaretDown, AiFillCaretUp } from 'react-icons/ai';
 
 interface PostSearchPaneProps {
-    onFoldChange?: (folded: boolean) => void;
     onSearch?: (searchRequest: SearchRequestBody) => void;
 }
 
@@ -17,7 +16,7 @@ export interface SearchRequestBody {
 
 const PostSearchPane = forwardRef<{ getSearchRequest: () => SearchRequestBody }, PostSearchPaneProps>(
     (
-        { onFoldChange, onSearch }, ref
+        { onSearch }, ref
     ) => {
         const [content, setContent] = useState('');
         const [author, setAuthor] = useState('');
@@ -36,7 +35,6 @@ const PostSearchPane = forwardRef<{ getSearchRequest: () => SearchRequestBody },
 
         const handleFoldChange = (newFolded: boolean) => {
             setFolded(newFolded);
-            onFoldChange?.(newFolded);
         };
 
         const handleSearch = (e: React.FormEvent<HTMLFormElement> | null) => {
@@ -124,6 +122,6 @@ const PostSearchPane = forwardRef<{ getSearchRequest: () => SearchRequestBody },
         );
     });
 
-PostSearchPane.displayName = "PostSearchPane";
+PostSearchPane.displayName = 'PostSearchPane';
 
 export default PostSearchPane;

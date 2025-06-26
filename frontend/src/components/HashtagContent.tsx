@@ -14,11 +14,11 @@ const HashtagContent: React.FC<HashtagContentProps> = ({ content }) => {
     let result = content;
     hashtags.forEach(tag => {
         const regex = new RegExp(`(${tag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'g');
-        result = result.replace(regex, `<hashtag>$1</hashtag>`);
+        result = result.replace(regex, '<hashtag>$1</hashtag>');
     });
 
     const parts = result.split(/(<hashtag>.*?<\/hashtag>)/);
-    
+
     return (
         <>
             {parts.map((part, index) => {
@@ -36,4 +36,4 @@ const HashtagContent: React.FC<HashtagContentProps> = ({ content }) => {
     );
 };
 
-export default HashtagContent; 
+export default HashtagContent;

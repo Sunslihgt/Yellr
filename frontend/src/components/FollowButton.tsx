@@ -12,11 +12,10 @@ interface FollowButtonProps {
     onFollowChange?: (isFollowing: boolean) => void;
 }
 
-const FollowButton: React.FC<FollowButtonProps> = ({ userId, className = "", onFollowChange }) => {
+const FollowButton: React.FC<FollowButtonProps> = ({ userId, className = '', onFollowChange }) => {
     const [isFollowing, setIsFollowing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const { apiCall } = useApi();
-    const { updateFollowersCount, addFollowedUser, removeFollowedUser } = useAppContext();
     const { user } = useAppSelector((state) => state.auth);
 
     const fetchIsFollowing = async () => {
@@ -38,7 +37,7 @@ const FollowButton: React.FC<FollowButtonProps> = ({ userId, className = "", onF
 
     const handleFollow = async (action: 'follow' | 'unfollow') => {
         if (!user) return;
-        
+
         setIsLoading(true);
         try {
             const response = await apiCall(`${BASE_URL}/api/follow/${userId}`, {
@@ -51,7 +50,7 @@ const FollowButton: React.FC<FollowButtonProps> = ({ userId, className = "", onF
             }
             const newFollowingState = action === 'follow';
             setIsFollowing(newFollowingState);
-            
+
             // Notify parent component of the change
             if (onFollowChange) {
                 onFollowChange(newFollowingState);

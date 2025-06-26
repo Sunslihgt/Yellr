@@ -22,12 +22,12 @@ const SkeletonUserCard: React.FC = () => (
         <div className="flex items-center space-x-3">
             {/* Avatar */}
             <div className="w-14 h-14 rounded-full rainbow-skeleton" />
-            
+
             {/* Username */}
             <div className="flex-1 min-w-0">
                 <div className="h-5 rounded w-24 rainbow-skeleton" />
             </div>
-            
+
             {/* Follow button */}
             <div className="w-20 h-8 rainbow-skeleton rounded-full" />
         </div>

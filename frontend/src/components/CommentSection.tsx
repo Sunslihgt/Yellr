@@ -26,7 +26,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentsCount, 
     const [liking, setLiking] = useState<string | null>(null); // commentId being liked
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
     const [editContent, setEditContent] = useState('');
-    const [imageErrors, setImageErrors] = useState<{ [commentId: string]: boolean }>({});
 
     const fetchComments = async () => {
         setLoading(true);

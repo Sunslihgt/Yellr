@@ -11,7 +11,7 @@ const FollowedUsersSection: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const { apiCall } = useApi();
     const { followedUsers, setFollowedUsers } = useAppContext();
-    const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+    const { isAuthenticated } = useAppSelector((state) => state.auth);
 
     const fetchFollowedUsers = async () => {
         if (!isAuthenticated) {

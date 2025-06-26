@@ -64,7 +64,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
             setVideoUrl('');
             setMediaPreview(null);
             setMediaType(null);
-            
+
             if (onPostCreated) {
                 onPostCreated();
             }
@@ -94,7 +94,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
             return;
         }
 
-        const allowedTypes = type === 'image' 
+        const allowedTypes = type === 'image'
             ? ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
             : ['video/mp4', 'video/webm', 'video/ogg'];
 

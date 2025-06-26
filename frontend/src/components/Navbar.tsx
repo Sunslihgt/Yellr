@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { logout } from '../store/slices/authSlice';
 
 function Navbar() {
-    const [mobileOpen, setMobileOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const userMenuRef = useRef<HTMLDivElement>(null);
     const [imageError, setImageError] = useState(false);
@@ -23,11 +22,11 @@ function Navbar() {
             // Check if the click target is the button itself
             const target = event.target as HTMLElement;
             const button = document.getElementById('user-menu-button');
-            
+
             if (button && button.contains(target)) {
                 return; // Don't close if clicking on the button
             }
-            
+
             if (userMenuRef.current && !userMenuRef.current.contains(target)) {
                 setUserMenuOpen(false);
             }

@@ -18,7 +18,6 @@ function PostsWithSkeleton() {
     const [error, setError] = useState<string | null>(null);
     const [offset, setOffset] = useState(0);
     const [totalCount, setTotalCount] = useState<number | null>(null);
-    const [searchPaneFolded, setSearchPaneFolded] = useState(true);
     const [searchRequestBody, setSearchRequestBody] = useState<SearchRequestBody>({
         content: '',
         authors: [],
@@ -115,7 +114,7 @@ function PostsWithSkeleton() {
                             <h1 className="text-xl font-semibold text-gray-900 dark:text-white">What&apos;s new ?</h1>
                         </div>
                         {/* Search Pane UI */}
-                        <PostSearchPane onFoldChange={setSearchPaneFolded} onSearch={handleSearch} />
+                        <PostSearchPane onSearch={handleSearch} />
                         {/* Add PostHeader component */}
                         <CreatePost onPostCreated={() => fetchPosts(0, false)} />
                         {/* Posts */}

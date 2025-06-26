@@ -4,12 +4,12 @@ import { User } from '../@types/user';
 interface AppContextType {
     followersCount: Record<string, number>;
     updateFollowersCount: (userId: string, count: number) => void;
-    
+
     followedUsers: User[];
     setFollowedUsers: (users: User[]) => void;
     addFollowedUser: (user: User) => void;
     removeFollowedUser: (userId: string) => void;
-    
+
     refreshLikedPosts: Record<string, boolean>;
     triggerLikedPostsRefresh: (userId: string) => void;
 }
@@ -77,4 +77,4 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
             {children}
         </AppContext.Provider>
     );
-}; 
+};
