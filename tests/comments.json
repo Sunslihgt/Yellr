@@ -1,0 +1,122 @@
+[
+  {
+    "_id": { "$oid": "60a7b8c9d0e1012345678901" },
+    "content": "This feature looks awesome! Great job.",
+    "authorId": { "$oid": "507f1f77bcf86cd799439012" },
+    "postId": { "$oid": "507f1f77bcf86cd799439021" },
+    "parentCommentId": null,
+    "likes": [{ "$oid": "507f1f77bcf86cd799439011" }],
+    "createdAt": "2025-06-15T09:00:00.000Z",
+    "updatedAt": "2025-06-15T09:00:00.000Z"
+  },
+  {
+    "_id": { "$oid": "60a7b8c9d0e1012345678902" },
+    "content": "Thanks! Glad you like it.",
+    "authorId": { "$oid": "507f1f77bcf86cd799439011" },
+    "postId": { "$oid": "507f1f77bcf86cd799439021" },
+    "parentCommentId": { "$oid": "60a7b8c9d0e1012345678901" },
+    "likes": [{ "$oid": "507f1f77bcf86cd799439012" }],
+    "createdAt": "2025-06-15T09:05:00.000Z",
+    "updatedAt": "2025-06-15T09:05:00.000Z"
+  },
+  {
+    "_id": { "$oid": "60a7b8c9d0e1012345678903" },
+    "content": "Love your digital art! The colors are amazing.",
+    "authorId": { "$oid": "507f1f77bcf86cd799439013" },
+    "postId": { "$oid": "507f1f77bcf86cd799439022" },
+    "parentCommentId": null,
+    "likes": [{ "$oid": "507f1f77bcf86cd799439012" }, { "$oid": "507f1f77bcf86cd799439011" }],
+    "createdAt": "2025-06-14T16:00:00.000Z",
+    "updatedAt": "2025-06-14T16:00:00.000Z"
+  },
+  {
+    "_id": { "$oid": "60a7b8c9d0e1012345678904" },
+    "content": "Great motivation! Consistency is key.",
+    "authorId": { "$oid": "507f1f77bcf86cd799439014" },
+    "postId": { "$oid": "507f1f77bcf86cd799439023" },
+    "parentCommentId": null,
+    "likes": [{ "$oid": "507f1f77bcf86cd799439013" }],
+    "createdAt": "2025-06-15T07:00:00.000Z",
+    "updatedAt": "2025-06-15T07:00:00.000Z"
+  },
+  {
+    "_id": { "$oid": "60a7b8c9d0e1012345678905" },
+    "content": "Absolutely! Thanks for the encouragement.",
+    "authorId": { "$oid": "507f1f77bcf86cd799439013" },
+    "postId": { "$oid": "507f1f77bcf86cd799439023" },
+    "parentCommentId": { "$oid": "60a7b8c9d0e1012345678904" },
+    "likes": [],
+    "createdAt": "2025-06-15T07:10:00.000Z",
+    "updatedAt": "2025-06-15T07:10:00.000Z"
+  },
+  {
+    "_id": { "$oid": "60a7b8c9d0e1012345678906" },
+    "content": "Paris is beautiful! Enjoy your trip.",
+    "authorId": { "$oid": "507f1f77bcf86cd799439011" },
+    "postId": { "$oid": "507f1f77bcf86cd799439024" },
+    "parentCommentId": null,
+    "likes": [{ "$oid": "507f1f77bcf86cd799439014" }],
+    "createdAt": "2025-06-13T13:00:00.000Z",
+    "updatedAt": "2025-06-13T13:00:00.000Z"
+  },
+  {
+    "_id": { "$oid": "60a7b8c9d0e1012345678907" },
+    "content": "Thanks! The architecture is stunning.",
+    "authorId": { "$oid": "507f1f77bcf86cd799439014" },
+    "postId": { "$oid": "507f1f77bcf86cd799439024" },
+    "parentCommentId": { "$oid": "60a7b8c9d0e1012345678906" },
+    "likes": [{ "$oid": "507f1f77bcf86cd799439011" }],
+    "createdAt": "2025-06-13T13:10:00.000Z",
+    "updatedAt": "2025-06-13T13:10:00.000Z"
+  },
+  {
+    "_id": { "$oid": "60a7b8c9d0e1012345678908" },
+    "content": "That coffee shop sounds amazing! I need to check it out.",
+    "authorId": { "$oid": "507f1f77bcf86cd799439012" },
+    "postId": { "$oid": "507f1f77bcf86cd799439025" },
+    "parentCommentId": null,
+    "likes": [{ "$oid": "507f1f77bcf86cd799439011" }],
+    "createdAt": "2025-06-12T11:00:00.000Z",
+    "updatedAt": "2025-06-12T11:00:00.000Z"
+  },
+  {
+    "_id": { "$oid": "70b8c9d0e1f2012345678911" },
+    "content": "Exploring new cities is the best way to learn! Where are you headed next?",
+    "authorId": { "$oid": "507f1f77bcf86cd799439012" },
+    "postId": { "$oid": "c9d0e1f2a3b4012345678909" },
+    "parentCommentId": null,
+    "likes": [{ "$oid": "507f1f77bcf86cd799439014" }],
+    "createdAt": "2025-06-24T19:10:00.000Z",
+    "updatedAt": "2025-06-24T19:10:00.000Z"
+  },
+  {
+    "_id": { "$oid": "70b8c9d0e1f2012345678912" },
+    "content": "Next stop: Tokyo! Can't wait to share more.",
+    "authorId": { "$oid": "507f1f77bcf86cd799439014" },
+    "postId": { "$oid": "c9d0e1f2a3b4012345678909" },
+    "parentCommentId": { "$oid": "70b8c9d0e1f2012345678911" },
+    "likes": [{ "$oid": "507f1f77bcf86cd799439012" }],
+    "createdAt": "2025-06-24T19:15:00.000Z",
+    "updatedAt": "2025-06-24T19:15:00.000Z"
+  },
+  {
+    "_id": { "$oid": "70b8c9d0e1f2012345678913" },
+    "content": "Great reminder! Security is so important these days.",
+    "authorId": { "$oid": "507f1f77bcf86cd799439011" },
+    "postId": { "$oid": "d0e1f2a3b4c5012345678910" },
+    "parentCommentId": null,
+    "likes": [{ "$oid": "507f1f77bcf86cd799439015" }],
+    "createdAt": "2025-06-24T20:10:00.000Z",
+    "updatedAt": "2025-06-24T20:10:00.000Z"
+  },
+  {
+    "_id": { "$oid": "70b8c9d0e1f2012345678914" },
+    "content": "Absolutely! Strong passwords keep us all safe.",
+    "authorId": { "$oid": "507f1f77bcf86cd799439015" },
+    "postId": { "$oid": "d0e1f2a3b4c5012345678910" },
+    "parentCommentId": { "$oid": "70b8c9d0e1f2012345678913" },
+    "likes": [{ "$oid": "507f1f77bcf86cd799439011" }],
+    "createdAt": "2025-06-24T20:15:00.000Z",
+    "updatedAt": "2025-06-24T20:15:00.000Z"
+  }
+]

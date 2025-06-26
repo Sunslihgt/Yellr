@@ -3,6 +3,48 @@
     "_id": { "$oid": "507f1f47bcf86cd799439033" },
     "follower": { "$oid": "507f1f77bcf86cd799439015" },
     "following": { "$oid": "507f1f77bcf86cd799439011" },
-    "createdAt": "2024-01-15T10:30:00.000Z"
+    "createdAt": "2025-06-15T10:30:00.000Z"
+  },
+  {
+    "_id": { "$oid": "507f1f47bcf86cd799439034" },
+    "follower": { "$oid": "507f1f77bcf86cd799439011" },
+    "following": { "$oid": "507f1f77bcf86cd799439012" },
+    "createdAt": "2025-06-16T09:00:00.000Z"
+  },
+  {
+    "_id": { "$oid": "507f1f47bcf86cd799439035" },
+    "follower": { "$oid": "507f1f77bcf86cd799439012" },
+    "following": { "$oid": "507f1f77bcf86cd799439013" },
+    "createdAt": "2025-06-17T11:15:00.000Z"
+  },
+  {
+    "_id": { "$oid": "507f1f47bcf86cd799439036" },
+    "follower": { "$oid": "507f1f77bcf86cd799439013" },
+    "following": { "$oid": "507f1f77bcf86cd799439014" },
+    "createdAt": "2025-06-18T13:45:00.000Z"
+  },
+  {
+    "_id": { "$oid": "507f1f47bcf86cd799439037" },
+    "follower": { "$oid": "507f1f77bcf86cd799439014" },
+    "following": { "$oid": "507f1f77bcf86cd799439011" },
+    "createdAt": "2025-06-19T15:30:00.000Z"
+  },
+  {
+    "_id": { "$oid": "507f1f47bcf86cd799439038" },
+    "follower": { "$oid": "507f1f77bcf86cd799439015" },
+    "following": { "$oid": "507f1f77bcf86cd799439012" },
+    "createdAt": "2025-06-20T10:00:00.000Z"
+  },
+  {
+    "_id": { "$oid": "507f1f47bcf86cd799439039" },
+    "follower": { "$oid": "507f1f77bcf86cd799439015" },
+    "following": { "$oid": "507f1f77bcf86cd799439013" },
+    "createdAt": "2025-06-20T10:01:00.000Z"
+  },
+  {
+    "_id": { "$oid": "507f1f47bcf86cd79943903a" },
+    "follower": { "$oid": "507f1f77bcf86cd799439015" },
+    "following": { "$oid": "507f1f77bcf86cd799439014" },
+    "createdAt": "2025-06-20T10:02:00.000Z"
   }
 ]
