@@ -245,9 +245,42 @@ const MessageCard: React.FC<MessageCardProps> = ({ post, onPostUpdated, onPostDe
                             </div>
                         </div>
                     ) : (
-                        <p className="text-gray-900 dark:text-white text-base leading-relaxed mb-3">
-                            {post.content}
-                        </p>
+                        <>
+                            {post.content && (
+                                <p className="text-gray-900 dark:text-white text-base leading-relaxed mb-3">
+                                    {post.content}
+                                </p>
+                            )}
+                            
+                            {/* Media Display */}
+                            {post.imageUrl && (
+                                <div className="mb-3">
+                                    <img
+                                        src={post.imageUrl}
+                                        alt="Post image"
+                                        className="max-w-full h-auto max-h-96 rounded-lg object-cover border border-gray-200 dark:border-gray-700"
+                                        onError={(e) => {
+                                            e.currentTarget.style.display = 'none';
+                                        }}
+                                    />
+                                </div>
+                            )}
+                            
+                            {post.videoUrl && (
+                                <div className="mb-3">
+                                    <video
+                                        src={post.videoUrl}
+                                        controls
+                                        className="max-w-full h-auto max-h-96 rounded-lg border border-gray-200 dark:border-gray-700"
+                                        onError={(e) => {
+                                            e.currentTarget.style.display = 'none';
+                                        }}
+                                    >
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                            )}
+                        </>
                     )}
 
                     {/* Actions */}

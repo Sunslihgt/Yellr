@@ -228,8 +228,14 @@ const Profile: React.FC = () => {
                 })
             });
 
+            let updatedUser;
+            try {
+                updatedUser = await response.json();
+            } catch (jsonError) {
+                throw new Error('Erreur du serveur. L\'image est peut-être trop volumineuse.');
+            }
+
             if (response.ok) {
-                const updatedUser = await response.json();
                 console.log('Profile updated successfully:', updatedUser);
 
                 updateUser(updatedUser);
@@ -239,9 +245,8 @@ const Profile: React.FC = () => {
 
                 setShowEditModal(false);
             } else {
-                const errorData = await response.json();
-                console.error('Error updating profile:', errorData);
-                alert(`Error updating profile: ${errorData.message || 'Please try again.'}`);
+                console.error('Error updating profile:', updatedUser);
+                alert(`Error updating profile: ${updatedUser.message || 'Veuillez réessayer.'}`);
             }
         } catch (error) {
             console.error('Error updating profile:', error);

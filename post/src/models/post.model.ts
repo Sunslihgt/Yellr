@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IPost extends Document {
-    content: string;
+    content?: string;
     authorId: string;
     tags: string[];
     likes: string[];
@@ -14,8 +14,9 @@ export interface IPost extends Document {
 const PostSchema: Schema = new Schema({
     content: {
         type: String,
-        required: true,
-        maxlength: 280
+        required: false,
+        maxlength: 280,
+        default: ''
     },
     authorId: {
         type: Schema.Types.ObjectId,
