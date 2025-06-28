@@ -2,12 +2,16 @@
 **_Where Everyone’s Loud_**  
 *...and nobody listens.*
 
-**YELLR** is the world's most _unapologetically chaotic_ microblogging platform. 🦅 We believe in **free** speech, especially the kind that involves shouting into the void while everyone else is doing the same. 🗣️ Built for those who want to be heard 💪 - but never want to listen .
+**YELLR** is the world's most _unapologetically chaotic_ microblogging platform. 🦅 We believe in **free** speech, especially the kind that involves shouting into the void while everyone else is doing the same. 🗣️ Built for those who want to be heard 💪 - but never want to listen.
 
 ## 👷‍♂️ Development
 
-Yellr is a _**Twitter/X clone**_ made by 3 students in a few weeks at CESI Graduate School of Engineering at Saint-Nazaire (_A3 INFO FISA 2024-2027_).<br>
-The project uses the **MERN** stack (MongoDB, Express, React, Node) with Typescript, Tailwind and Nginx. The backend is built from different micro-services.
+Yellr is a _**Twitter/X clone**_ made as a fun, modern take on social microblogging by 3 students in a few weeks at CESI Graduate School of Engineering at Saint-Nazaire, France (_A3 INFO FISA 2024-2027_). The project uses the **MERN** stack (MongoDB, Express, React, Node) with Typescript, Tailwind and Nginx. The backend is built from different micro-services.
+
+### 🤝 Team members :
+- [Nathan Picoul](https://github.com/picool44)
+- [Samuel Deschamps](https://github.com/Sunslihgt)
+- [Pierre Kerlau](https://github.com/PierreKerlau)
 
 ## 🗒️ Environnement files
 
@@ -55,3 +59,17 @@ To start the project on Windows, just run the PowerShell file :
 This will stop all currently running images, start all necessary services. HMR will be enabled to streamline the development process.
 
 You can also run `./run-prod.ps1` to build the project for deployment and prod tests.
+
+## 🖼️ Screenshots
+
+### Home Page 
+![Home Page](docs/screenshots/home-page.png)
+
+### User Profile
+![User Profile](docs/screenshots/user-profile.png)
+
+### Themes
+![Mobile View Home Page](docs/screenshots/mobile-light-dark-home-page.png)
+
+### Mobile View
+![Mobile View User Profile](docs/screenshots/mobile-user-profile.png)
